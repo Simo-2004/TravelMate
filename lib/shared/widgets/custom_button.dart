@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:travelmate/core/constants/app_colors.dart';
+import 'package:travelmate/core/constants/app_sizes.dart';
+
 class CustomButton extends StatelessWidget {
   // Button properties that will change every time we use the button
   final String text;
@@ -18,20 +21,20 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: color ?? Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), 
+        foregroundColor: AppColors.white,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.buttonH,
+          vertical: AppSizes.buttonV,
         ),
-        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusM),
+        ),
+        elevation: AppSizes.buttonElevation,
       ),
       onPressed: onPressed,
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.labelLarge,
       ),
     );
   }
