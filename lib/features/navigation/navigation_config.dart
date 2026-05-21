@@ -118,7 +118,7 @@ class NavigationDefaults {
         label: AppStrings.navSavedLabel,
         title: AppStrings.pageSavedTitle,
         icon: Icons.bookmark_border,
-        svgAsset: 'assets/icons/Bookmark 4.svg',
+        svgAsset: 'assets/icons/Bookmark.svg',
         page: const SavedItemsScreen(),
       ),
       const NavigationItem(
