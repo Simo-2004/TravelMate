@@ -29,11 +29,13 @@ class NavigationStyle {
   final Color backgroundColor;
   final Color selectedColor;
   final Color unselectedColor;
+  final Color selectedIndicatorColor;
 
   const NavigationStyle({
     required this.backgroundColor,
     required this.selectedColor,
     required this.unselectedColor,
+    required this.selectedIndicatorColor,
   });
 
   double elevation(AppSizes sizes) {
@@ -66,6 +68,10 @@ class NavigationStyle {
     return sizes.padXs;
   }
 
+  double indicatorPadding(AppSizes sizes) {
+    return sizes.padM;
+  }
+
   Color iconColor(bool isSelected) {
     return isSelected ? selectedColor : unselectedColor;
   }
@@ -93,9 +99,10 @@ class NavigationConfig {
 
 class NavigationDefaults {
   static const NavigationStyle style = NavigationStyle(
-    backgroundColor: AppColors.white,
-    selectedColor: AppColors.yellow,
+    backgroundColor: AppColors.yellow,
+    selectedColor: AppColors.black,
     unselectedColor: AppColors.black,
+    selectedIndicatorColor: AppColors.white,
   );
 
   static const NavigationConfig config = NavigationConfig(

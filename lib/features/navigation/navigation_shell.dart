@@ -110,8 +110,11 @@ double _calculateBarHeight(
   final labelStyle = style.labelStyle(sizes, true);
   final labelHeight = _maxLabelHeight(context, labelStyle, items);
   final iconSize = style.iconSize(sizes);
-  final contentHeight =
-      iconSize + style.labelSpacing(sizes) + labelHeight + itemPadding.vertical;
+  final indicatorPadding = style.indicatorPadding(sizes);
+  final indicatorContentHeight =
+      iconSize + style.labelSpacing(sizes) + labelHeight;
+  final indicatorSize = indicatorContentHeight + (indicatorPadding * 2);
+  final contentHeight = indicatorSize + itemPadding.vertical;
   final safeBottom = MediaQuery.of(context).padding.bottom;
 
   return contentHeight + padding.vertical + safeBottom;
@@ -160,6 +163,11 @@ class _NavButton extends StatelessWidget {
     final iconColor = style.iconColor(isSelected);
     final labelStyle = style.labelStyle(sizes, isSelected);
     final iconSize = style.iconSize(sizes);
+    final indicatorPadding = style.indicatorPadding(sizes);
+    final labelHeight = _labelHeight(context, labelStyle, item.label);
+    final indicatorContentHeight =
+        iconSize + style.labelSpacing(sizes) + labelHeight;
+    final indicatorSize = indicatorContentHeight + (indicatorPadding * 2);
 
     final Widget iconWidget;
     if (item.svgAsset != null) {
@@ -181,15 +189,50 @@ class _NavButton extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            iconWidget,
-            SizedBox(height: style.labelSpacing(sizes)),
-            Text(
-              item.label,
-              style: labelStyle,
+            Container(
+              width: indicatorSize,
+              height: indicatorSize,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? style.selectedIndicatorColor
+                    : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  iconWidget,
+                  SizedBox(height: style.labelSpacing(sizes)),
+                  Text(
+                    item.label,
+                    style: labelStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+double _labelHeight(
+  BuildContext context,
+  TextStyle style,
+  String label,
+) {
+  final textScaler = MediaQuery.textScalerOf(context);
+  final direction = Directionality.of(context);
+
+  final painter = TextPainter(
+    text: TextSpan(text: label, style: style),
+    textDirection: direction,
+    textScaler: textScaler,
+    maxLines: 1,
+  )..layout();
+
+  return painter.size.height;
 }
