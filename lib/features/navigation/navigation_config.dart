@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
+import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/home/home_screen.dart';
 import 'package:travelmate/features/saved/saved_items_screen.dart';
 import 'package:travelmate/features/search/search_screen.dart';
@@ -28,35 +29,53 @@ class NavigationStyle {
   final Color backgroundColor;
   final Color selectedColor;
   final Color unselectedColor;
-  final double elevation;
-  final EdgeInsetsGeometry padding;
-  final EdgeInsetsGeometry itemPadding;
-  final BorderRadius itemRadius;
-  final double iconSize;
-  final double labelSpacing;
-  final TextStyle selectedLabelStyle;
-  final TextStyle unselectedLabelStyle;
 
   const NavigationStyle({
     required this.backgroundColor,
     required this.selectedColor,
     required this.unselectedColor,
-    required this.elevation,
-    required this.padding,
-    required this.itemPadding,
-    required this.itemRadius,
-    required this.iconSize,
-    required this.labelSpacing,
-    required this.selectedLabelStyle,
-    required this.unselectedLabelStyle,
   });
+
+  double elevation(AppSizes sizes) {
+    return sizes.navElevation;
+  }
+
+  EdgeInsets padding(AppSizes sizes) {
+    return EdgeInsets.symmetric(
+      horizontal: sizes.padM,
+      vertical: sizes.padS,
+    );
+  }
+
+  EdgeInsets itemPadding(AppSizes sizes) {
+    return EdgeInsets.symmetric(
+      horizontal: sizes.padS,
+      vertical: sizes.padXs,
+    );
+  }
+
+  BorderRadius itemRadius(AppSizes sizes) {
+    return BorderRadius.all(Radius.circular(sizes.radiusM));
+  }
+
+  double iconSize(AppSizes sizes) {
+    return sizes.iconM;
+  }
+
+  double labelSpacing(AppSizes sizes) {
+    return sizes.padXs;
+  }
 
   Color iconColor(bool isSelected) {
     return isSelected ? selectedColor : unselectedColor;
   }
 
-  TextStyle labelStyle(bool isSelected) {
-    return isSelected ? selectedLabelStyle : unselectedLabelStyle;
+  TextStyle labelStyle(AppSizes sizes, bool isSelected) {
+    return AppTextStyles.navLabel(
+      sizes,
+      color: isSelected ? selectedColor : unselectedColor,
+      weight: isSelected ? FontWeight.bold : FontWeight.w600,
+    );
   }
 }
 
@@ -77,28 +96,6 @@ class NavigationDefaults {
     backgroundColor: AppColors.white,
     selectedColor: AppColors.yellow,
     unselectedColor: AppColors.black,
-    elevation: AppSizes.navElevation,
-    padding: EdgeInsets.symmetric(
-      horizontal: AppSizes.padM,
-      vertical: AppSizes.padS,
-    ),
-    itemPadding: EdgeInsets.symmetric(
-      horizontal: AppSizes.padS,
-      vertical: AppSizes.padXs,
-    ),
-    itemRadius: BorderRadius.all(Radius.circular(AppSizes.radiusM)),
-    iconSize: AppSizes.iconM,
-    labelSpacing: AppSizes.padXs,
-    selectedLabelStyle: TextStyle(
-      fontSize: AppSizes.textSm,
-      fontWeight: FontWeight.bold,
-      color: AppColors.yellow,
-    ),
-    unselectedLabelStyle: TextStyle(
-      fontSize: AppSizes.textSm,
-      fontWeight: FontWeight.w600,
-      color: AppColors.black,
-    ),
   );
 
   static const NavigationConfig config = NavigationConfig(

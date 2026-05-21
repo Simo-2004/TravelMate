@@ -1,23 +1,40 @@
+import 'package:flutter/material.dart';
+
 class AppSizes {
-  static const double padL = 24;
-  static const double padM = 12;
-  static const double padS = 8;
-  static const double padXs = 4;
+  final double shortestSide;
+  final double textScale;
 
-  static const double spaceS = padM;
-  static const double spaceM = padL;
-  static const double spaceL = 32;
+  const AppSizes._(this.shortestSide, this.textScale);
 
-  static const double radiusM = 12;
-  static const double iconM = 22;
+  factory AppSizes.of(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final scale = MediaQuery.textScalerOf(context).scale(1.0);
 
-  static const double textSm = 12;
-  static const double textMd = 16;
-  static const double textLg = 22;
+    return AppSizes._(media.size.shortestSide, scale);
+  }
 
-  static const double buttonElevation = 2;
-  static const double navElevation = 8;
+  double _ratio(double factor) => shortestSide * factor;
 
-  static const double buttonH = padL;
-  static const double buttonV = 14;
+  double get padXs => _ratio(0.012);
+  double get padS => _ratio(0.022);
+  double get padM => _ratio(0.032);
+  double get padL => _ratio(0.06);
+
+  double get spaceS => padM;
+  double get spaceM => padL;
+  double get spaceL => _ratio(0.088);
+
+  double get radiusM => _ratio(0.032);
+  double get iconM => _ratio(0.06);
+
+  double get textSm => _ratio(0.032) * textScale;
+  double get textMd => _ratio(0.042) * textScale;
+  double get textLg => _ratio(0.06) * textScale;
+  double get textHeightTight => 1.0 + (textScale - 1.0) * 0.2;
+
+  double get buttonElevation => _ratio(0.005);
+  double get navElevation => _ratio(0.02);
+
+  double get buttonH => padL;
+  double get buttonV => _ratio(0.04);
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
+import 'package:travelmate/core/theme/app_text_styles.dart';
 
 class CustomButton extends StatelessWidget {
   // Button properties that will change every time we use the button
@@ -18,23 +19,25 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: color ?? Theme.of(context).colorScheme.primary,
         foregroundColor: AppColors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.buttonH,
-          vertical: AppSizes.buttonV,
+        padding: EdgeInsets.symmetric(
+          horizontal: sizes.buttonH,
+          vertical: sizes.buttonV,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusM),
+          borderRadius: BorderRadius.circular(sizes.radiusM),
         ),
-        elevation: AppSizes.buttonElevation,
+        elevation: sizes.buttonElevation,
       ),
       onPressed: onPressed,
       child: Text(
         text,
-        style: Theme.of(context).textTheme.labelLarge,
+        style: AppTextStyles.buttonLabel(sizes),
       ),
     );
   }

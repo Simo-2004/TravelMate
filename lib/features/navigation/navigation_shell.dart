@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:travelmate/core/constants/app_sizes.dart';
+import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/navigation/navigation_config.dart';
 
 class NavigationShell extends StatefulWidget {
@@ -30,7 +33,7 @@ class _NavigationShellState extends State<NavigationShell> {
     }
 
     _currentIndex =
-        widget.config.initialIndex.clamp(0, _items.length - 1) as int;
+        widget.config.initialIndex.clamp(0, _items.length - 1);
   }
 
   @override
@@ -43,10 +46,20 @@ class _NavigationShellState extends State<NavigationShell> {
 
     final currentItem = _items[_currentIndex];
     final style = _style;
+    final sizes = AppSizes.of(context);
+    final barHeight = _calculateBarHeight(
+      context,
+      sizes: sizes,
+      style: style,
+      items: _items,
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentItem.title),
+        title: Text(
+          currentItem.title,
+          style: AppTextStyles.titleLg(sizes),
+        ),
       ),
       body: IndexedStack(
         index: _currentIndex,
@@ -54,11 +67,12 @@ class _NavigationShellState extends State<NavigationShell> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: style.backgroundColor,
-        elevation: style.elevation,
+        elevation: style.elevation(sizes),
+        height: barHeight,
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: style.padding,
+            padding: style.padding(sizes),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(_items.length, (index) {
@@ -68,6 +82,7 @@ class _NavigationShellState extends State<NavigationShell> {
                 return _NavButton(
                   item: item,
                   style: style,
+                  sizes: sizes,
                   isSelected: isSelected,
                   onTap: () => setState(() => _currentIndex = index),
                 );
@@ -80,15 +95,62 @@ class _NavigationShellState extends State<NavigationShell> {
   }
 }
 
+double _calculateBarHeight(
+  BuildContext context, {
+  required AppSizes sizes,
+  required NavigationStyle style,
+  required List<NavigationItem> items,
+}) {
+  if (items.isEmpty) {
+    return 0;
+  }
+
+  final padding = style.padding(sizes);
+  final itemPadding = style.itemPadding(sizes);
+  final labelStyle = style.labelStyle(sizes, true);
+  final labelHeight = _maxLabelHeight(context, labelStyle, items);
+  final iconSize = style.iconSize(sizes);
+  final contentHeight =
+      iconSize + style.labelSpacing(sizes) + labelHeight + itemPadding.vertical;
+  final safeBottom = MediaQuery.of(context).padding.bottom;
+
+  return contentHeight + padding.vertical + safeBottom;
+}
+
+double _maxLabelHeight(
+  BuildContext context,
+  TextStyle style,
+  List<NavigationItem> items,
+) {
+  final textScaler = MediaQuery.textScalerOf(context);
+  final direction = Directionality.of(context);
+
+  double maxHeight = 0;
+  for (final item in items) {
+    final painter = TextPainter(
+      text: TextSpan(text: item.label, style: style),
+      textDirection: direction,
+      textScaler: textScaler,
+      maxLines: 1,
+    )..layout();
+
+    maxHeight = math.max(maxHeight, painter.size.height);
+  }
+
+  return maxHeight;
+}
+
 class _NavButton extends StatelessWidget {
   final NavigationItem item;
   final NavigationStyle style;
+  final AppSizes sizes;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavButton({
     required this.item,
     required this.style,
+    required this.sizes,
     required this.isSelected,
     required this.onTap,
   });
@@ -96,30 +158,31 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconColor = style.iconColor(isSelected);
-    final labelStyle = style.labelStyle(isSelected);
+    final labelStyle = style.labelStyle(sizes, isSelected);
+    final iconSize = style.iconSize(sizes);
 
     final Widget iconWidget;
     if (item.svgAsset != null) {
       iconWidget = SvgPicture.asset(
         item.svgAsset!,
-        width: style.iconSize,
-        height: style.iconSize,
+        width: iconSize,
+        height: iconSize,
         colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
       );
     } else {
-      iconWidget = Icon(item.icon, color: iconColor, size: style.iconSize);
+      iconWidget = Icon(item.icon, color: iconColor, size: iconSize);
     }
 
     return InkWell(
       onTap: onTap,
-      borderRadius: style.itemRadius,
+      borderRadius: style.itemRadius(sizes),
       child: Padding(
-        padding: style.itemPadding,
+        padding: style.itemPadding(sizes),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             iconWidget,
-            SizedBox(height: style.labelSpacing),
+            SizedBox(height: style.labelSpacing(sizes)),
             Text(
               item.label,
               style: labelStyle,

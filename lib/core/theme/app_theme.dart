@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
-import 'package:travelmate/core/constants/app_sizes.dart';
 
 class AppTheme {
   static ThemeData light() {
@@ -47,27 +46,6 @@ class AppTheme {
         surfaceTintColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-      ),
-      textTheme: const TextTheme(
-        titleLarge: TextStyle(
-          fontSize: AppSizes.textLg,
-          fontWeight: FontWeight.bold,
-          color: AppColors.black,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: AppSizes.textMd,
-          color: AppColors.blackAlpha60,
-        ),
-        labelLarge: TextStyle(
-          fontSize: AppSizes.textMd,
-          fontWeight: FontWeight.bold,
-          color: AppColors.white,
-        ),
-        labelSmall: TextStyle(
-          fontSize: AppSizes.textSm,
-          fontWeight: FontWeight.w600,
-          color: AppColors.black,
-        ),
       ),
     );
   }
