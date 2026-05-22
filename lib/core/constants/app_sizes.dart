@@ -25,6 +25,7 @@ class AppSizes {
   double get spaceL => _ratio(0.088);
 
   double get radiusM => _ratio(0.032);
+  double get radiusL => _ratio(0.06);
   double get iconM => _ratio(0.06);
 
   double get textSm => _ratio(0.032) * textScale;

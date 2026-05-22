@@ -18,4 +18,6 @@ class AppStrings {
   static const String homeCta = 'Inizia a Esplorare';
   static const String homeCtaLog =
       "L'utente vuole cercare compagni di viaggio!";
+
+    static const String searchHint = 'Search on TravelMate';
 }
