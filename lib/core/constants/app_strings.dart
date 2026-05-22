@@ -12,12 +12,21 @@ class AppStrings {
   static const String pageSettingsTitle = 'Settings';
 
   static const String homeHeadline =
-      'Trova il tuo compagno di viaggio ideale';
+      'Find your ideal travel companion';
   static const String homeSubtitle =
-      'Filtra le persone in base alla tua prossima destinazione.';
-  static const String homeCta = 'Inizia a Esplorare';
+      'Filter people based on your next destination.';
+  static const String homeCta = 'Start Exploring';
   static const String homeCtaLog =
-      "L'utente vuole cercare compagni di viaggio!";
+      "The user wants to find travel companions!";
 
     static const String searchHint = 'Search on TravelMate';
+    static const String homeSliderTitle = 'Recommended trips for you';
+    static const List<String> mockTripLabels = [
+        'Trip 1',
+        'Trip 2',
+        'Trip 3',
+        'Trip 4',
+        'Trip 5',
+        'Trip 6',
+    ];
 }
