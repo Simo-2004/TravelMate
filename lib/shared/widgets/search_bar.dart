@@ -8,7 +8,9 @@ import 'package:travelmate/core/theme/app_text_styles.dart';
 
 class TravelSearchBar extends StatelessWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
+  final VoidCallback? onTap;
   final String hintText;
   final Color? backgroundColor;
   final Color? textColor;
@@ -17,11 +19,16 @@ class TravelSearchBar extends StatelessWidget {
   final String? iconAsset;
   final double? iconSize;
   final EdgeInsetsGeometry? padding;
+  final bool? readOnly;
+  final bool? showCursor;
+  final bool? autofocus;
 
   const TravelSearchBar({
     super.key,
     this.controller,
+    this.focusNode,
     this.onChanged,
+    this.onTap,
     this.hintText = AppStrings.searchHint,
     this.backgroundColor,
     this.textColor,
@@ -30,6 +37,9 @@ class TravelSearchBar extends StatelessWidget {
     this.iconAsset,
     this.iconSize,
     this.padding,
+    this.readOnly,
+    this.showCursor,
+    this.autofocus,
   });
 
   @override
@@ -46,6 +56,9 @@ class TravelSearchBar extends StatelessWidget {
         );
     final resolvedIconSize = iconSize ?? sizes.iconM;
     final resolvedIconAsset = iconAsset ?? _defaultIconAsset;
+    final resolvedReadOnly = readOnly ?? onTap != null;
+    final resolvedShowCursor = showCursor ?? !resolvedReadOnly;
+    final resolvedAutofocus = autofocus ?? false;
 
     return Container(
       padding: resolvedPadding,
@@ -65,7 +78,12 @@ class TravelSearchBar extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
+              focusNode: focusNode,
               onChanged: onChanged,
+              onTap: onTap,
+              readOnly: resolvedReadOnly,
+              showCursor: resolvedShowCursor,
+              autofocus: resolvedAutofocus,
               style: AppTextStyles.bodyMd(sizes).copyWith(
                 color: resolvedTextColor,
               ),
