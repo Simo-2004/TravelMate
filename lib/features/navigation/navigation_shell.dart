@@ -42,7 +42,7 @@ class _NavigationShellState extends State<NavigationShell> {
         widget.config.initialIndex.clamp(0, _items.length - 1);
 
     _controller = widget.controller ??
-        NavigationController(initialIndex: initialIndex as int);
+        NavigationController(initialIndex: initialIndex);
     _ownsController = widget.controller == null;
   }
 
@@ -69,7 +69,7 @@ class _NavigationShellState extends State<NavigationShell> {
         animation: _controller,
         builder: (context, _) {
           final currentIndex =
-              _controller.index.clamp(0, _items.length - 1) as int;
+              _controller.index.clamp(0, _items.length - 1);
           final currentItem = _items[currentIndex];
           final style = _style;
           final sizes = AppSizes.of(context);
