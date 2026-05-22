@@ -14,4 +14,13 @@ class AppAssets {
     trip5,
     trip6,
   ];
+
+  static const List<String> mockRecentAssets = [
+    trip6,
+    trip5,
+    trip4,
+    trip3,
+    trip2,
+    trip1,
+  ];
 }

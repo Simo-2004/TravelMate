@@ -20,6 +20,15 @@ class HomeScreen extends StatelessWidget {
     ),
   );
 
+  static final List<({String asset, String label})> _mockRecent =
+      List.generate(
+    AppAssets.mockRecentAssets.length,
+    (index) => (
+      asset: AppAssets.mockRecentAssets[index],
+      label: AppStrings.mockRecentLabels[index],
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
@@ -50,6 +59,29 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: sizes.radiusL,
                       onTap: () =>
                           debugPrint('Selected trip ${index + 1}'),
+                    );
+                  },
+                ),
+              ),
+            ),
+            SliderSection(
+              title: AppStrings.viewedRecentlyTitle,
+              child: SizedBox(
+                height: sizes.sliderTileSize,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _mockRecent.length,
+                  separatorBuilder: (_, __) =>
+                      SizedBox(width: sizes.sliderTileSpacing),
+                  itemBuilder: (context, index) {
+                    final item = _mockRecent[index];
+
+                    return SquareImageButton(
+                      imageAsset: item.asset,
+                      label: item.label,
+                      borderRadius: sizes.radiusL,
+                      onTap: () =>
+                          debugPrint('Viewed recent ${index + 1}'),
                     );
                   },
                 ),
