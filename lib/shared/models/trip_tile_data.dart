@@ -5,11 +5,15 @@ class TripTileData {
   final String label;
   final List<String> scheduleImages;
   final List<TripTag> tags;
+  final String destinationTitle;
+  final String description;
 
   const TripTileData({
     required this.asset,
     required this.label,
     required this.scheduleImages,
     required this.tags,
+    required this.destinationTitle,
+    required this.description,
   });
 }

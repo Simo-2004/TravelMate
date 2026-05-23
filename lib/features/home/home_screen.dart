@@ -77,6 +77,10 @@ class HomeScreen extends StatelessWidget {
                                       tripName: item.label,
                                       images: item.scheduleImages,
                                       tags: item.tags,
+                                      destinationTitle:
+                                          item.destinationTitle,
+                                      destinationDescription:
+                                          item.description,
                                     ),
                                   ),
                                 );
@@ -110,6 +114,10 @@ class HomeScreen extends StatelessWidget {
                                       tripName: item.label,
                                       images: item.scheduleImages,
                                       tags: item.tags,
+                                      destinationTitle:
+                                          item.destinationTitle,
+                                      destinationDescription:
+                                          item.description,
                                     ),
                                   ),
                                 );
