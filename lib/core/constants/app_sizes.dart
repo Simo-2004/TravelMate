@@ -40,6 +40,7 @@ class AppSizes {
   double get sliderTileSpacing => padS;
       double get sliderImageScale =>
         ((shortestSide / 700) * 1.2).clamp(0.6, 0.9).toDouble();
+  double get scheduleSliderSize => _ratio(0.72);
 
   double get buttonH => padL;
   double get buttonV => _ratio(0.04);

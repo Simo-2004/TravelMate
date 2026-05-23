@@ -5,30 +5,61 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_assets.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/features/navigation/navigation_controller.dart';
+import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
 import 'package:travelmate/shared/widgets/search_bar.dart';
 import 'package:travelmate/shared/widgets/slider_section.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
 
+typedef TripTile = ({
+  String asset,
+  String label,
+  List<String> scheduleImages,
+});
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static final List<({String asset, String label})> _mockTrips =
-      List.generate(
-    AppAssets.mockTripAssets.length,
-    (index) => (
-      asset: AppAssets.mockTripAssets[index],
-      label: AppStrings.mockTripLabels[index],
+  static final List<TripTile> _tripTiles = [
+    (
+      asset: AppAssets.homeTrip1,
+      label: AppStrings.mockTripLabels[0],
+      scheduleImages: AppAssets.scheduleSet1,
     ),
-  );
+    (
+      asset: AppAssets.homeTrip2,
+      label: AppStrings.mockTripLabels[1],
+      scheduleImages: AppAssets.scheduleSet2,
+    ),
+    (
+      asset: AppAssets.homeTrip3,
+      label: AppStrings.mockTripLabels[2],
+      scheduleImages: AppAssets.scheduleSet3,
+    ),
+    (
+      asset: AppAssets.homeTrip4,
+      label: AppStrings.mockTripLabels[3],
+      scheduleImages: AppAssets.scheduleSet4,
+    ),
+    (
+      asset: AppAssets.homeTrip5,
+      label: AppStrings.mockTripLabels[4],
+      scheduleImages: AppAssets.scheduleSet5,
+    ),
+    (
+      asset: AppAssets.homeTrip6,
+      label: AppStrings.mockTripLabels[5],
+      scheduleImages: AppAssets.scheduleSet6,
+    ),
+  ];
 
-  static final List<({String asset, String label})> _mockRecent =
-      List.generate(
-    AppAssets.mockRecentAssets.length,
-    (index) => (
-      asset: AppAssets.mockRecentAssets[index],
-      label: AppStrings.mockRecentLabels[index],
-    ),
-  );
+  static final List<TripTile> _recentTiles = [
+    _tripTiles[5],
+    _tripTiles[4],
+    _tripTiles[3],
+    _tripTiles[2],
+    _tripTiles[1],
+    _tripTiles[0],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +103,27 @@ class HomeScreen extends StatelessWidget {
                         height: sizes.sliderTileSize,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _mockTrips.length,
+                          itemCount: _tripTiles.length,
                           separatorBuilder: (_, __) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
-                            final item = _mockTrips[index];
+                            final item = _tripTiles[index];
 
                             return SquareImageButton(
                               imageAsset: item.asset,
                               label: item.label,
                               borderRadius: sizes.radiusL,
-                              onTap: () =>
-                                  debugPrint('Selected trip ${index + 1}'),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        TravelScheduleScreen(
+                                      tripName: item.label,
+                                      images: item.scheduleImages,
+                                    ),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
@@ -95,18 +135,27 @@ class HomeScreen extends StatelessWidget {
                         height: sizes.sliderTileSize,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _mockRecent.length,
+                          itemCount: _recentTiles.length,
                           separatorBuilder: (_, __) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
-                            final item = _mockRecent[index];
+                            final item = _recentTiles[index];
 
                             return SquareImageButton(
                               imageAsset: item.asset,
                               label: item.label,
                               borderRadius: sizes.radiusL,
-                              onTap: () =>
-                                  debugPrint('Viewed recent ${index + 1}'),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        TravelScheduleScreen(
+                                      tripName: item.label,
+                                      images: item.scheduleImages,
+                                    ),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),

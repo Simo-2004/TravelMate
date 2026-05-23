@@ -22,6 +22,7 @@ class AppStrings {
     static const String searchHint = 'Search on TravelMate';
     static const String homeSliderTitle = 'Recommended trips for you';
     static const String viewedRecentlyTitle = 'Viewed recently';
+    static const String travelScheduleTitle = 'Travel schedule';
     static const List<String> mockTripLabels = [
         'Trip 1',
         'Trip 2',
