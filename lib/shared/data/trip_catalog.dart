@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:travelmate/core/constants/app_assets.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
+import 'package:travelmate/shared/data/trip_media_catalog.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
 
@@ -133,12 +133,7 @@ class TripCatalog {
   ];
 
   static final List<String> _tileAssets = [
-    AppAssets.homeTrip1,
-    AppAssets.homeTrip2,
-    AppAssets.homeTrip3,
-    AppAssets.homeTrip4,
-    AppAssets.homeTrip5,
-    AppAssets.homeTrip6,
+    ...TripMediaCatalog.homeTripAssets,
   ];
 
   static final List<List<TripTag>> _tagSets = [
@@ -155,7 +150,7 @@ class TripCatalog {
       return TripTileData(
         asset: _tileAssets[index],
         label: labels[index],
-        scheduleImages: AppAssets.scheduleSets[index],
+        scheduleImages: TripMediaCatalog.scheduleSets[index],
         tags: _tagSets[index],
       );
     });
