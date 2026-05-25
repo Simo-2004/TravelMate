@@ -25,6 +25,7 @@ class AppSizes {
   double get spaceL => _ratio(0.088);
 
   double get radiusM => _ratio(0.032);
+  double get radiusL => _ratio(0.06);
   double get iconM => _ratio(0.06);
 
   double get textSm => _ratio(0.032) * textScale;
@@ -34,6 +35,12 @@ class AppSizes {
 
   double get buttonElevation => _ratio(0.005);
   double get navElevation => _ratio(0.02);
+
+  double get sliderTileSize => _ratio(0.32);
+  double get sliderTileSpacing => padS;
+      double get sliderImageScale =>
+        ((shortestSide / 700) * 1.2).clamp(0.6, 0.9).toDouble();
+  double get scheduleSliderSize => _ratio(0.72);
 
   double get buttonH => padL;
   double get buttonV => _ratio(0.04);

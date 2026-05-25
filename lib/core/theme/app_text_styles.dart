@@ -40,4 +40,13 @@ class AppTextStyles {
       color: color,
     );
   }
+
+  static TextStyle caption(AppSizes sizes) {
+    return TextStyle(
+      fontSize: sizes.textSm,
+      fontWeight: FontWeight.w600,
+      height: sizes.textHeightTight,
+      color: AppColors.black,
+    );
+  }
 }

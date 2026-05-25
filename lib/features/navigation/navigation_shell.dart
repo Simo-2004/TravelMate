@@ -5,13 +5,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/navigation/navigation_config.dart';
+import 'package:travelmate/features/navigation/navigation_controller.dart';
+import 'package:travelmate/shared/transitions/app_transitions.dart';
 
 class NavigationShell extends StatefulWidget {
   final NavigationConfig config;
+  final NavigationController? controller;
 
   const NavigationShell({
     super.key,
     this.config = NavigationDefaults.config,
+    this.controller,
   });
 
   @override
@@ -19,7 +23,8 @@ class NavigationShell extends StatefulWidget {
 }
 
 class _NavigationShellState extends State<NavigationShell> {
-  late int _currentIndex;
+  late final NavigationController _controller;
+  late final bool _ownsController;
 
   List<NavigationItem> get _items => widget.config.items;
   NavigationStyle get _style => widget.config.style;
@@ -28,12 +33,25 @@ class _NavigationShellState extends State<NavigationShell> {
   void initState() {
     super.initState();
     if (_items.isEmpty) {
-      _currentIndex = 0;
+      _controller = widget.controller ?? NavigationController();
+      _ownsController = widget.controller == null;
       return;
     }
 
-    _currentIndex =
+    final initialIndex =
         widget.config.initialIndex.clamp(0, _items.length - 1);
+
+    _controller = widget.controller ??
+        NavigationController(initialIndex: initialIndex);
+    _ownsController = widget.controller == null;
+  }
+
+  @override
+  void dispose() {
+    if (_ownsController) {
+      _controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -44,52 +62,73 @@ class _NavigationShellState extends State<NavigationShell> {
       );
     }
 
-    final currentItem = _items[_currentIndex];
-    final style = _style;
-    final sizes = AppSizes.of(context);
-    final barHeight = _calculateBarHeight(
-      context,
-      sizes: sizes,
-      style: style,
+    return NavigationScope(
+      controller: _controller,
       items: _items,
-    );
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final currentIndex =
+              _controller.index.clamp(0, _items.length - 1);
+          final currentItem = _items[currentIndex];
+          final style = _style;
+          final sizes = AppSizes.of(context);
+          final isKeyboardOpen =
+              MediaQuery.of(context).viewInsets.bottom > 0;
+          final barHeight = _calculateBarHeight(
+            context,
+            sizes: sizes,
+            style: style,
+            items: _items,
+          );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          currentItem.title,
-          style: AppTextStyles.titleLg(sizes),
-        ),
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _items.map((item) => item.page).toList(),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: style.backgroundColor,
-        elevation: style.elevation(sizes),
-        height: barHeight,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: style.padding(sizes),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(_items.length, (index) {
-                final item = _items[index];
-                final isSelected = index == _currentIndex;
-
-                return _NavButton(
-                  item: item,
-                  style: style,
-                  sizes: sizes,
-                  isSelected: isSelected,
-                  onTap: () => setState(() => _currentIndex = index),
-                );
-              }),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                currentItem.title,
+                style: AppTextStyles.titleLg(sizes),
+              ),
             ),
-          ),
-        ),
+            body: AnimatedSwitcher(
+              duration: AppTransitions.pageSwitchDuration,
+              reverseDuration: AppTransitions.pageSwitchReverseDuration,
+              transitionBuilder: AppTransitions.switcherTransition,
+              layoutBuilder: AppTransitions.switcherLayout,
+              child: KeyedSubtree(
+                key: ValueKey<int>(currentIndex),
+                child: _items[currentIndex].page,
+              ),
+            ),
+            bottomNavigationBar: isKeyboardOpen
+                ? null
+                : BottomAppBar(
+                    color: style.backgroundColor,
+                    elevation: style.elevation(sizes),
+                    height: barHeight,
+                    child: SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: style.padding(sizes),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: List.generate(_items.length, (index) {
+                            final item = _items[index];
+                            final isSelected = index == currentIndex;
+
+                            return _NavButton(
+                              item: item,
+                              style: style,
+                              sizes: sizes,
+                              isSelected: isSelected,
+                              onTap: () => _controller.index = index,
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                  ),
+          );
+        },
       ),
     );
   }

@@ -45,14 +45,14 @@ class NavigationStyle {
   EdgeInsets padding(AppSizes sizes) {
     return EdgeInsets.symmetric(
       horizontal: sizes.padM,
-      vertical: sizes.padS,
+      vertical: sizes.padXs,
     );
   }
 
   EdgeInsets itemPadding(AppSizes sizes) {
     return EdgeInsets.symmetric(
       horizontal: sizes.padS,
-      vertical: sizes.padXs,
+      vertical: sizes.padXs * 0.5,
     );
   }
 
@@ -69,7 +69,7 @@ class NavigationStyle {
   }
 
   double indicatorPadding(AppSizes sizes) {
-    return sizes.padM;
+    return sizes.padS;
   }
 
   Color iconColor(bool isSelected) {
