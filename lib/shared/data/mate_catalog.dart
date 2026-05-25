@@ -7,6 +7,14 @@ class MateCatalog {
       name: 'Alessia',
       description: 'Beach lover, flexible dates, and low-budget weekend plans.',
       profileImageAsset: 'assets/icons/mate_avatar_1.svg',
+      interests: [
+        'low-budget',
+        'group trips',
+      ],
+      preferredTrips: [
+        'nature',
+        'islands',
+      ],
       keywords: [
         'beach',
         'weekend',
@@ -19,6 +27,14 @@ class MateCatalog {
       name: 'Marco',
       description: 'Road trip fan, sunrise hikes, and nature photography routes.',
       profileImageAsset: 'assets/icons/mate_avatar_2.svg',
+      interests: [
+        'high budget',
+        'adventure',
+      ],
+      preferredTrips: [
+        'mountains',
+        'nature',
+      ],
       keywords: [
         'road trip',
         'nature',
@@ -31,6 +47,14 @@ class MateCatalog {
       name: 'Sofia',
       description: 'City breaks, museum days, and local food exploration.',
       profileImageAsset: 'assets/icons/mate_avatar_3.svg',
+      interests: [
+        'high budget',
+        'culture',
+      ],
+      preferredTrips: [
+        'urban',
+        'city breaks',
+      ],
       keywords: [
         'city',
         'culture',

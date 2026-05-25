@@ -10,6 +10,9 @@ class AppStrings {
   static const String pageSearchTitle = 'Search';
   static const String pageSavedTitle = 'Saved Items';
   static const String pageSettingsTitle = 'Settings';
+    static const String mateDetailsPageTitle = 'Profile';
+    static const String mateInterestsTitle = 'Interests';
+    static const String matePreferredTripsTitle = 'Preferred trips';
 
   static const String homeHeadline =
       'Find your ideal travel companion';

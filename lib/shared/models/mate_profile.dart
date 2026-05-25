@@ -4,6 +4,8 @@ class MateProfile {
   final String description;
   final String? profileImageAsset;
   final List<String> keywords;
+  final List<String> interests;
+  final List<String> preferredTrips;
 
   const MateProfile({
     required this.id,
@@ -11,5 +13,7 @@ class MateProfile {
     required this.description,
     this.profileImageAsset,
     this.keywords = const [],
+    this.interests = const [],
+    this.preferredTrips = const [],
   });
 }

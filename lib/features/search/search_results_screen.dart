@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
+import 'package:travelmate/features/search/mate_details_screen.dart';
 import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
 import 'package:travelmate/shared/data/trip_catalog.dart';
@@ -202,6 +203,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         .toList(growable: false);
   }
 
+  void _openMateDetails(MateProfile mate) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MateDetailsScreen(mate: mate),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
@@ -249,6 +258,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                 ? AppStrings.searchNoMatesMessage
                                 : AppStrings.searchMateHint,
                             listHeight: double.infinity,
+                            onMateTap: _openMateDetails,
                           ),
                         )
                       else if (filteredTrips.isEmpty && hasQuery)
