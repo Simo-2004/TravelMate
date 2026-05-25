@@ -20,6 +20,20 @@ class AppStrings {
       "The user wants to find travel companions!";
 
     static const String searchHint = 'Search on TravelMate';
+    static const String searchTripHint = 'Search a trip';
+    static const String searchMateHint = 'Search a mate';
+    static const String searchTripsTitle = 'Trips';
+    static const String searchMatesTitle = 'Mates';
+    static const String searchModeTripsLabel = 'Trips';
+    static const String searchModeMatesLabel = 'Mates';
+    static const String searchModeTripsCaption =
+        'Now searching trips';
+    static const String searchModeMatesCaption =
+        'Now searching mates';
+    static const String searchNoTripsMessage =
+        'No trips found. Try destination, tags, or trip name.';
+    static const String searchNoMatesMessage =
+        'No mates found. Try interests, travel style, or destination keywords.';
     static const String homeSliderTitle = 'Recommended trips for you';
     static const String viewedRecentlyTitle = 'Viewed recently';
     static const String travelScheduleTitle = 'Travel schedule';
@@ -30,6 +44,8 @@ class AppStrings {
         'Trip 4',
         'Trip 5',
         'Trip 6',
+        'Trip 7',
+        'Trip 8',
     ];
     static const List<String> mockRecentLabels = [
         'Recent 1',
@@ -38,5 +54,7 @@ class AppStrings {
         'Recent 4',
         'Recent 5',
         'Recent 6',
+        'Recent 7',
+        'Recent 8',
     ];
 }

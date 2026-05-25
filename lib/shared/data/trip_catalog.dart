@@ -132,6 +132,48 @@ class TripCatalog {
     ),
   ];
 
+  static const List<TripTag> _tagSet7 = [
+    TripTag(
+      label: 'island-vibe',
+      backgroundColor: Color(0xFF00F5A0),
+      textColor: Color(0xFF00422A),
+      borderColor: Color(0xFF8DFFD2),
+    ),
+    TripTag(
+      label: 'sunset-views',
+      backgroundColor: Color(0xFFFF8A00),
+      textColor: Color(0xFF4A2600),
+      borderColor: Color(0xFFFFD3A1),
+    ),
+    TripTag(
+      label: 'relax-mode',
+      backgroundColor: Color(0xFF00E5FF),
+      textColor: Color(0xFF00343A),
+      borderColor: Color(0xFF99F8FF),
+    ),
+  ];
+
+  static const List<TripTag> _tagSet8 = [
+    TripTag(
+      label: 'historic-route',
+      backgroundColor: Color(0xFFFF5C8A),
+      textColor: Color(0xFF4A0018),
+      borderColor: Color(0xFFFFBDD0),
+    ),
+    TripTag(
+      label: 'museum-pass',
+      backgroundColor: Color(0xFFB24CFF),
+      textColor: Color(0xFF2F005C),
+      borderColor: Color(0xFFE0B6FF),
+    ),
+    TripTag(
+      label: 'train-friendly',
+      backgroundColor: Color(0xFFFFF700),
+      textColor: Color(0xFF3A3200),
+      borderColor: Color(0xFFFFF199),
+    ),
+  ];
+
   static final List<String> _tileAssets = [
     ...TripMediaCatalog.homeTripAssets,
   ];
@@ -143,6 +185,8 @@ class TripCatalog {
     _tagSet4,
     _tagSet5,
     _tagSet6,
+    _tagSet7,
+    _tagSet8,
   ];
 
   static const List<String> _destinationTitles = [
@@ -156,6 +200,8 @@ class TripCatalog {
     'A nature-forward schedule with scenic stops, short hikes, and open-air activities.',
     'A quick weekend escape with optimized timing for low-stress planning and transit.',
     'A road-based journey with panoramic viewpoints and group-friendly rest stops.',
+    'A coastal itinerary packed with sunset viewpoints, beach transfers, and easy island hops.',
+    'A heritage-focused plan with old-town walks, museum circuits, and efficient rail links.',
   ];
 
   static List<TripTileData> _buildTiles(List<String> labels) {
