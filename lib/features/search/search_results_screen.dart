@@ -222,97 +222,88 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           body: SafeArea(
             child: Stack(
               children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom +
-                            sizes.padL * 2.2,
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    sizes.padL,
+                    sizes.padL,
+                    sizes.padL,
+                    sizes.padL * 2.4,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TravelSearchBar(
+                        controller: _searchController,
+                        hintText: hintText,
+                        onChanged: (_) => setState(() {}),
+                        onSubmitted: (_) => setState(() {}),
+                        textInputAction: TextInputAction.done,
+                        autofocus: false,
                       ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(sizes.padL),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              TravelSearchBar(
-                                controller: _searchController,
-                                hintText: hintText,
-                                onChanged: (_) => setState(() {}),
-                                onSubmitted: (_) => setState(() {}),
-                                textInputAction: TextInputAction.done,
-                                autofocus: false,
-                              ),
-                              if (mode == SearchResearchMode.mates)
-                                MatesVerticalSection(
-                                  title: AppStrings.searchMatesTitle,
-                                  mates: filteredMates,
-                                  emptyMessage: hasQuery
-                                      ? AppStrings.searchNoMatesMessage
-                                      : AppStrings.searchMateHint,
-                                )
-                              else if (filteredTrips.isEmpty && hasQuery)
-                                Padding(
-                                  padding: EdgeInsets.only(top: sizes.spaceM),
-                                  child: Text(
-                                    AppStrings.searchNoTripsMessage,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          fontSize: sizes.textSm,
-                                        ),
-                                  ),
-                                )
-                              else
-                                SliderSection(
-                                  title: AppStrings.searchTripsTitle,
-                                  child: SizedBox(
-                                    height: sizes.sliderTileSize,
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: filteredTrips.length,
-                                      separatorBuilder: (_, __) =>
-                                          SizedBox(
-                                        width: sizes.sliderTileSpacing,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final item = filteredTrips[index];
-
-                                        return SquareImageButton(
-                                          imageAsset: item.asset,
-                                          label: item.label,
-                                          borderRadius: sizes.radiusL,
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    TravelScheduleScreen(
-                                                  tripName: item.label,
-                                                  images: item.scheduleImages,
-                                                  tags: item.tags,
-                                                  destinationTitle: item
-                                                      .destinationTitle,
-                                                  destinationDescription:
-                                                      item.description,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
+                      if (mode == SearchResearchMode.mates)
+                        Expanded(
+                          child: MatesVerticalSection(
+                            title: AppStrings.searchMatesTitle,
+                            mates: filteredMates,
+                            emptyMessage: hasQuery
+                                ? AppStrings.searchNoMatesMessage
+                                : AppStrings.searchMateHint,
+                            listHeight: double.infinity,
+                          ),
+                        )
+                      else if (filteredTrips.isEmpty && hasQuery)
+                        Padding(
+                          padding: EdgeInsets.only(top: sizes.spaceM),
+                          child: Text(
+                            AppStrings.searchNoTripsMessage,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontSize: sizes.textSm,
                                 ),
-                            ],
+                          ),
+                        )
+                      else
+                        SliderSection(
+                          title: AppStrings.searchTripsTitle,
+                          child: SizedBox(
+                            height: sizes.sliderTileSize,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: filteredTrips.length,
+                              separatorBuilder: (_, __) => SizedBox(
+                                width: sizes.sliderTileSpacing,
+                              ),
+                              itemBuilder: (context, index) {
+                                final item = filteredTrips[index];
+
+                                return SquareImageButton(
+                                  imageAsset: item.asset,
+                                  label: item.label,
+                                  borderRadius: sizes.radiusL,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => TravelScheduleScreen(
+                                          tripName: item.label,
+                                          images: item.scheduleImages,
+                                          tags: item.tags,
+                                          destinationTitle:
+                                              item.destinationTitle,
+                                          destinationDescription:
+                                              item.description,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
                 Positioned(
                   left: 0,

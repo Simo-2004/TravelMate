@@ -26,8 +26,29 @@ class MatesVerticalSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-    final resolvedListHeight = listHeight ?? sizes.scheduleSliderSize * 1.18;
-    final resolvedItemSpacing = itemSpacing ?? sizes.padS;
+    final resolvedListHeight = listHeight ?? sizes.scheduleSliderSize * 1.34;
+    final resolvedItemSpacing = itemSpacing ?? sizes.padS * 1.2;
+    final listView = ListView.separated(
+      scrollDirection: Axis.vertical,
+      itemCount: mates.length,
+      separatorBuilder: (_, __) => SizedBox(height: resolvedItemSpacing),
+      itemBuilder: (context, index) {
+        final mate = mates[index];
+
+        return MateCard(
+          title: mate.name,
+          description: mate.description,
+          profileImageAsset: mate.profileImageAsset,
+          onTap: onMateTap == null ? null : () => onMateTap!(mate),
+        );
+      },
+    );
+    final listContent = resolvedListHeight.isFinite
+        ? SizedBox(
+            height: resolvedListHeight,
+            child: listView,
+          )
+        : Expanded(child: listView);
 
     return SliderSection(
       title: title,
@@ -42,25 +63,7 @@ class MatesVerticalSection extends StatelessWidget {
                     ?.copyWith(fontSize: sizes.textSm),
               ),
             )
-          : SizedBox(
-              height: resolvedListHeight,
-              child: ListView.separated(
-                scrollDirection: Axis.vertical,
-                itemCount: mates.length,
-                separatorBuilder: (_, __) =>
-                    SizedBox(height: resolvedItemSpacing),
-                itemBuilder: (context, index) {
-                  final mate = mates[index];
-
-                  return MateCard(
-                    title: mate.name,
-                    description: mate.description,
-                    profileImageAsset: mate.profileImageAsset,
-                    onTap: onMateTap == null ? null : () => onMateTap!(mate),
-                  );
-                },
-              ),
-            ),
+          : listContent,
     );
   }
 }
