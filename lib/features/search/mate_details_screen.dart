@@ -75,9 +75,11 @@ class MateDetailsScreen extends StatelessWidget {
       description: mate.description,
       coverImage: mate.profileImageAsset ?? '',
       tags: _buildPreviewTags(),
+      bookmarkType: SavedBookmarkType.mate,
+      sourceId: mate.id,
     );
 
-    SavedTripPreviewStore.instance.stageTrip(preview);
+    SavedTripPreviewStore.instance.stageBookmark(preview);
 
     final targetIndex = NavigationScope.indexOfLabel(
       context,

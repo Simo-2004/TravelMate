@@ -3,14 +3,109 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
+import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
+import 'package:travelmate/features/search/mate_details_screen.dart';
+import 'package:travelmate/shared/data/mate_catalog.dart';
+import 'package:travelmate/shared/data/trip_catalog.dart';
+import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
+import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 
 class SavedItemsScreen extends StatelessWidget {
   const SavedItemsScreen({super.key});
+
+  void _openSavedItem(BuildContext context, SavedTripPreview item) {
+    if (item.bookmarkType == SavedBookmarkType.mate) {
+      final mate = _resolveMate(item) ?? _buildFallbackMate(item);
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => MateDetailsScreen(mate: mate)));
+      return;
+    }
+
+    final trip = _resolveTrip(item);
+    final fallbackImages = item.coverImage.isEmpty
+        ? const <String>[]
+        : <String>[item.coverImage];
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TravelScheduleScreen(
+          tripName: trip?.label ?? item.tripName,
+          images: trip?.scheduleImages ?? fallbackImages,
+          tags: trip?.tags ?? item.tags,
+          destinationTitle: trip?.destinationTitle ?? item.destinationTitle,
+          destinationDescription: trip?.description ?? item.description,
+        ),
+      ),
+    );
+  }
+
+  TripTileData? _resolveTrip(SavedTripPreview item) {
+    final normalizedSourceId = item.sourceId.trim().toLowerCase();
+    final normalizedTripName = item.tripName.trim().toLowerCase();
+    final normalizedDestinationTitle = item.destinationTitle
+        .trim()
+        .toLowerCase();
+
+    for (final trip in TripCatalog.trips) {
+      final matchesSourceId =
+          normalizedSourceId.isNotEmpty &&
+          trip.label.toLowerCase() == normalizedSourceId;
+      final matchesLabel = trip.label.toLowerCase() == normalizedTripName;
+      final matchesDestination =
+          trip.destinationTitle.toLowerCase() == normalizedDestinationTitle;
+
+      if (matchesSourceId || matchesLabel || matchesDestination) {
+        return trip;
+      }
+    }
+
+    return null;
+  }
+
+  MateProfile? _resolveMate(SavedTripPreview item) {
+    final normalizedSourceId = item.sourceId.trim().toLowerCase();
+    final normalizedName = item.tripName.trim().toLowerCase();
+
+    for (final mate in MateCatalog.mates) {
+      final matchesSourceId =
+          normalizedSourceId.isNotEmpty &&
+          mate.id.toLowerCase() == normalizedSourceId;
+      final matchesName = mate.name.toLowerCase() == normalizedName;
+
+      if (matchesSourceId || matchesName) {
+        return mate;
+      }
+    }
+
+    return null;
+  }
+
+  MateProfile _buildFallbackMate(SavedTripPreview item) {
+    final tagLabels = item.tags
+        .map((tag) => tag.label)
+        .where((label) => label.trim().isNotEmpty)
+        .toList(growable: false);
+
+    final fallbackId = item.sourceId.trim().isNotEmpty
+        ? item.sourceId
+        : 'saved_mate_${item.tripName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}';
+
+    return MateProfile(
+      id: fallbackId,
+      name: item.tripName,
+      description: item.description,
+      profileImageAsset: item.coverImage.isEmpty ? null : item.coverImage,
+      interests: tagLabels,
+      preferredTrips: const [],
+      keywords: tagLabels,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +134,10 @@ class SavedItemsScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = previews[index];
 
-            return _SavedPreviewCard(item: item);
+            return _SavedPreviewCard(
+              item: item,
+              onTap: () => _openSavedItem(context, item),
+            );
           },
         );
       },
@@ -49,70 +147,78 @@ class SavedItemsScreen extends StatelessWidget {
 
 class _SavedPreviewCard extends StatelessWidget {
   final SavedTripPreview item;
+  final VoidCallback onTap;
 
-  const _SavedPreviewCard({required this.item});
+  const _SavedPreviewCard({required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
     final hasCoverImage = item.coverImage.isNotEmpty;
     final isSvg = item.coverImage.toLowerCase().endsWith('.svg');
+    final cardBorderRadius = BorderRadius.circular(sizes.radiusL);
 
-    return Container(
-      padding: EdgeInsets.all(sizes.padM),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(sizes.radiusL),
-        border: Border.all(
-          color: AppColors.blackAlpha60,
-          width: sizes.padXs * 0.2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Material(
+      color: AppColors.white,
+      borderRadius: cardBorderRadius,
+      child: InkWell(
+        borderRadius: cardBorderRadius,
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(sizes.padM),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: cardBorderRadius,
+            border: Border.all(
+              color: AppColors.blackAlpha60,
+              width: sizes.padXs * 0.2,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PreviewImage(
-                imageAsset: item.coverImage,
-                hasCoverImage: hasCoverImage,
-                isSvg: isSvg,
-              ),
-              SizedBox(width: sizes.padM),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.tripName,
-                      style: AppTextStyles.titleLg(
-                        sizes,
-                      ).copyWith(fontSize: sizes.textMd),
+              Row(
+                children: [
+                  _PreviewImage(
+                    imageAsset: item.coverImage,
+                    hasCoverImage: hasCoverImage,
+                    isSvg: isSvg,
+                  ),
+                  SizedBox(width: sizes.padM),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.tripName,
+                          style: AppTextStyles.titleLg(
+                            sizes,
+                          ).copyWith(fontSize: sizes.textMd),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: sizes.padXs),
-                    Text('Ready to save', style: AppTextStyles.bodyMd(sizes)),
-                  ],
+                  ),
+                ],
+              ),
+              SizedBox(height: sizes.spaceS),
+              TripInfoCard(
+                title: item.destinationTitle,
+                description: item.description,
+              ),
+              TagSection(
+                padding: EdgeInsets.only(top: sizes.spaceS),
+                spacing: sizes.padS,
+                runSpacing: sizes.padXs,
+                tagPadding: EdgeInsets.symmetric(
+                  horizontal: sizes.padS,
+                  vertical: sizes.padXs * 0.6,
                 ),
+                tagMinHeight: sizes.padL * 0.8,
+                tags: item.tags,
               ),
             ],
           ),
-          SizedBox(height: sizes.spaceS),
-          TripInfoCard(
-            title: item.destinationTitle,
-            description: item.description,
-          ),
-          TagSection(
-            padding: EdgeInsets.only(top: sizes.spaceS),
-            spacing: sizes.padS,
-            runSpacing: sizes.padXs,
-            tagPadding: EdgeInsets.symmetric(
-              horizontal: sizes.padS,
-              vertical: sizes.padXs * 0.6,
-            ),
-            tagMinHeight: sizes.padL * 0.8,
-            tags: item.tags,
-          ),
-        ],
+        ),
       ),
     );
   }

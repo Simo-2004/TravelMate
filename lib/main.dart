@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
+import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SavedTripPreviewStore.instance.initialize();
   runApp(const TravelMateApp());
 }
 
@@ -17,7 +20,7 @@ class TravelMateApp extends StatelessWidget {
       title: AppStrings.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      home: const NavigationShell(), 
+      home: const NavigationShell(),
     );
   }
 }

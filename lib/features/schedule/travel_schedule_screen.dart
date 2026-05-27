@@ -36,9 +36,11 @@ class TravelScheduleScreen extends StatelessWidget {
       description: destinationDescription,
       coverImage: images.isEmpty ? '' : images.first,
       tags: tags,
+      bookmarkType: SavedBookmarkType.trip,
+      sourceId: tripName,
     );
 
-    SavedTripPreviewStore.instance.stageTrip(preview);
+    SavedTripPreviewStore.instance.stageBookmark(preview);
 
     final targetIndex = NavigationScope.indexOfLabel(
       context,
@@ -53,9 +55,7 @@ class TravelScheduleScreen extends StatelessWidget {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Trip card is ready in Saved Items.'),
-      ),
+      const SnackBar(content: Text('Trip card is ready in Saved Items.')),
     );
   }
 
@@ -73,9 +73,7 @@ class TravelScheduleScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           tripName,
-          style: AppTextStyles.titleLg(sizes).copyWith(
-            color: AppColors.yellow,
-          ),
+          style: AppTextStyles.titleLg(sizes).copyWith(color: AppColors.yellow),
         ),
       ),
       body: SafeArea(
@@ -86,16 +84,12 @@ class TravelScheduleScreen extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.topCenter,
-                child: TravelImageSlider(
-                  images: images,
-                ),
+                child: TravelImageSlider(images: images),
               ),
               SizedBox(height: sizes.spaceS),
               Align(
                 alignment: Alignment.centerRight,
-                child: SaveTripButton(
-                  onTap: () => _stageTripPreview(context),
-                ),
+                child: SaveTripButton(onTap: () => _stageTripPreview(context)),
               ),
               TagSection(
                 padding: EdgeInsets.only(top: sizes.spaceM),
