@@ -1,5 +1,5 @@
 class TripMediaCatalog {
-  static const int tripCount = 6;
+  static const int tripCount = 8;
   static const int schedulePerTrip = 4;
   static const String _homeFolder = 'assets/images/home';
   static const String _scheduleFolder = 'assets/images/schedule';

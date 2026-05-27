@@ -10,6 +10,7 @@ class TravelSearchBar extends StatelessWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
   final String hintText;
   final Color? backgroundColor;
@@ -22,12 +23,14 @@ class TravelSearchBar extends StatelessWidget {
   final bool? readOnly;
   final bool? showCursor;
   final bool? autofocus;
+  final TextInputAction? textInputAction;
 
   const TravelSearchBar({
     super.key,
     this.controller,
     this.focusNode,
     this.onChanged,
+    this.onSubmitted,
     this.onTap,
     this.hintText = AppStrings.searchHint,
     this.backgroundColor,
@@ -40,6 +43,7 @@ class TravelSearchBar extends StatelessWidget {
     this.readOnly,
     this.showCursor,
     this.autofocus,
+    this.textInputAction,
   });
 
   @override
@@ -80,10 +84,12 @@ class TravelSearchBar extends StatelessWidget {
               controller: controller,
               focusNode: focusNode,
               onChanged: onChanged,
+              onSubmitted: onSubmitted,
               onTap: onTap,
               readOnly: resolvedReadOnly,
               showCursor: resolvedShowCursor,
               autofocus: resolvedAutofocus,
+              textInputAction: textInputAction,
               style: AppTextStyles.bodyMd(sizes).copyWith(
                 color: resolvedTextColor,
               ),
