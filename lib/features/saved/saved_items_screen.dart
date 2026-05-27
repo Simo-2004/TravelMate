@@ -24,7 +24,7 @@ class SavedItemsScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(sizes.padL),
               child: Text(
-                'Tap the bookmark button in a schedule to prepare a card for saving.',
+                'Tap the bookmark button in a schedule or mate profile to prepare a card for saving.',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodyMd(sizes),
               ),
@@ -85,15 +85,12 @@ class _SavedPreviewCard extends StatelessWidget {
                   children: [
                     Text(
                       item.tripName,
-                      style: AppTextStyles.titleLg(sizes).copyWith(
-                        fontSize: sizes.textMd,
-                      ),
+                      style: AppTextStyles.titleLg(
+                        sizes,
+                      ).copyWith(fontSize: sizes.textMd),
                     ),
                     SizedBox(height: sizes.padXs),
-                    Text(
-                      'Ready to save',
-                      style: AppTextStyles.bodyMd(sizes),
-                    ),
+                    Text('Ready to save', style: AppTextStyles.bodyMd(sizes)),
                   ],
                 ),
               ),
@@ -150,14 +147,8 @@ class _PreviewImage extends StatelessWidget {
                 size: sizes.iconM,
               )
             : isSvg
-                ? SvgPicture.asset(
-                    imageAsset,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    imageAsset,
-                    fit: BoxFit.cover,
-                  ),
+            ? SvgPicture.asset(imageAsset, fit: BoxFit.cover)
+            : Image.asset(imageAsset, fit: BoxFit.cover),
       ),
     );
   }

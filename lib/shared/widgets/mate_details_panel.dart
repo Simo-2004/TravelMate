@@ -14,6 +14,7 @@ class MateDetailsPanel extends StatelessWidget {
   final double? avatarSize;
   final TextStyle? nameStyle;
   final TextStyle? descriptionStyle;
+  final Widget? nameTrailing;
   final double? imageToTitleSpacing;
   final EdgeInsetsGeometry? descriptionPadding;
   final Color? descriptionBackgroundColor;
@@ -31,6 +32,7 @@ class MateDetailsPanel extends StatelessWidget {
     this.avatarSize,
     this.nameStyle,
     this.descriptionStyle,
+    this.nameTrailing,
     this.imageToTitleSpacing,
     this.descriptionPadding,
     this.descriptionBackgroundColor,
@@ -42,27 +44,25 @@ class MateDetailsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-    final resolvedPadding = padding ??
-        EdgeInsets.symmetric(
-          vertical: sizes.padS,
-        );
+    final resolvedPadding =
+        padding ?? EdgeInsets.symmetric(vertical: sizes.padS);
     final resolvedImageToTitleSpacing =
         imageToTitleSpacing ?? (sizes.padM * 1.45);
-    final resolvedNameStyle = nameStyle ??
+    final resolvedNameStyle =
+        nameStyle ??
         AppTextStyles.titleLg(sizes).copyWith(
           fontSize: (sizes.textMd * 1.22).clamp(19.0, 30.0).toDouble(),
           height: sizes.textHeightTight + 0.05,
         );
-    final resolvedDescriptionStyle = descriptionStyle ??
+    final resolvedDescriptionStyle =
+        descriptionStyle ??
         AppTextStyles.bodyMd(sizes).copyWith(
           fontSize: (sizes.textSm * 1.26).clamp(14.0, 20.0).toDouble(),
           height: sizes.textHeightTight + 0.1,
         );
-    final resolvedDescriptionPadding = descriptionPadding ??
-        EdgeInsets.symmetric(
-          horizontal: sizes.padM,
-          vertical: sizes.padS,
-        );
+    final resolvedDescriptionPadding =
+        descriptionPadding ??
+        EdgeInsets.symmetric(horizontal: sizes.padM, vertical: sizes.padS);
     final resolvedDescriptionBackgroundColor =
         descriptionBackgroundColor ?? const Color(0xFFFFFCED);
     final resolvedDescriptionBorderColor =
@@ -71,17 +71,20 @@ class MateDetailsPanel extends StatelessWidget {
         descriptionBorderWidth ?? sizes.padXs * 0.22;
     final resolvedDescriptionBorderRadius =
         descriptionBorderRadius ?? sizes.radiusM;
-    final resolvedDescriptionInsets =
-        resolvedDescriptionPadding.resolve(Directionality.of(context));
+    final resolvedDescriptionInsets = resolvedDescriptionPadding.resolve(
+      Directionality.of(context),
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final baseAvatarSize =
             avatarSize ?? (sizes.sliderTileSize * 0.84).clamp(84.0, 150.0);
-        final widthBasedMax =
-            (constraints.maxWidth * 0.34).clamp(84.0, 150.0).toDouble();
-        final resolvedAvatarSize =
-            baseAvatarSize.clamp(84.0, widthBasedMax).toDouble();
+        final widthBasedMax = (constraints.maxWidth * 0.34)
+            .clamp(84.0, 150.0)
+            .toDouble();
+        final resolvedAvatarSize = baseAvatarSize
+            .clamp(84.0, widthBasedMax)
+            .toDouble();
 
         return Padding(
           padding: resolvedPadding,
@@ -91,8 +94,7 @@ class MateDetailsPanel extends StatelessWidget {
               Align(
                 alignment: Alignment.topCenter,
                 child: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(resolvedAvatarSize * 0.5),
+                  borderRadius: BorderRadius.circular(resolvedAvatarSize * 0.5),
                   child: Container(
                     width: resolvedAvatarSize,
                     height: resolvedAvatarSize,
@@ -107,9 +109,21 @@ class MateDetailsPanel extends StatelessWidget {
               SizedBox(height: resolvedImageToTitleSpacing),
               Padding(
                 padding: EdgeInsets.only(left: resolvedDescriptionInsets.left),
-                child: Text(
-                  name,
-                  style: resolvedNameStyle,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: resolvedNameStyle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (nameTrailing != null) ...[
+                      SizedBox(width: sizes.padS),
+                      nameTrailing!,
+                    ],
+                  ],
                 ),
               ),
               SizedBox(height: sizes.padXs * 1.35),
@@ -118,17 +132,15 @@ class MateDetailsPanel extends StatelessWidget {
                 padding: resolvedDescriptionPadding,
                 decoration: BoxDecoration(
                   color: resolvedDescriptionBackgroundColor,
-                  borderRadius:
-                      BorderRadius.circular(resolvedDescriptionBorderRadius),
+                  borderRadius: BorderRadius.circular(
+                    resolvedDescriptionBorderRadius,
+                  ),
                   border: Border.all(
                     color: resolvedDescriptionBorderColor,
                     width: resolvedDescriptionBorderWidth,
                   ),
                 ),
-                child: Text(
-                  description,
-                  style: resolvedDescriptionStyle,
-                ),
+                child: Text(description, style: resolvedDescriptionStyle),
               ),
             ],
           ),
