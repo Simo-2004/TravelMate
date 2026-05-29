@@ -44,8 +44,9 @@ class HomeScreen extends StatelessWidget {
                           context,
                           AppStrings.navSearchLabel,
                         );
-                        final controller =
-                            NavigationScope.maybeControllerOf(context);
+                        final controller = NavigationScope.maybeControllerOf(
+                          context,
+                        );
 
                         if (controller != null && targetIndex != null) {
                           controller.index = targetIndex;
@@ -72,15 +73,13 @@ class HomeScreen extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        TravelScheduleScreen(
-                                      tripName: item.label,
+                                    builder: (_) => TravelScheduleScreen(
+                                      tripId: item.tripId,
+                                      tripName: item.destinationTitle,
                                       images: item.scheduleImages,
                                       tags: item.tags,
-                                      destinationTitle:
-                                          item.destinationTitle,
-                                      destinationDescription:
-                                          item.description,
+                                      destinationTitle: item.destinationTitle,
+                                      destinationDescription: item.description,
                                     ),
                                   ),
                                 );
@@ -109,15 +108,13 @@ class HomeScreen extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        TravelScheduleScreen(
-                                      tripName: item.label,
+                                    builder: (_) => TravelScheduleScreen(
+                                      tripId: item.tripId,
+                                      tripName: item.destinationTitle,
                                       images: item.scheduleImages,
                                       tags: item.tags,
-                                      destinationTitle:
-                                          item.destinationTitle,
-                                      destinationDescription:
-                                          item.description,
+                                      destinationTitle: item.destinationTitle,
+                                      destinationDescription: item.description,
                                     ),
                                   ),
                                 );

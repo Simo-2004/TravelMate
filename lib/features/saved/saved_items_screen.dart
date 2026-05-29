@@ -16,6 +16,11 @@ import 'package:travelmate/shared/widgets/tag_section.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 
 class SavedItemsScreen extends StatelessWidget {
+  static final List<TripTileData> _allTripTiles = [
+    ...TripCatalog.trips,
+    ...TripCatalog.recents,
+  ];
+
   const SavedItemsScreen({super.key});
 
   void _openSavedItem(BuildContext context, SavedTripPreview item) {
@@ -35,6 +40,7 @@ class SavedItemsScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => TravelScheduleScreen(
+          tripId: trip?.tripId ?? item.sourceId,
           tripName: trip?.label ?? item.tripName,
           images: trip?.scheduleImages ?? fallbackImages,
           tags: trip?.tags ?? item.tags,
@@ -52,15 +58,31 @@ class SavedItemsScreen extends StatelessWidget {
         .trim()
         .toLowerCase();
 
-    for (final trip in TripCatalog.trips) {
-      final matchesSourceId =
-          normalizedSourceId.isNotEmpty &&
-          trip.label.toLowerCase() == normalizedSourceId;
-      final matchesLabel = trip.label.toLowerCase() == normalizedTripName;
-      final matchesDestination =
-          trip.destinationTitle.toLowerCase() == normalizedDestinationTitle;
+    final tripById = TripCatalog.findTripById(normalizedSourceId);
+    if (tripById != null) {
+      return tripById;
+    }
 
-      if (matchesSourceId || matchesLabel || matchesDestination) {
+    if (normalizedSourceId.isNotEmpty) {
+      for (final trip in _allTripTiles) {
+        if (trip.label.toLowerCase() == normalizedSourceId) {
+          return trip;
+        }
+      }
+    }
+
+    for (final trip in _allTripTiles) {
+      if (trip.label.toLowerCase() == normalizedTripName) {
+        return trip;
+      }
+    }
+
+    if (normalizedSourceId.isNotEmpty) {
+      return null;
+    }
+
+    for (final trip in _allTripTiles) {
+      if (trip.destinationTitle.toLowerCase() == normalizedDestinationTitle) {
         return trip;
       }
     }

@@ -4,7 +4,6 @@ import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
-import 'package:travelmate/features/navigation/navigation_controller.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
@@ -68,8 +67,8 @@ class MateDetailsScreen extends StatelessWidget {
         .toList(growable: false);
   }
 
-  void _stageMatePreview(BuildContext context) {
-    final preview = SavedTripPreview(
+  SavedTripPreview _buildMatePreview() {
+    return SavedTripPreview(
       tripName: mate.name,
       destinationTitle: '${AppStrings.mateDetailsPageTitle}: ${mate.name}',
       description: mate.description,
@@ -78,24 +77,20 @@ class MateDetailsScreen extends StatelessWidget {
       bookmarkType: SavedBookmarkType.mate,
       sourceId: mate.id,
     );
+  }
 
-    SavedTripPreviewStore.instance.stageBookmark(preview);
-
-    final targetIndex = NavigationScope.indexOfLabel(
-      context,
-      AppStrings.navSavedLabel,
+  void _toggleMateBookmark(BuildContext context) {
+    final nowSaved = SavedTripPreviewStore.instance.toggleBookmark(
+      _buildMatePreview(),
     );
-    final controller = NavigationScope.maybeControllerOf(context);
-
-    if (controller != null && targetIndex != null) {
-      controller.index = targetIndex;
-      Navigator.of(context).pop();
-      return;
-    }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Mate profile card is ready in Saved Items.'),
+      SnackBar(
+        content: Text(
+          nowSaved
+              ? 'Mate profile saved to Saved Items.'
+              : 'Mate profile removed from Saved Items.',
+        ),
       ),
     );
   }
@@ -129,8 +124,18 @@ class MateDetailsScreen extends StatelessWidget {
                   name: mate.name,
                   description: mate.description,
                   profileImageAsset: mate.profileImageAsset,
-                  nameTrailing: SaveTripButton(
-                    onTap: () => _stageMatePreview(context),
+                  nameTrailing: ValueListenableBuilder<List<SavedTripPreview>>(
+                    valueListenable: SavedTripPreviewStore.instance,
+                    builder: (context, _, __) {
+                      final isSaved = SavedTripPreviewStore.instance.isSaved(
+                        _buildMatePreview(),
+                      );
+
+                      return SaveTripButton(
+                        isSaved: isSaved,
+                        onTap: () => _toggleMateBookmark(context),
+                      );
+                    },
                   ),
                 ),
                 MateTagGroup(
