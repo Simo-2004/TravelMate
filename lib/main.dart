@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
+import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SavedTripPreviewStore.instance.initialize();
+  await Future.wait([
+    SavedTripPreviewStore.instance.initialize(),
+    PersonalProfileStore.instance.initialize(),
+  ]);
   runApp(const TravelMateApp());
 }
 
