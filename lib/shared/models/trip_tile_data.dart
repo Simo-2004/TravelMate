@@ -1,6 +1,7 @@
 import 'package:travelmate/shared/models/trip_tag.dart';
 
 class TripTileData {
+  final String tripId;
   final String asset;
   final String label;
   final List<String> scheduleImages;
@@ -9,6 +10,7 @@ class TripTileData {
   final String description;
 
   const TripTileData({
+    required this.tripId,
     required this.asset,
     required this.label,
     required this.scheduleImages,

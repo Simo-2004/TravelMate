@@ -19,10 +19,7 @@ import 'package:travelmate/shared/widgets/square_image_button.dart';
 class SearchResultsScreen extends StatefulWidget {
   final String initialQuery;
 
-  const SearchResultsScreen({
-    super.key,
-    required this.initialQuery,
-  });
+  const SearchResultsScreen({super.key, required this.initialQuery});
 
   @override
   State<SearchResultsScreen> createState() => _SearchResultsScreenState();
@@ -94,8 +91,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         }
 
         final matchingTag = tagLabels.firstWhere(
-          (tagLabel) =>
-              tagLabel.startsWith(term) || tagLabel.contains(term),
+          (tagLabel) => tagLabel.startsWith(term) || tagLabel.contains(term),
           orElse: () => '',
         );
         if (matchingTag.isNotEmpty) {
@@ -123,9 +119,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       return a.trip.label.compareTo(b.trip.label);
     });
 
-    return scoredTrips
-        .map((entry) => entry.trip)
-        .toList(growable: false);
+    return scoredTrips.map((entry) => entry.trip).toList(growable: false);
   }
 
   List<MateProfile> _filterMates(String query) {
@@ -168,8 +162,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         }
 
         final matchingKeyword = keywords.firstWhere(
-          (keyword) =>
-              keyword.startsWith(term) || keyword.contains(term),
+          (keyword) => keyword.startsWith(term) || keyword.contains(term),
           orElse: () => '',
         );
 
@@ -198,17 +191,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       return a.mate.name.compareTo(b.mate.name);
     });
 
-    return scoredMates
-        .map((entry) => entry.mate)
-        .toList(growable: false);
+    return scoredMates.map((entry) => entry.mate).toList(growable: false);
   }
 
   void _openMateDetails(MateProfile mate) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MateDetailsScreen(mate: mate),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => MateDetailsScreen(mate: mate)));
   }
 
   @override
@@ -225,9 +214,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             : AppStrings.searchMateHint;
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text(AppStrings.pageSearchTitle),
-          ),
+          appBar: AppBar(title: const Text(AppStrings.pageSearchTitle)),
           body: SafeArea(
             child: Stack(
               children: [
@@ -266,12 +253,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           padding: EdgeInsets.only(top: sizes.spaceM),
                           child: Text(
                             AppStrings.searchNoTripsMessage,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontSize: sizes.textSm,
-                                ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontSize: sizes.textSm),
                           ),
                         )
                       else
@@ -282,9 +265,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemCount: filteredTrips.length,
-                              separatorBuilder: (_, __) => SizedBox(
-                                width: sizes.sliderTileSpacing,
-                              ),
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(width: sizes.sliderTileSpacing),
                               itemBuilder: (context, index) {
                                 final item = filteredTrips[index];
 
@@ -296,7 +278,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (_) => TravelScheduleScreen(
-                                          tripName: item.label,
+                                          tripId: item.tripId,
+                                          tripName: item.destinationTitle,
                                           images: item.scheduleImages,
                                           tags: item.tags,
                                           destinationTitle:

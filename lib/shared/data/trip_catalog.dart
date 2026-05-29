@@ -174,9 +174,7 @@ class TripCatalog {
     ),
   ];
 
-  static final List<String> _tileAssets = [
-    ...TripMediaCatalog.homeTripAssets,
-  ];
+  static final List<String> _tileAssets = [...TripMediaCatalog.homeTripAssets];
 
   static final List<List<TripTag>> _tagSets = [
     _tagSet1,
@@ -189,9 +187,18 @@ class TripCatalog {
     _tagSet8,
   ];
 
-  static const List<String> _destinationTitles = [
-    ...AppStrings.mockTripLabels,
+  static const List<String> _tripIds = [
+    'trip_1',
+    'trip_2',
+    'trip_3',
+    'trip_4',
+    'trip_5',
+    'trip_6',
+    'trip_7',
+    'trip_8',
   ];
+
+  static const List<String> _destinationTitles = [...AppStrings.mockTripLabels];
 
   static const List<String> _tripDescriptions = [
     'A compact and budget-friendly route with easy transfers and flexible daily plans.',
@@ -207,6 +214,7 @@ class TripCatalog {
   static List<TripTileData> _buildTiles(List<String> labels) {
     return List.generate(_tileAssets.length, (index) {
       return TripTileData(
+        tripId: _tripIds[index],
         asset: _tileAssets[index],
         label: labels[index],
         scheduleImages: TripMediaCatalog.scheduleSets[index],
@@ -217,8 +225,23 @@ class TripCatalog {
     });
   }
 
-  static final List<TripTileData> trips =
-      _buildTiles(AppStrings.mockTripLabels);
-  static final List<TripTileData> recents =
-      _buildTiles(AppStrings.mockRecentLabels);
+  static final List<TripTileData> trips = _buildTiles(
+    AppStrings.mockTripLabels,
+  );
+  static final List<TripTileData> recents = _buildTiles(
+    AppStrings.mockRecentLabels,
+  );
+
+  static final Map<String, TripTileData> _tripById = {
+    for (final trip in trips) trip.tripId: trip,
+  };
+
+  static TripTileData? findTripById(String tripId) {
+    final normalizedTripId = tripId.trim().toLowerCase();
+    if (normalizedTripId.isEmpty) {
+      return null;
+    }
+
+    return _tripById[normalizedTripId];
+  }
 }

@@ -49,16 +49,15 @@ class SearchModeSwitchButton extends StatelessWidget {
     final resolvedSize = size ?? sizes.padL * 2.2;
     final resolvedIconSize = iconSize ?? sizes.iconM * 0.98;
     final resolvedElevation = elevation ?? sizes.buttonElevation;
-    final resolvedBackgroundColor = backgroundColor ?? const Color(0xFFFFFCED);
-    final resolvedBorderColor = borderColor ?? const Color(0xFFFFE9A6);
+    final resolvedBackgroundColor = backgroundColor ?? AppColors.yellow;
+    final resolvedBorderColor = borderColor ?? AppColors.yellow;
     final resolvedIconColor = iconColor ?? AppColors.black;
     final resolvedLabelColor = labelColor ?? AppColors.black;
 
     final isTripsMode = mode == SearchResearchMode.trips;
     final modeLabel = isTripsMode ? tripsLabel : matesLabel;
     final modeIconAsset = isTripsMode ? tripsIconAsset : matesIconAsset;
-    final fallbackIcon =
-        isTripsMode ? tripsFallbackIcon : matesFallbackIcon;
+    final fallbackIcon = isTripsMode ? tripsFallbackIcon : matesFallbackIcon;
 
     return SizedBox(
       width: resolvedSize,
@@ -76,9 +75,7 @@ class SearchModeSwitchButton extends StatelessWidget {
           customBorder: const CircleBorder(),
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: sizes.padXs * 0.9,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: sizes.padXs * 0.9),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -147,8 +144,7 @@ class _ModeIcon extends StatelessWidget {
 }
 
 class _SvgAssetAvailabilityCache {
-  static final Map<String, Future<bool>> _cache =
-      <String, Future<bool>>{};
+  static final Map<String, Future<bool>> _cache = <String, Future<bool>>{};
 
   static Future<bool> exists(String assetPath) {
     return _cache.putIfAbsent(assetPath, () async {
