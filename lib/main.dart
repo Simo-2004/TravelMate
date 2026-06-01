@@ -4,6 +4,7 @@ import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
+import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 
 Future<void> main() async {
@@ -11,6 +12,7 @@ Future<void> main() async {
   await Future.wait([
     SavedTripPreviewStore.instance.initialize(),
     PersonalProfileStore.instance.initialize(),
+    PrivacySettingsStore.instance.initialize(),
   ]);
   runApp(const TravelMateApp());
 }

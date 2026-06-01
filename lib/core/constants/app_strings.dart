@@ -10,9 +10,22 @@ class AppStrings {
   static const String pageSearchTitle = 'Search';
   static const String pageSavedTitle = 'Saved Items';
   static const String pageSettingsTitle = 'Settings';
+  static const String settingsPrivacyTitle = 'Privacy';
+  static const String settingsSupportTitle = 'Support';
   static const String settingsProfileTitle = 'Personal profile';
   static const String settingsProfileSubtitle =
       'This is your account preview. Name, photo, and description are stored and ready for future editing.';
+  static const String privacySectionTitle = 'Privacy controls';
+  static const String privacySectionSubtitle =
+      'These toggles are ready for future integrations. Right now each action shows a click confirmation.';
+  static const String privacyPrivateProfileLabel = 'Private Profile';
+  static const String privacyRadiusOnlyLabel = 'Only people in your radius';
+  static const String privacyCheckMessagesLabel = 'Check messages';
+  static const String privacyOfflineModeLabel = 'Offline mode';
+  static const String supportFaqTitle = 'FAQ';
+  static const String supportContactTitle = 'Contact support';
+  static const String supportContactedMessage =
+      'Contacted support, they will reply to you immediately';
   static const String mateDetailsPageTitle = 'Profile';
   static const String mateInterestsTitle = 'Interests';
   static const String matePreferredTripsTitle = 'Preferred trips';

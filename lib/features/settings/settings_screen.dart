@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
-import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/profile/personal_profile_screen.dart';
+import 'package:travelmate/features/settings/privacy_settings_screen.dart';
+import 'package:travelmate/features/settings/support_screen.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/widgets/personal_profile_card.dart';
@@ -12,19 +13,6 @@ import 'package:travelmate/shared/widgets/settings_action_button.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  void _openSettingsSection(
-    BuildContext context, {
-    required String title,
-    required String description,
-  }) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) =>
-            _SettingsSectionScreen(title: title, description: description),
-      ),
-    );
-  }
 
   void _handleExit(BuildContext context) {
     ScaffoldMessenger.of(
@@ -93,12 +81,14 @@ class SettingsScreen extends StatelessWidget {
                                 iconAsset: 'assets/icons/lock.svg',
                                 textColor: AppColors.black,
                                 iconColor: Color(0xFF2F80ED),
-                                onTap: () => _openSettingsSection(
-                                  context,
-                                  title: 'Privacy',
-                                  description:
-                                      'Privacy settings page placeholder. Add permission and visibility controls here.',
-                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const PrivacySettingsScreen(),
+                                    ),
+                                  );
+                                },
                               ),
                               SizedBox(height: sizes.padS),
                               SettingsActionButton(
@@ -107,12 +97,13 @@ class SettingsScreen extends StatelessWidget {
                                 iconAsset: 'assets/icons/handphones.svg',
                                 textColor: AppColors.black,
                                 iconColor: Color(0xFF2FA84F),
-                                onTap: () => _openSettingsSection(
-                                  context,
-                                  title: 'Support',
-                                  description:
-                                      'Support page placeholder. You can place FAQ, contact, and help actions here.',
-                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SupportScreen(),
+                                    ),
+                                  );
+                                },
                               ),
                               SizedBox(height: sizes.spaceS),
                               SettingsActionButton(
@@ -133,34 +124,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _SettingsSectionScreen extends StatelessWidget {
-  final String title;
-  final String description;
-
-  const _SettingsSectionScreen({
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final sizes = AppSizes.of(context);
-
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(sizes.padL),
-          child: Text(
-            description,
-            style: AppTextStyles.bodyMd(sizes).copyWith(color: AppColors.black),
-          ),
-        ),
-      ),
     );
   }
 }
