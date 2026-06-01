@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/features/profile/personal_profile_screen.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/widgets/personal_profile_card.dart';
@@ -76,12 +77,14 @@ class SettingsScreen extends StatelessWidget {
                                 iconAsset: 'assets/icons/user_icon.svg',
                                 textColor: AppColors.black,
                                 iconColor: AppColors.yellow,
-                                onTap: () => _openSettingsSection(
-                                  context,
-                                  title: 'Profile',
-                                  description:
-                                      'Profile settings page placeholder. You can plug in editable profile controls here.',
-                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const PersonalProfileScreen(),
+                                    ),
+                                  );
+                                },
                               ),
                               SizedBox(height: sizes.padS),
                               SettingsActionButton(

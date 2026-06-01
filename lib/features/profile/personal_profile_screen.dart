@@ -1,0 +1,495 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:travelmate/core/constants/app_colors.dart';
+import 'package:travelmate/core/constants/app_sizes.dart';
+import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/shared/models/personal_profile.dart';
+import 'package:travelmate/shared/state/personal_profile_store.dart';
+import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
+import 'package:travelmate/shared/widgets/mate_details_panel.dart';
+import 'package:travelmate/shared/widgets/personal_tag_group.dart';
+import 'package:travelmate/shared/widgets/settings_action_button.dart';
+import 'package:travelmate/shared/widgets/settings_action_card.dart';
+
+class PersonalProfileScreen extends StatefulWidget {
+  const PersonalProfileScreen({super.key});
+
+  @override
+  State<PersonalProfileScreen> createState() => _PersonalProfileScreenState();
+}
+
+class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
+  static const List<String> _photoOptions = [
+    'assets/icons/user_icon.svg',
+    'assets/icons/mate_avatar_1.svg',
+    'assets/icons/mate_avatar_2.svg',
+    'assets/icons/mate_avatar_3.svg',
+  ];
+
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _interestTagInputController;
+  late final TextEditingController _tripTagInputController;
+  late String _selectedPhotoAsset;
+  late List<String> _interestTags;
+  late List<String> _tripTags;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = PersonalProfileStore.instance.value;
+
+    _firstNameController = TextEditingController(text: profile.firstName)
+      ..addListener(_handleFieldChanged);
+    _lastNameController = TextEditingController(text: profile.lastName)
+      ..addListener(_handleFieldChanged);
+    _descriptionController = TextEditingController(text: profile.description)
+      ..addListener(_handleFieldChanged);
+    _interestTagInputController = TextEditingController();
+    _tripTagInputController = TextEditingController();
+
+    _applyProfileToDraft(profile);
+  }
+
+  @override
+  void dispose() {
+    _firstNameController
+      ..removeListener(_handleFieldChanged)
+      ..dispose();
+    _lastNameController
+      ..removeListener(_handleFieldChanged)
+      ..dispose();
+    _descriptionController
+      ..removeListener(_handleFieldChanged)
+      ..dispose();
+    _interestTagInputController.dispose();
+    _tripTagInputController.dispose();
+    super.dispose();
+  }
+
+  void _handleFieldChanged() {
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {});
+  }
+
+  String _resolvedFirstName() {
+    final value = _firstNameController.text.trim();
+    return value.isEmpty
+        ? PersonalProfileStore.instance.value.firstName
+        : value;
+  }
+
+  String _resolvedLastName() {
+    final value = _lastNameController.text.trim();
+    return value.isEmpty ? PersonalProfileStore.instance.value.lastName : value;
+  }
+
+  String _resolvedDescription() {
+    final value = _descriptionController.text.trim();
+    return value.isEmpty
+        ? PersonalProfileStore.instance.value.description
+        : value;
+  }
+
+  String _normalizedTagLabel(String raw) {
+    return raw.trim().replaceAll(RegExp(r'\s+'), ' ');
+  }
+
+  List<String> _cleanTagList(List<String> source) {
+    final unique = <String>{};
+    final cleaned = <String>[];
+
+    for (final item in source) {
+      final normalized = _normalizedTagLabel(item);
+      if (normalized.isEmpty) {
+        continue;
+      }
+
+      final key = normalized.toLowerCase();
+      if (unique.add(key)) {
+        cleaned.add(normalized);
+      }
+    }
+
+    return cleaned;
+  }
+
+  void _addTag({required bool isInterestTag}) {
+    final controller = isInterestTag
+        ? _interestTagInputController
+        : _tripTagInputController;
+    final normalized = _normalizedTagLabel(controller.text);
+    if (normalized.isEmpty) {
+      controller.clear();
+      return;
+    }
+
+    final currentTags = isInterestTag ? _interestTags : _tripTags;
+    final alreadyExists = currentTags.any(
+      (tag) => tag.toLowerCase() == normalized.toLowerCase(),
+    );
+    if (alreadyExists) {
+      controller.clear();
+      return;
+    }
+
+    setState(() {
+      final updated = <String>[...currentTags, normalized];
+      if (isInterestTag) {
+        _interestTags = updated;
+      } else {
+        _tripTags = updated;
+      }
+      controller.clear();
+    });
+  }
+
+  void _removeTag(String tag, {required bool isInterestTag}) {
+    setState(() {
+      if (isInterestTag) {
+        _interestTags = _interestTags
+            .where((item) => item.toLowerCase() != tag.toLowerCase())
+            .toList(growable: false);
+      } else {
+        _tripTags = _tripTags
+            .where((item) => item.toLowerCase() != tag.toLowerCase())
+            .toList(growable: false);
+      }
+    });
+  }
+
+  void _addInterestTag() => _addTag(isInterestTag: true);
+
+  void _addTripTag() => _addTag(isInterestTag: false);
+
+  void _removeInterestTag(String tag) => _removeTag(tag, isInterestTag: true);
+
+  void _removeTripTag(String tag) => _removeTag(tag, isInterestTag: false);
+
+  void _applyProfileToDraft(PersonalProfile profile) {
+    _firstNameController.text = profile.firstName;
+    _lastNameController.text = profile.lastName;
+    _descriptionController.text = profile.description;
+    _selectedPhotoAsset = profile.photoAsset;
+    _interestTags = List<String>.from(_cleanTagList(profile.interestTags));
+    _tripTags = List<String>.from(_cleanTagList(profile.tripTags));
+    _interestTagInputController.clear();
+    _tripTagInputController.clear();
+  }
+
+  void _startEditing() {
+    final current = PersonalProfileStore.instance.value;
+    setState(() {
+      _applyProfileToDraft(current);
+      _isEditing = true;
+    });
+  }
+
+  void _cancelEditing() {
+    final current = PersonalProfileStore.instance.value;
+    setState(() {
+      _applyProfileToDraft(current);
+      _isEditing = false;
+    });
+  }
+
+  void _selectPhoto(String asset) {
+    setState(() {
+      _selectedPhotoAsset = asset;
+    });
+  }
+
+  void _saveProfile(BuildContext context) {
+    final updated = PersonalProfile(
+      firstName: _resolvedFirstName(),
+      lastName: _resolvedLastName(),
+      description: _resolvedDescription(),
+      photoAsset: _selectedPhotoAsset,
+      interestTags: _cleanTagList(_interestTags),
+      tripTags: _cleanTagList(_tripTags),
+    );
+
+    PersonalProfileStore.instance.updateProfile(updated);
+
+    setState(() {
+      _isEditing = false;
+      _applyProfileToDraft(updated);
+    });
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Personal profile updated.')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+    final previewProfile = PersonalProfile(
+      firstName: _resolvedFirstName(),
+      lastName: _resolvedLastName(),
+      description: _resolvedDescription(),
+      photoAsset: _selectedPhotoAsset,
+      interestTags: _cleanTagList(_interestTags),
+      tripTags: _cleanTagList(_tripTags),
+    );
+
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        title: Text(
+          'Profile',
+          style: AppTextStyles.titleLg(sizes).copyWith(color: AppColors.yellow),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              sizes.padL,
+              sizes.padL,
+              sizes.padL,
+              sizes.padL * 1.4,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: sizes.padS),
+                MateDetailsPanel(
+                  name: previewProfile.fullName,
+                  description: previewProfile.description,
+                  profileImageAsset: previewProfile.photoAsset,
+                ),
+                PersonalTagGroup(
+                  title: 'Personal interests',
+                  tags: previewProfile.interestTags,
+                  paletteOffset: 0,
+                ),
+                PersonalTagGroup(
+                  title: 'Personal trip tags',
+                  tags: previewProfile.tripTags,
+                  paletteOffset: 3,
+                ),
+                SizedBox(height: sizes.spaceM),
+                SettingsActionCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!_isEditing)
+                        SettingsActionButton(
+                          label: 'Edit profile',
+                          color: AppColors.yellow,
+                          iconAsset: 'assets/icons/user_icon.svg',
+                          textColor: AppColors.black,
+                          iconColor: AppColors.yellow,
+                          onTap: _startEditing,
+                        ),
+                      if (_isEditing) ...[
+                        Text(
+                          'Edit your profile',
+                          style: AppTextStyles.titleLg(
+                            sizes,
+                          ).copyWith(fontSize: sizes.textMd),
+                        ),
+                        SizedBox(height: sizes.padS),
+                        _ProfileField(
+                          label: 'Name',
+                          controller: _firstNameController,
+                        ),
+                        SizedBox(height: sizes.padS),
+                        _ProfileField(
+                          label: 'Surname',
+                          controller: _lastNameController,
+                        ),
+                        SizedBox(height: sizes.padS),
+                        _ProfileField(
+                          label: 'Description',
+                          controller: _descriptionController,
+                          maxLines: 4,
+                          minLines: 3,
+                        ),
+                        SizedBox(height: sizes.padS),
+                        Text(
+                          'Photo',
+                          style: AppTextStyles.bodyMd(
+                            sizes,
+                          ).copyWith(color: AppColors.black),
+                        ),
+                        SizedBox(height: sizes.padXs),
+                        Wrap(
+                          spacing: sizes.padS,
+                          runSpacing: sizes.padS,
+                          children: _photoOptions
+                              .map(
+                                (asset) => _PhotoOptionButton(
+                                  asset: asset,
+                                  selected: _selectedPhotoAsset == asset,
+                                  onTap: () => _selectPhoto(asset),
+                                ),
+                              )
+                              .toList(growable: false),
+                        ),
+                        SizedBox(height: sizes.spaceM),
+                        EditablePersonalTagGroup(
+                          title: 'Personal interest tags',
+                          fieldLabel: 'Type and add an interest tag',
+                          emptyText: 'No personal interest tags yet.',
+                          inputController: _interestTagInputController,
+                          tags: _interestTags,
+                          onAddPressed: _addInterestTag,
+                          onRemoveTag: _removeInterestTag,
+                          paletteOffset: 0,
+                        ),
+                        SizedBox(height: sizes.spaceS),
+                        EditablePersonalTagGroup(
+                          title: 'Personal trip tags',
+                          fieldLabel: 'Type and add a trip tag',
+                          emptyText: 'No personal trip tags yet.',
+                          inputController: _tripTagInputController,
+                          tags: _tripTags,
+                          onAddPressed: _addTripTag,
+                          onRemoveTag: _removeTripTag,
+                          paletteOffset: 3,
+                        ),
+                        SizedBox(height: sizes.spaceM),
+                        SettingsActionButton(
+                          label: 'Save profile changes',
+                          color: AppColors.yellow,
+                          iconAsset: 'assets/icons/user_icon.svg',
+                          textColor: AppColors.black,
+                          iconColor: AppColors.yellow,
+                          onTap: () => _saveProfile(context),
+                        ),
+                        SizedBox(height: sizes.padS),
+                        SettingsActionButton(
+                          label: 'Cancel',
+                          color: const Color(0xFFFF5353),
+                          iconAsset: 'assets/icons/exit.svg',
+                          onTap: _cancelEditing,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileField extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final int maxLines;
+  final int minLines;
+
+  const _ProfileField({
+    required this.label,
+    required this.controller,
+    this.maxLines = 1,
+    this.minLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      minLines: minLines,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: AppTextStyles.bodyMd(
+          sizes,
+        ).copyWith(color: AppColors.blackAlpha60),
+        filled: true,
+        fillColor: const Color(0xFFFFFCED),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: sizes.padM,
+          vertical: sizes.padS,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(sizes.radiusM),
+          borderSide: BorderSide(
+            color: AppColors.blackAlpha60,
+            width: sizes.padXs * 0.2,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(sizes.radiusM),
+          borderSide: BorderSide(
+            color: AppColors.blackAlpha60,
+            width: sizes.padXs * 0.2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(sizes.radiusM),
+          borderSide: BorderSide(
+            color: AppColors.yellow,
+            width: sizes.padXs * 0.3,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PhotoOptionButton extends StatelessWidget {
+  final String asset;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PhotoOptionButton({
+    required this.asset,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+    final side = (sizes.sliderTileSize * 0.28).clamp(56.0, 84.0).toDouble();
+    final isSvg = asset.toLowerCase().endsWith('.svg');
+
+    return Material(
+      color: AppColors.white,
+      borderRadius: BorderRadius.circular(sizes.radiusM),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(sizes.radiusM),
+        onTap: onTap,
+        child: Container(
+          width: side,
+          height: side,
+          padding: EdgeInsets.all(sizes.padXs * 0.9),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFCED),
+            borderRadius: BorderRadius.circular(sizes.radiusM),
+            border: Border.all(
+              color: selected ? AppColors.yellow : AppColors.blackAlpha60,
+              width: selected ? sizes.padXs * 0.34 : sizes.padXs * 0.2,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(sizes.radiusM),
+            child: isSvg
+                ? SvgPicture.asset(asset, fit: BoxFit.cover)
+                : Image.asset(
+                    asset,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
