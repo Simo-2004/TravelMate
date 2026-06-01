@@ -33,27 +33,27 @@ class TravelTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
     final resolvedRadius = borderRadius ?? sizes.radiusM;
-    final resolvedPadding = padding ??
+    final resolvedPadding =
+        padding ??
         EdgeInsets.symmetric(
           horizontal: sizes.padS,
           vertical: sizes.padXs * 0.6,
         );
-    final resolvedBorderWidth = borderWidth ?? (sizes.padXs * 0.2);
+    final resolvedBorderWidth = borderWidth ?? (sizes.padXs * 0.34);
+    final resolvedBorderColor = borderColor ?? backgroundColor;
     final resolvedLabel = _truncateLabel(label, maxCharacters);
-    final resolvedTextStyle = textStyle ??
-        AppTextStyles.caption(sizes).copyWith(
-          color: textColor,
-        );
+    final resolvedTextStyle =
+        textStyle ?? AppTextStyles.caption(sizes).copyWith(color: textColor);
 
     return Container(
       constraints: BoxConstraints(minHeight: minHeight ?? sizes.padL * 0.7),
       padding: resolvedPadding,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(resolvedRadius),
         border: Border.all(
-          color: borderColor ?? Colors.transparent,
-          width: borderColor == null ? 0 : resolvedBorderWidth,
+          color: resolvedBorderColor,
+          width: resolvedBorderWidth,
         ),
       ),
       child: Text(
