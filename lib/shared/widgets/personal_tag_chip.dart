@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 
-class TravelTag extends StatelessWidget {
+class PersonalTagChip extends StatelessWidget {
   final String label;
   final Color backgroundColor;
   final Color textColor;
@@ -15,7 +15,7 @@ class TravelTag extends StatelessWidget {
   final TextStyle? textStyle;
   final double? minHeight;
 
-  const TravelTag({
+  const PersonalTagChip({
     super.key,
     required this.label,
     required this.backgroundColor,
@@ -40,7 +40,6 @@ class TravelTag extends StatelessWidget {
           vertical: sizes.padXs * 0.6,
         );
     final resolvedBorderWidth = borderWidth ?? (sizes.padXs * 0.34);
-    final resolvedBorderColor = borderColor ?? backgroundColor;
     final resolvedLabel = _truncateLabel(label, maxCharacters);
     final resolvedTextStyle =
         textStyle ?? AppTextStyles.caption(sizes).copyWith(color: textColor);
@@ -49,11 +48,11 @@ class TravelTag extends StatelessWidget {
       constraints: BoxConstraints(minHeight: minHeight ?? sizes.padL * 0.7),
       padding: resolvedPadding,
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(resolvedRadius),
         border: Border.all(
-          color: resolvedBorderColor,
-          width: resolvedBorderWidth,
+          color: borderColor ?? Colors.transparent,
+          width: borderColor == null ? 0 : resolvedBorderWidth,
         ),
       ),
       child: Text(
