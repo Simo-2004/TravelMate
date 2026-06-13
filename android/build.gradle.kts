@@ -6,6 +6,8 @@ allprojects {
 
     dependencyLocking {
         lockAllConfigurations()
+        //ignore the flutter dependencies since they are not published to maven and are not needed for the lock file
+        ignoredDependencies.add("io.flutter:*")
     }
 }
 
