@@ -107,33 +107,33 @@ class NavigationDefaults {
 
   static const NavigationConfig config = NavigationConfig(
     items: [
-      const NavigationItem(
+       NavigationItem(
         label: AppStrings.navHomeLabel,
         title: AppStrings.pageHomeTitle,
         icon: Icons.home,
         svgAsset: 'assets/icons/airplane.svg',
-        page: const HomeScreen(),
+        page: HomeScreen(),
       ),
-      const NavigationItem(
+       NavigationItem(
         label: AppStrings.navSearchLabel,
         title: AppStrings.pageSearchTitle,
         icon: Icons.search,
         svgAsset: 'assets/icons/Search 2.svg',
-        page: const SearchScreen(),
+        page: SearchScreen(),
       ),
-      const NavigationItem(
+       NavigationItem(
         label: AppStrings.navSavedLabel,
         title: AppStrings.pageSavedTitle,
         icon: Icons.bookmark_border,
         svgAsset: 'assets/icons/Bookmark.svg',
-        page: const SavedItemsScreen(),
+        page: SavedItemsScreen(),
       ),
-      const NavigationItem(
+       NavigationItem(
         label: AppStrings.navSettingsLabel,
         title: AppStrings.pageSettingsTitle,
         icon: Icons.settings,
         svgAsset: 'assets/icons/Setting.svg',
-        page: const SettingsScreen(),
+        page: SettingsScreen(),
       ),
     ],
     style: style,
