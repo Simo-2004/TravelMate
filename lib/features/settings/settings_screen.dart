@@ -11,6 +11,7 @@ import 'package:travelmate/shared/widgets/personal_profile_card.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 
+/// Settings hub for profile, privacy, support, and exit actions.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 

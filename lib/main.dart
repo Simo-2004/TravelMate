@@ -7,6 +7,7 @@ import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 
+/// Initializes persistent stores and launches the TravelMate application.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.wait([
@@ -17,6 +18,7 @@ Future<void> main() async {
   runApp(const TravelMateApp());
 }
 
+/// Root widget that configures global theme and top-level navigation.
 class TravelMateApp extends StatelessWidget {
   const TravelMateApp({super.key});
 

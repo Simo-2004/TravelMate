@@ -6,6 +6,7 @@ import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
+/// Support page with expandable FAQ and contact actions.
 class SupportScreen extends StatelessWidget {
   static const List<FaqItem> _defaultFaqItems = [
     FaqItem(
@@ -173,6 +174,7 @@ class _FaqItemView extends StatelessWidget {
   }
 }
 
+/// Immutable FAQ entry used by the support screen.
 class FaqItem {
   final String question;
   final String answer;

@@ -1,3 +1,4 @@
+/// Static text labels used across navigation, screens, and widgets.
 class AppStrings {
   static const String appTitle = 'TravelMate';
 

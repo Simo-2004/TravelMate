@@ -12,6 +12,7 @@ import 'package:travelmate/shared/widgets/personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
+/// Editable personal profile page with identity, photo, and personal tags.
 class PersonalProfileScreen extends StatefulWidget {
   const PersonalProfileScreen({super.key});
 

@@ -13,6 +13,7 @@ typedef PrivacySettingChanged =
 
 typedef PrivacySettingsChanged = void Function(PrivacySettings settings);
 
+/// Screen exposing privacy toggles backed by persistent local settings.
 class PrivacySettingsScreen extends StatefulWidget {
   final PrivacySettingChanged? onSettingChanged;
   final PrivacySettingsChanged? onSettingsChanged;

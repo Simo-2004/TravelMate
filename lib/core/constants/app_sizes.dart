@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Central responsive sizing tokens derived from the current device metrics.
 class AppSizes {
   final double shortestSide;
   final double textScale;
@@ -38,8 +39,8 @@ class AppSizes {
 
   double get sliderTileSize => _ratio(0.32);
   double get sliderTileSpacing => padS;
-      double get sliderImageScale =>
-        ((shortestSide / 700) * 1.2).clamp(0.6, 0.9).toDouble();
+  double get sliderImageScale =>
+      ((shortestSide / 700) * 1.2).clamp(0.6, 0.9).toDouble();
   double get scheduleSliderSize => _ratio(0.72);
 
   double get buttonH => padL;

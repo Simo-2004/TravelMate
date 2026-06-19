@@ -15,6 +15,7 @@ import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 
+/// Screen listing all saved trip and mate bookmarks.
 class SavedItemsScreen extends StatelessWidget {
   static final List<TripTileData> _allTripTiles = [
     ...TripCatalog.trips,
