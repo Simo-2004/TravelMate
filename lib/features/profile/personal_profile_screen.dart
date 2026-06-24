@@ -12,6 +12,7 @@ import 'package:travelmate/shared/widgets/personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
+/// Editable personal profile page with identity, photo, and personal tags.
 class PersonalProfileScreen extends StatefulWidget {
   const PersonalProfileScreen({super.key});
 
@@ -20,8 +21,10 @@ class PersonalProfileScreen extends StatefulWidget {
 }
 
 class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
+  static const String _userIconAsset = 'assets/icons/user_icon.svg';
+
   static const List<String> _photoOptions = [
-    'assets/icons/user_icon.svg',
+    _userIconAsset,
     'assets/icons/mate_avatar_1.svg',
     'assets/icons/mate_avatar_2.svg',
     'assets/icons/mate_avatar_3.svg',
@@ -284,7 +287,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                         SettingsActionButton(
                           label: 'Edit profile',
                           color: AppColors.yellow,
-                          iconAsset: 'assets/icons/user_icon.svg',
+                          iconAsset: _userIconAsset,
                           textColor: AppColors.black,
                           iconColor: AppColors.yellow,
                           onTap: _startEditing,
@@ -360,7 +363,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                         SettingsActionButton(
                           label: 'Save profile changes',
                           color: AppColors.yellow,
-                          iconAsset: 'assets/icons/user_icon.svg',
+                          iconAsset: _userIconAsset,
                           textColor: AppColors.black,
                           iconColor: AppColors.yellow,
                           onTap: () => _saveProfile(context),

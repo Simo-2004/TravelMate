@@ -11,13 +11,14 @@ import 'package:travelmate/shared/widgets/personal_profile_card.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 
+/// Settings hub for profile, privacy, support, and exit actions.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   void _handleExit(BuildContext context) {
-    ScaffoldMessenger.of(
+    Navigator.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Exit action pressed.')));
+    ).push(MaterialPageRoute(builder: (_) => const _LogoutDoneScreen()));
   }
 
   @override
@@ -124,6 +125,31 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _LogoutDoneScreen extends StatelessWidget {
+  const _LogoutDoneScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'log out done',
+            style: TextStyle(
+              fontSize: sizes.textMd,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

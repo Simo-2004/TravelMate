@@ -8,6 +8,7 @@ import 'package:travelmate/features/navigation/navigation_config.dart';
 import 'package:travelmate/features/navigation/navigation_controller.dart';
 import 'package:travelmate/shared/transitions/app_transitions.dart';
 
+/// Main scaffold shell hosting app pages and the bottom navigation bar.
 class NavigationShell extends StatefulWidget {
   final NavigationConfig config;
   final NavigationController? controller;
@@ -38,11 +39,10 @@ class _NavigationShellState extends State<NavigationShell> {
       return;
     }
 
-    final initialIndex =
-        widget.config.initialIndex.clamp(0, _items.length - 1);
+    final initialIndex = widget.config.initialIndex.clamp(0, _items.length - 1);
 
-    _controller = widget.controller ??
-        NavigationController(initialIndex: initialIndex);
+    _controller =
+        widget.controller ?? NavigationController(initialIndex: initialIndex);
     _ownsController = widget.controller == null;
   }
 
@@ -57,9 +57,7 @@ class _NavigationShellState extends State<NavigationShell> {
   @override
   Widget build(BuildContext context) {
     if (_items.isEmpty) {
-      return const Scaffold(
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(body: SizedBox.shrink());
     }
 
     return NavigationScope(
@@ -68,13 +66,11 @@ class _NavigationShellState extends State<NavigationShell> {
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
-          final currentIndex =
-              _controller.index.clamp(0, _items.length - 1);
+          final currentIndex = _controller.index.clamp(0, _items.length - 1);
           final currentItem = _items[currentIndex];
           final style = _style;
           final sizes = AppSizes.of(context);
-          final isKeyboardOpen =
-              MediaQuery.of(context).viewInsets.bottom > 0;
+          final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
           final barHeight = _calculateBarHeight(
             context,
             sizes: sizes,
@@ -258,11 +254,7 @@ class _NavButton extends StatelessWidget {
   }
 }
 
-double _labelHeight(
-  BuildContext context,
-  TextStyle style,
-  String label,
-) {
+double _labelHeight(BuildContext context, TextStyle style, String label) {
   final textScaler = MediaQuery.textScalerOf(context);
   final direction = Directionality.of(context);
 

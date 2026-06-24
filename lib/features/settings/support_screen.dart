@@ -6,26 +6,27 @@ import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
+/// Support page with expandable FAQ and contact actions.
 class SupportScreen extends StatelessWidget {
-  static const List<_FaqItem> _defaultFaqItems = [
-    _FaqItem(
+  static const List<FaqItem> _defaultFaqItems = [
+    FaqItem(
       question: 'How can I edit my personal profile?',
       answer:
           'Go to Settings, open Profile, tap Edit profile, then save your changes.',
     ),
-    _FaqItem(
+    FaqItem(
       question: 'How do I save or unsave mates and trips?',
       answer:
           'Open any mate detail or trip schedule and tap the bookmark button to toggle saved state.',
     ),
-    _FaqItem(
+    FaqItem(
       question: 'Are my profile and privacy settings persistent?',
       answer:
           'Yes. Your profile and privacy toggles are stored locally and restored when the app restarts.',
     ),
   ];
 
-  final List<_FaqItem> faqItems;
+  final List<FaqItem> faqItems;
 
   const SupportScreen({super.key, this.faqItems = _defaultFaqItems});
 
@@ -141,7 +142,7 @@ class _SupportExpandableCard extends StatelessWidget {
 }
 
 class _FaqItemView extends StatelessWidget {
-  final _FaqItem item;
+  final FaqItem item;
 
   const _FaqItemView({required this.item});
 
@@ -173,9 +174,10 @@ class _FaqItemView extends StatelessWidget {
   }
 }
 
-class _FaqItem {
+/// Immutable FAQ entry used by the support screen.
+class FaqItem {
   final String question;
   final String answer;
 
-  const _FaqItem({required this.question, required this.answer});
+  const FaqItem({required this.question, required this.answer});
 }

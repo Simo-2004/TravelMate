@@ -13,6 +13,7 @@ typedef PrivacySettingChanged =
 
 typedef PrivacySettingsChanged = void Function(PrivacySettings settings);
 
+/// Screen exposing privacy toggles backed by persistent local settings.
 class PrivacySettingsScreen extends StatefulWidget {
   final PrivacySettingChanged? onSettingChanged;
   final PrivacySettingsChanged? onSettingsChanged;
@@ -51,6 +52,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     BuildContext context,
     PrivacySettings settings,
     PrivacySettingKey key,
+    String label,
     bool value,
   ) {
     final updated = settings.copyWithKey(key, value);
@@ -60,9 +62,12 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     widget.onSettingChanged?.call(key, value, updated);
     widget.onSettingsChanged?.call(updated);
 
+    final stateLabel = value ? 'On' : 'Off';
+    final message = '$label $stateLabel';
+
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('button clicked')));
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -119,6 +124,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                           context,
                           settings,
                           definition.key,
+                          definition.label,
                           value,
                         ),
                       ),

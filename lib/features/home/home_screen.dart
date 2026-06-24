@@ -11,6 +11,7 @@ import 'package:travelmate/shared/widgets/search_bar.dart';
 import 'package:travelmate/shared/widgets/slider_section.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
 
+/// Home tab showing recommended and recently viewed trips.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

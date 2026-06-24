@@ -9,6 +9,7 @@ import 'package:travelmate/shared/state/search_research_mode_store.dart';
 import 'package:travelmate/shared/widgets/search_bar.dart';
 import 'package:travelmate/shared/widgets/search_mode_switch_button.dart';
 
+/// Search tab that routes user queries to trip or mate results.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 

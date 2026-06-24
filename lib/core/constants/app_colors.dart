@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Shared color palette for the app theme and reusable UI components.
 class AppColors {
   static const Color yellow = Color(0xFFFFC73D);
   static const Color black = Colors.black;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 
+/// Creates configured Material themes used by the application.
 class AppTheme {
   static ThemeData light() {
     const colorScheme = ColorScheme(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 
+/// Typography helpers that map AppSizes tokens to reusable text styles.
 class AppTextStyles {
   static TextStyle titleLg(AppSizes sizes) {
     return TextStyle(
@@ -13,10 +14,7 @@ class AppTextStyles {
   }
 
   static TextStyle bodyMd(AppSizes sizes) {
-    return TextStyle(
-      fontSize: sizes.textMd,
-      color: AppColors.blackAlpha60,
-    );
+    return TextStyle(fontSize: sizes.textMd, color: AppColors.blackAlpha60);
   }
 
   static TextStyle buttonLabel(AppSizes sizes) {
