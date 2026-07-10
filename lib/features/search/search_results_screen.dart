@@ -10,11 +10,12 @@ import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/search_research_mode.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
+import 'package:travelmate/shared/utils/mate_search.dart';
+import 'package:travelmate/shared/utils/trip_search.dart';
 import 'package:travelmate/shared/widgets/mates_vertical_section.dart';
 import 'package:travelmate/shared/widgets/search_bar.dart';
 import 'package:travelmate/shared/widgets/search_mode_switch_button.dart';
-import 'package:travelmate/shared/widgets/slider_section.dart';
-import 'package:travelmate/shared/widgets/square_image_button.dart';
+import 'package:travelmate/shared/widgets/trips_vertical_section.dart';
 
 class SearchResultsScreen extends StatefulWidget {
   final String initialQuery;
@@ -26,6 +27,8 @@ class SearchResultsScreen extends StatefulWidget {
 }
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
+  static const int _maxMatesShown = 5;
+  static const int _maxTripsShown = 5;
   static final List<TripTileData> _tripTiles = TripCatalog.trips;
   static final List<MateProfile> _mates = MateCatalog.mates;
   late final TextEditingController _searchController;
@@ -43,155 +46,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   List<TripTileData> _filterTrips(String query) {
-    final normalizedQuery = query.trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return const [];
-    }
-
-    final terms = normalizedQuery
-        .split(RegExp(r'\s+'))
-        .where((term) => term.isNotEmpty)
-        .toList(growable: false);
-
-    final scoredTrips = <({TripTileData trip, int score})>[];
-
-    for (final trip in _tripTiles) {
-      final label = trip.label.toLowerCase();
-      final destination = trip.destinationTitle.toLowerCase();
-      final description = trip.description.toLowerCase();
-      final tagLabels = trip.tags
-          .map((tag) => tag.label.toLowerCase())
-          .toList(growable: false);
-
-      var score = 0;
-      var matchesAllTerms = true;
-
-      for (final term in terms) {
-        var termMatched = false;
-
-        if (label.startsWith(term)) {
-          score += 8;
-          termMatched = true;
-        } else if (label.contains(term)) {
-          score += 5;
-          termMatched = true;
-        }
-
-        if (destination.startsWith(term)) {
-          score += 7;
-          termMatched = true;
-        } else if (destination.contains(term)) {
-          score += 4;
-          termMatched = true;
-        }
-
-        if (description.contains(term)) {
-          score += 2;
-          termMatched = true;
-        }
-
-        final matchingTag = tagLabels.firstWhere(
-          (tagLabel) => tagLabel.startsWith(term) || tagLabel.contains(term),
-          orElse: () => '',
-        );
-        if (matchingTag.isNotEmpty) {
-          score += matchingTag.startsWith(term) ? 6 : 3;
-          termMatched = true;
-        }
-
-        if (!termMatched) {
-          matchesAllTerms = false;
-          break;
-        }
-      }
-
-      if (matchesAllTerms) {
-        scoredTrips.add((trip: trip, score: score));
-      }
-    }
-
-    scoredTrips.sort((a, b) {
-      final byScore = b.score.compareTo(a.score);
-      if (byScore != 0) {
-        return byScore;
-      }
-
-      return a.trip.label.compareTo(b.trip.label);
-    });
-
-    return scoredTrips.map((entry) => entry.trip).toList(growable: false);
+    return filterTrips(_tripTiles, query, limit: _maxTripsShown);
   }
 
   List<MateProfile> _filterMates(String query) {
-    final normalizedQuery = query.trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return const [];
-    }
-
-    final terms = normalizedQuery
-        .split(RegExp(r'\s+'))
-        .where((term) => term.isNotEmpty)
-        .toList(growable: false);
-
-    final scoredMates = <({MateProfile mate, int score})>[];
-
-    for (final mate in _mates) {
-      final name = mate.name.toLowerCase();
-      final description = mate.description.toLowerCase();
-      final keywords = mate.keywords
-          .map((keyword) => keyword.toLowerCase())
-          .toList(growable: false);
-
-      var score = 0;
-      var matchesAllTerms = true;
-
-      for (final term in terms) {
-        var termMatched = false;
-
-        if (name.startsWith(term)) {
-          score += 8;
-          termMatched = true;
-        } else if (name.contains(term)) {
-          score += 5;
-          termMatched = true;
-        }
-
-        if (description.contains(term)) {
-          score += 3;
-          termMatched = true;
-        }
-
-        final matchingKeyword = keywords.firstWhere(
-          (keyword) => keyword.startsWith(term) || keyword.contains(term),
-          orElse: () => '',
-        );
-
-        if (matchingKeyword.isNotEmpty) {
-          score += matchingKeyword.startsWith(term) ? 6 : 4;
-          termMatched = true;
-        }
-
-        if (!termMatched) {
-          matchesAllTerms = false;
-          break;
-        }
-      }
-
-      if (matchesAllTerms) {
-        scoredMates.add((mate: mate, score: score));
-      }
-    }
-
-    scoredMates.sort((a, b) {
-      final byScore = b.score.compareTo(a.score);
-      if (byScore != 0) {
-        return byScore;
-      }
-
-      return a.mate.name.compareTo(b.mate.name);
-    });
-
-    return scoredMates.map((entry) => entry.mate).toList(growable: false);
+    return filterMates(_mates, query, limit: _maxMatesShown);
   }
 
   void _openMateDetails(MateProfile mate) {
@@ -200,15 +59,32 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     ).push(MaterialPageRoute(builder: (_) => MateDetailsScreen(mate: mate)));
   }
 
+  void _openTripSchedule(TripTileData trip) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TravelScheduleScreen(
+          tripId: trip.tripId,
+          tripName: trip.destinationTitle,
+          images: trip.scheduleImages,
+          tags: trip.tags,
+          destinationTitle: trip.destinationTitle,
+          destinationDescription: trip.description,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
+    final modeButtonSize = sizes.padL * 2.6;
+    final bottomClearance = modeButtonSize + sizes.padS * 2;
+
     return ValueListenableBuilder<SearchResearchMode>(
       valueListenable: SearchResearchModeStore.instance,
       builder: (context, mode, _) {
         final filteredTrips = _filterTrips(_searchController.text);
         final filteredMates = _filterMates(_searchController.text);
-        final hasQuery = _searchController.text.trim().isNotEmpty;
         final hintText = mode == SearchResearchMode.trips
             ? AppStrings.searchTripHint
             : AppStrings.searchMateHint;
@@ -223,7 +99,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     sizes.padL,
                     sizes.padL,
                     sizes.padL,
-                    sizes.padL * 2.4,
+                    bottomClearance,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -241,74 +117,33 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           child: MatesVerticalSection(
                             title: AppStrings.searchMatesTitle,
                             mates: filteredMates,
-                            emptyMessage: hasQuery
-                                ? AppStrings.searchNoMatesMessage
-                                : AppStrings.searchMateHint,
+                            emptyMessage: AppStrings.searchNoMatesMessage,
                             listHeight: double.infinity,
                             onMateTap: _openMateDetails,
                           ),
                         )
-                      else if (filteredTrips.isEmpty && hasQuery)
-                        Padding(
-                          padding: EdgeInsets.only(top: sizes.spaceM),
-                          child: Text(
-                            AppStrings.searchNoTripsMessage,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(fontSize: sizes.textSm),
-                          ),
-                        )
                       else
-                        SliderSection(
-                          title: AppStrings.searchTripsTitle,
-                          child: SizedBox(
-                            height: sizes.sliderTileSize,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: filteredTrips.length,
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(width: sizes.sliderTileSpacing),
-                              itemBuilder: (context, index) {
-                                final item = filteredTrips[index];
-
-                                return SquareImageButton(
-                                  imageAsset: item.asset,
-                                  label: item.label,
-                                  borderRadius: sizes.radiusL,
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => TravelScheduleScreen(
-                                          tripId: item.tripId,
-                                          tripName: item.destinationTitle,
-                                          images: item.scheduleImages,
-                                          tags: item.tags,
-                                          destinationTitle:
-                                              item.destinationTitle,
-                                          destinationDescription:
-                                              item.description,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                        Expanded(
+                          child: TripsVerticalSection(
+                            title: AppStrings.searchTripsTitle,
+                            trips: filteredTrips,
+                            emptyMessage: AppStrings.searchNoTripsMessage,
+                            listHeight: double.infinity,
+                            onTripTap: _openTripSchedule,
                           ),
                         ),
                     ],
                   ),
                 ),
                 Positioned(
-                  left: 0,
-                  right: 0,
+                  right: sizes.padL,
                   bottom: sizes.padS,
-                  child: Center(
-                    child: SearchModeSwitchButton(
-                      mode: mode,
-                      onTap: SearchResearchModeStore.instance.toggle,
-                      tripsLabel: AppStrings.searchModeTripsLabel,
-                      matesLabel: AppStrings.searchModeMatesLabel,
-                    ),
+                  child: SearchModeSwitchButton(
+                    mode: mode,
+                    onTap: SearchResearchModeStore.instance.toggle,
+                    tripsLabel: AppStrings.searchModeTripsLabel,
+                    matesLabel: AppStrings.searchModeMatesLabel,
+                    size: modeButtonSize,
                   ),
                 ),
               ],

@@ -28,6 +28,24 @@ class TravelMateApp extends StatelessWidget {
       title: AppStrings.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      builder: (context, child) {
+        // Layout sizes are derived from screen dimensions (see AppSizes) on
+        // the assumption of a roughly 1.0x text scale. Devices with a larger
+        // default system font size would otherwise inflate text-driven
+        // measurements (e.g. the bottom nav bar height) well beyond what the
+        // rest of the proportional UI does, so the scale factor is clamped
+        // to a reasonable range here.
+        final mediaQuery = MediaQuery.of(context);
+        final clampedScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.2,
+        );
+
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: clampedScaler),
+          child: child!,
+        );
+      },
       home: const NavigationShell(),
     );
   }
