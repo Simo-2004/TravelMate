@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
+import 'package:travelmate/shared/models/trip_tile_data.dart';
+import 'package:travelmate/shared/widgets/square_image_button.dart';
 
 /// Single chat bubble: yellow and right-aligned for the current user's
-/// messages, neutral and left-aligned for the other participant's.
+/// messages, neutral and left-aligned for the other participant's. When the
+/// message carries an attached trip, its card is rendered above the text
+/// and taps are forwarded through [onTripTap].
 class ChatMessageBubble extends StatelessWidget {
   final ChatMessage message;
+  final ValueChanged<TripTileData>? onTripTap;
 
-  const ChatMessageBubble({super.key, required this.message});
+  const ChatMessageBubble({super.key, required this.message, this.onTripTap});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +30,10 @@ class ChatMessageBubble extends StatelessWidget {
         : const Color(0xFFFFE9A6);
     final cornerRadius = sizes.radiusM;
     final tightCorner = sizes.padXs * 0.6;
+    final attachedTripId = message.attachedTripId;
+    final attachedTrip = attachedTripId == null
+        ? null
+        : TripCatalog.findTripById(attachedTripId);
 
     return Align(
       alignment: isFromMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -52,6 +62,19 @@ class ChatMessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (attachedTrip != null)
+              Padding(
+                padding: EdgeInsets.only(bottom: sizes.padS),
+                child: SquareImageButton(
+                  imageAsset: attachedTrip.asset,
+                  label: attachedTrip.label,
+                  size: sizes.sliderTileSize,
+                  borderRadius: sizes.radiusM,
+                  onTap: onTripTap == null
+                      ? null
+                      : () => onTripTap!(attachedTrip),
+                ),
+              ),
             Text(
               message.text,
               style: AppTextStyles.bodyMd(sizes).copyWith(

@@ -5,17 +5,20 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 
-/// Bottom message composer: a text field plus a yellow send button.
+/// Bottom message composer: a text field, an optional attach button, and a
+/// yellow send button.
 class ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onSend;
   final ValueChanged<String>? onChanged;
+  final VoidCallback? onAttachTap;
 
   const ChatInputBar({
     super.key,
     required this.controller,
     required this.onSend,
     this.onChanged,
+    this.onAttachTap,
   });
 
   void _handleSend() {
@@ -76,8 +79,28 @@ class ChatInputBar extends StatelessWidget {
                   ),
                 ),
               ),
+              if (onAttachTap != null) ...[
+                SizedBox(width: sizes.padS),
+                _ChatRoundIconButton(
+                  onTap: onAttachTap!,
+                  icon: Icons.add_rounded,
+                  tooltip: AppStrings.chatAttachTripTooltip,
+                  size: sizes.padL * 1.5,
+                  iconSize: sizes.iconM * 0.8,
+                  backgroundColor: const Color(0xFFFFFCED),
+                  borderColor: const Color(0xFFFFE9A6),
+                ),
+              ],
               SizedBox(width: sizes.padS),
-              _ChatSendButton(onTap: _handleSend),
+              _ChatRoundIconButton(
+                onTap: _handleSend,
+                icon: Icons.send_rounded,
+                // Fixed diameter (not derived from the row's live height) so
+                // it never grows as the field expands for multiline text.
+                size: sizes.padL * 1.85,
+                iconSize: sizes.iconM * 0.85,
+                backgroundColor: AppColors.yellow,
+              ),
             ],
           ),
         ),
@@ -86,39 +109,56 @@ class ChatInputBar extends StatelessWidget {
   }
 }
 
-class _ChatSendButton extends StatelessWidget {
+class _ChatRoundIconButton extends StatelessWidget {
   final VoidCallback onTap;
+  final IconData icon;
+  final double size;
+  final double iconSize;
+  final Color backgroundColor;
+  final Color? borderColor;
+  final String? tooltip;
 
-  const _ChatSendButton({required this.onTap});
+  const _ChatRoundIconButton({
+    required this.onTap,
+    required this.icon,
+    required this.size,
+    required this.iconSize,
+    required this.backgroundColor,
+    this.borderColor,
+    this.tooltip,
+  });
 
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-
-    // Fixed diameter (not derived from the row's live height) so it never
-    // grows as the field expands for multiline text; centered in the row
-    // so it stays visually aligned with the field's single-line height.
-    final size = sizes.padL * 1.85;
-
-    return SizedBox(
+    final button = SizedBox(
       width: size,
       height: size,
       child: Material(
-        color: AppColors.yellow,
+        color: backgroundColor,
         elevation: sizes.buttonElevation,
-        shape: const CircleBorder(),
+        shape: CircleBorder(
+          side: borderColor == null
+              ? BorderSide.none
+              : BorderSide(
+                  color: borderColor!,
+                  width: sizes.padXs * 0.22,
+                ),
+        ),
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onTap,
           child: Center(
-            child: Icon(
-              Icons.send_rounded,
-              color: AppColors.black,
-              size: sizes.iconM * 0.85,
-            ),
+            child: Icon(icon, color: AppColors.black, size: iconSize),
           ),
         ),
       ),
     );
+
+    if (tooltip == null) {
+      return button;
+    }
+
+    return Tooltip(message: tooltip!, child: button);
   }
 }

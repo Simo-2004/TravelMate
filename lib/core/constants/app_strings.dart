@@ -59,6 +59,15 @@ class AppStrings {
       "I'll share some photos from my last trip soon!";
   static const String chatClearHistoryTooltip = 'Clear chat history';
   static const String chatHistoryClearedMessage = 'Chat history cleared.';
+  static const String chatAttachTripTooltip = 'Attach a saved trip';
+  static const String chatNoSavedTripsMessage =
+      'No saved trips yet. Bookmark a trip to share it here.';
+  static const String chatTripInviteMessage =
+      'Do you want to do this travel with me?';
+  static const String chatReplyTripAccepted =
+      "I'd love to! This trip looks perfect for me, let's plan it together!";
+  static const String chatReplyTripDeclined =
+      "Thanks for the invite, but this trip isn't really my style. Maybe another one?";
 
   static const String homeHeadline = 'Find your ideal travel companion';
   static const String homeSubtitle =

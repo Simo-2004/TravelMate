@@ -4,11 +4,16 @@ class ChatMessage {
   final bool isFromMe;
   final DateTime sentAt;
 
+  /// When set, this message carries a trip attachment: the id of a trip
+  /// from TripCatalog rendered as a tappable trip card inside the bubble.
+  final String? attachedTripId;
+
   const ChatMessage({
     required this.id,
     required this.text,
     required this.isFromMe,
     required this.sentAt,
+    this.attachedTripId,
   });
 
   Map<String, dynamic> toJson() {
@@ -17,6 +22,7 @@ class ChatMessage {
       'text': text,
       'isFromMe': isFromMe,
       'sentAt': sentAt.toIso8601String(),
+      'attachedTripId': attachedTripId,
     };
   }
 
@@ -25,6 +31,7 @@ class ChatMessage {
     final text = json['text'];
     final isFromMe = json['isFromMe'];
     final sentAt = json['sentAt'];
+    final attachedTripId = json['attachedTripId'];
 
     return ChatMessage(
       id: id is String ? id : '',
@@ -33,6 +40,9 @@ class ChatMessage {
       sentAt: sentAt is String
           ? (DateTime.tryParse(sentAt) ?? DateTime.now())
           : DateTime.now(),
+      attachedTripId: attachedTripId is String && attachedTripId.isNotEmpty
+          ? attachedTripId
+          : null,
     );
   }
 }

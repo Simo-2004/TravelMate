@@ -93,7 +93,32 @@ class ChatStore {
       ),
     );
 
-    unawaited(_scheduleReply(mateId, trimmed));
+    unawaited(_scheduleReply(mateId, resolveAutoReply(trimmed)));
+  }
+
+  /// Sends [message] carrying [tripId] as an attachment, then schedules
+  /// [reply] as the mate's response. Whether the mate accepts or declines
+  /// the invite is decided by the caller (see mateLikesTrip).
+  void sendTripInvite(
+    String mateId, {
+    required String tripId,
+    required String message,
+    required String reply,
+  }) {
+    notifyActivity(mateId);
+
+    _append(
+      mateId,
+      ChatMessage(
+        id: _nextId(),
+        text: message,
+        isFromMe: true,
+        sentAt: DateTime.now(),
+        attachedTripId: tripId,
+      ),
+    );
+
+    unawaited(_scheduleReply(mateId, reply));
   }
 
   void clearConversation(String mateId) {
@@ -101,7 +126,7 @@ class ChatStore {
     unawaited(_persist());
   }
 
-  Future<void> _scheduleReply(String mateId, String incomingText) async {
+  Future<void> _scheduleReply(String mateId, String replyText) async {
     await Future.delayed(_replyDelay);
 
     notifyActivity(mateId);
@@ -110,7 +135,7 @@ class ChatStore {
       mateId,
       ChatMessage(
         id: _nextId(),
-        text: resolveAutoReply(incomingText),
+        text: replyText,
         isFromMe: false,
         sentAt: DateTime.now(),
       ),

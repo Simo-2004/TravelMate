@@ -5,6 +5,7 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/chat/chat_screen.dart';
+import 'package:travelmate/shared/data/trip_tag_catalog.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
@@ -57,6 +58,14 @@ class MateDetailsScreen extends StatelessWidget {
         .asMap()
         .entries
         .map((entry) {
+          // Reuse the real trip tag's colors when this label matches one
+          // (typically a preferredTrips entry), so the bookmark preview
+          // stays consistent with the on-screen chip and with actual trips.
+          final catalogTag = TripTagCatalog.resolve(entry.value);
+          if (catalogTag != null) {
+            return catalogTag;
+          }
+
           final paletteIndex = entry.key % _tagBackgroundPalette.length;
 
           return TripTag(
@@ -163,6 +172,7 @@ class MateDetailsScreen extends StatelessWidget {
                         title: AppStrings.matePreferredTripsTitle,
                         tags: mate.preferredTrips,
                         paletteOffset: 3,
+                        matchTripTagCatalog: true,
                       ),
                     ],
                   ),
