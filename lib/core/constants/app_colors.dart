@@ -6,4 +6,5 @@ class AppColors {
   static const Color black = Colors.black;
   static const Color white = Colors.white;
   static const Color blackAlpha60 = Color(0x99000000);
+  static const Color onlineGreen = Color(0xFF34C759);
 }

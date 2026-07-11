@@ -4,10 +4,12 @@ import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/features/chat/chat_screen.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/widgets/chat_button.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
 import 'package:travelmate/shared/widgets/mate_tag_group.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
@@ -79,6 +81,12 @@ class MateDetailsScreen extends StatelessWidget {
     );
   }
 
+  void _openChat(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => ChatScreen(mate: mate)));
+  }
+
   void _toggleMateBookmark(BuildContext context) {
     final nowSaved = SavedTripPreviewStore.instance.toggleBookmark(
       _buildMatePreview(),
@@ -108,49 +116,71 @@ class MateDetailsScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              sizes.padL,
-              sizes.padL,
-              sizes.padL,
-              sizes.padL * 1.4,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: sizes.padS),
-                MateDetailsPanel(
-                  name: mate.name,
-                  description: mate.description,
-                  profileImageAsset: mate.profileImageAsset,
-                  nameTrailing: ValueListenableBuilder<List<SavedTripPreview>>(
-                    valueListenable: SavedTripPreviewStore.instance,
-                    builder: (context, _, __) {
-                      final isSaved = SavedTripPreviewStore.instance.isSaved(
-                        _buildMatePreview(),
-                      );
+        child: Stack(
+          children: [
+            // Positioned.fill (rather than a plain child) makes this the
+            // only content Stack sizes around, so Stack claims the full
+            // available height instead of shrink-wrapping to the profile
+            // content — otherwise the floating button below would anchor
+            // itself to the bottom of the content instead of the screen.
+            Positioned.fill(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    sizes.padL,
+                    sizes.padL,
+                    sizes.padL,
+                    sizes.padL * 3.4,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: sizes.padS),
+                      MateDetailsPanel(
+                        name: mate.name,
+                        description: mate.description,
+                        profileImageAsset: mate.profileImageAsset,
+                        nameTrailing:
+                            ValueListenableBuilder<List<SavedTripPreview>>(
+                              valueListenable: SavedTripPreviewStore.instance,
+                              builder: (context, _, __) {
+                                final isSaved = SavedTripPreviewStore.instance
+                                    .isSaved(_buildMatePreview());
 
-                      return SaveTripButton(
-                        isSaved: isSaved,
-                        onTap: () => _toggleMateBookmark(context),
-                      );
-                    },
+                                return SaveTripButton(
+                                  isSaved: isSaved,
+                                  onTap: () => _toggleMateBookmark(context),
+                                );
+                              },
+                            ),
+                      ),
+                      MateTagGroup(
+                        title: AppStrings.mateInterestsTitle,
+                        tags: mate.interests,
+                        paletteOffset: 0,
+                      ),
+                      MateTagGroup(
+                        title: AppStrings.matePreferredTripsTitle,
+                        tags: mate.preferredTrips,
+                        paletteOffset: 3,
+                      ),
+                    ],
                   ),
                 ),
-                MateTagGroup(
-                  title: AppStrings.mateInterestsTitle,
-                  tags: mate.interests,
-                  paletteOffset: 0,
-                ),
-                MateTagGroup(
-                  title: AppStrings.matePreferredTripsTitle,
-                  tags: mate.preferredTrips,
-                  paletteOffset: 3,
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: sizes.padL,
+              child: Center(
+                child: ChatButton(
+                  label: AppStrings.mateChatButtonLabel,
+                  onTap: () => _openChat(context),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

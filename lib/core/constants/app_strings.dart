@@ -30,6 +30,35 @@ class AppStrings {
   static const String mateDetailsPageTitle = 'Profile';
   static const String mateInterestsTitle = 'Interests';
   static const String matePreferredTripsTitle = 'Preferred trips';
+  static const String mateChatButtonLabel = 'Chat';
+
+  static const String chatOnlineLabel = 'Online';
+  static const String chatOfflineLabel = 'Offline';
+  static const String chatInputHint = 'Type a message...';
+  static const String chatEmptyStateMessage =
+      'Say hi to start the conversation!';
+  static const String chatFallbackReply =
+      "I don't understand this text, please try again";
+  static const String chatReplyGreeting = 'Hey! Great to hear from you.';
+  static const String chatReplyHowAreYou =
+      "I'm doing great, thanks for asking! How about you?";
+  static const String chatReplyTravelPlans =
+      "I'd love to plan our next trip together, tell me more!";
+  static const String chatReplyThanks = "You're very welcome!";
+  static const String chatReplyName = 'Nice to meet you!';
+  static const String chatReplyLaugh = "Haha, that's really funny!";
+  static const String chatReplyLocation =
+      "I'm still deciding, but I'm open to suggestions!";
+  static const String chatReplyAgreement = 'Sounds good to me!';
+  static const String chatReplyDisagreement = "No worries, that's fine.";
+  static const String chatReplyGoodbye = 'Talk to you soon, safe travels!';
+  static const String chatReplyWeather =
+      'The weather looks great for traveling this week!';
+  static const String chatReplyFood = "I'm always up for trying new food!";
+  static const String chatReplyPhoto =
+      "I'll share some photos from my last trip soon!";
+  static const String chatClearHistoryTooltip = 'Clear chat history';
+  static const String chatHistoryClearedMessage = 'Chat history cleared.';
 
   static const String homeHeadline = 'Find your ideal travel companion';
   static const String homeSubtitle =
