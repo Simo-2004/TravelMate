@@ -1,177 +1,56 @@
-import 'package:flutter/material.dart';
-
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/shared/data/trip_media_catalog.dart';
+import 'package:travelmate/shared/data/trip_tag_catalog.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
 
 class TripCatalog {
   static const List<TripTag> _tagSet1 = [
-    TripTag(
-      label: 'economic-trip',
-      backgroundColor: Color(0xFFFFF700),
-      textColor: Color(0xFF3A3200),
-      borderColor: Color(0xFFFFF199),
-    ),
-    TripTag(
-      label: 'long-journey',
-      backgroundColor: Color(0xFF00E5FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
-    TripTag(
-      label: 'family-friendly',
-      backgroundColor: Color(0xFF7CFF4D),
-      textColor: Color(0xFF1F3A00),
-      borderColor: Color(0xFFC8FFB5),
-    ),
+    TripTagCatalog.economicTrip,
+    TripTagCatalog.longJourney,
+    TripTagCatalog.familyFriendly,
   ];
 
   static const List<TripTag> _tagSet2 = [
-    TripTag(
-      label: 'backpacking',
-      backgroundColor: Color(0xFFFF9100),
-      textColor: Color(0xFF4A2600),
-      borderColor: Color(0xFFFFD299),
-    ),
-    TripTag(
-      label: 'flexible-dates',
-      backgroundColor: Color(0xFFFF4FD8),
-      textColor: Color(0xFF3A0032),
-      borderColor: Color(0xFFFFC2EF),
-    ),
-    TripTag(
-      label: 'low-budget',
-      backgroundColor: Color(0xFFB24CFF),
-      textColor: Color(0xFF2F005C),
-      borderColor: Color(0xFFE0B6FF),
-    ),
+    TripTagCatalog.backpacking,
+    TripTagCatalog.flexibleDates,
+    TripTagCatalog.lowBudget,
   ];
 
   static const List<TripTag> _tagSet3 = [
-    TripTag(
-      label: 'city-break',
-      backgroundColor: Color(0xFF00F0FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
-    TripTag(
-      label: 'culture',
-      backgroundColor: Color(0xFFFF4FD8),
-      textColor: Color(0xFF3A0032),
-      borderColor: Color(0xFFFFC2EF),
-    ),
-    TripTag(
-      label: 'foodie',
-      backgroundColor: Color(0xFFFFF700),
-      textColor: Color(0xFF3A3200),
-      borderColor: Color(0xFFFFF199),
-    ),
+    TripTagCatalog.cityBreak,
+    TripTagCatalog.culture,
+    TripTagCatalog.foodie,
   ];
 
   static const List<TripTag> _tagSet4 = [
-    TripTag(
-      label: 'adventure',
-      backgroundColor: Color(0xFF7CFF4D),
-      textColor: Color(0xFF1F3A00),
-      borderColor: Color(0xFFC8FFB5),
-    ),
-    TripTag(
-      label: 'nature',
-      backgroundColor: Color(0xFF00E5FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
-    TripTag(
-      label: 'outdoor',
-      backgroundColor: Color(0xFFFF9100),
-      textColor: Color(0xFF4A2600),
-      borderColor: Color(0xFFFFD299),
-    ),
+    TripTagCatalog.adventure,
+    TripTagCatalog.nature,
+    TripTagCatalog.outdoor,
   ];
 
   static const List<TripTag> _tagSet5 = [
-    TripTag(
-      label: 'weekend',
-      backgroundColor: Color(0xFFFFF700),
-      textColor: Color(0xFF3A3200),
-      borderColor: Color(0xFFFFF199),
-    ),
-    TripTag(
-      label: 'romantic',
-      backgroundColor: Color(0xFFFF4FD8),
-      textColor: Color(0xFF3A0032),
-      borderColor: Color(0xFFFFC2EF),
-    ),
-    TripTag(
-      label: 'easy-planning',
-      backgroundColor: Color(0xFFB24CFF),
-      textColor: Color(0xFF2F005C),
-      borderColor: Color(0xFFE0B6FF),
-    ),
+    TripTagCatalog.weekend,
+    TripTagCatalog.romantic,
+    TripTagCatalog.easyPlanning,
   ];
 
   static const List<TripTag> _tagSet6 = [
-    TripTag(
-      label: 'road-trip',
-      backgroundColor: Color(0xFFFF9100),
-      textColor: Color(0xFF4A2600),
-      borderColor: Color(0xFFFFD299),
-    ),
-    TripTag(
-      label: 'scenic',
-      backgroundColor: Color(0xFF00E5FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
-    TripTag(
-      label: 'group-friendly',
-      backgroundColor: Color(0xFF7CFF4D),
-      textColor: Color(0xFF1F3A00),
-      borderColor: Color(0xFFC8FFB5),
-    ),
+    TripTagCatalog.roadTrip,
+    TripTagCatalog.scenic,
+    TripTagCatalog.groupFriendly,
   ];
 
   static const List<TripTag> _tagSet7 = [
-    TripTag(
-      label: 'island-vibe',
-      backgroundColor: Color(0xFF00F5A0),
-      textColor: Color(0xFF00422A),
-      borderColor: Color(0xFF8DFFD2),
-    ),
-    TripTag(
-      label: 'sunset-views',
-      backgroundColor: Color(0xFFFF8A00),
-      textColor: Color(0xFF4A2600),
-      borderColor: Color(0xFFFFD3A1),
-    ),
-    TripTag(
-      label: 'relax-mode',
-      backgroundColor: Color(0xFF00E5FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
+    TripTagCatalog.islandVibe,
+    TripTagCatalog.sunsetViews,
+    TripTagCatalog.relaxMode,
   ];
 
   static const List<TripTag> _tagSet8 = [
-    TripTag(
-      label: 'historic-route',
-      backgroundColor: Color(0xFFFF5C8A),
-      textColor: Color(0xFF4A0018),
-      borderColor: Color(0xFFFFBDD0),
-    ),
-    TripTag(
-      label: 'museum-pass',
-      backgroundColor: Color(0xFFB24CFF),
-      textColor: Color(0xFF2F005C),
-      borderColor: Color(0xFFE0B6FF),
-    ),
-    TripTag(
-      label: 'train-friendly',
-      backgroundColor: Color(0xFFFFF700),
-      textColor: Color(0xFF3A3200),
-      borderColor: Color(0xFFFFF199),
-    ),
+    TripTagCatalog.historicRoute,
+    TripTagCatalog.museumPass,
+    TripTagCatalog.trainFriendly,
   ];
 
   static final List<String> _tileAssets = [...TripMediaCatalog.homeTripAssets];

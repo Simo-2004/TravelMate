@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
+import 'package:travelmate/shared/state/chat_store.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
@@ -14,6 +15,7 @@ Future<void> main() async {
     SavedTripPreviewStore.instance.initialize(),
     PersonalProfileStore.instance.initialize(),
     PrivacySettingsStore.instance.initialize(),
+    ChatStore.instance.initialize(),
   ]);
   runApp(const TravelMateApp());
 }
@@ -28,6 +30,18 @@ class TravelMateApp extends StatelessWidget {
       title: AppStrings.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        final clampedScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.2,
+        );
+
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: clampedScaler),
+          child: child!,
+        );
+      },
       home: const NavigationShell(),
     );
   }

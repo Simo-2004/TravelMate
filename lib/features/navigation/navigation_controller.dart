@@ -7,6 +7,7 @@ class NavigationController extends ChangeNotifier {
 
   int _index;
   int _focusRequest = 0;
+  int _consumedFocusRequest = 0;
 
   int get index => _index;
   int get focusRequest => _focusRequest;
@@ -22,6 +23,16 @@ class NavigationController extends ChangeNotifier {
   void requestFocus() {
     _focusRequest += 1;
     notifyListeners();
+  }
+
+  /// Returns true once per pending [requestFocus] call, regardless of how
+  /// many pages have listened to (and been recreated by) this controller.
+  bool consumeFocusRequest() {
+    if (_focusRequest == _consumedFocusRequest) {
+      return false;
+    }
+    _consumedFocusRequest = _focusRequest;
+    return true;
   }
 }
 

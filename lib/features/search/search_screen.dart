@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/features/navigation/navigation_controller.dart';
+import 'package:travelmate/features/search/search_mode_view.dart';
 import 'package:travelmate/features/search/search_results_screen.dart';
+import 'package:travelmate/shared/data/mate_catalog.dart';
+import 'package:travelmate/shared/data/trip_catalog.dart';
+import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/search_research_mode.dart';
+import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
-import 'package:travelmate/shared/widgets/search_bar.dart';
-import 'package:travelmate/shared/widgets/search_mode_switch_button.dart';
+import 'package:travelmate/shared/utils/mate_search.dart';
+import 'package:travelmate/shared/utils/trip_search.dart';
 
 /// Search tab that routes user queries to trip or mate results.
 class SearchScreen extends StatefulWidget {
@@ -18,10 +22,14 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  static const int _maxMatesShown = 5;
+  static const int _maxTripsShown = 5;
+  static final List<MateProfile> _mates = MateCatalog.mates;
+  static final List<TripTileData> _tripTiles = TripCatalog.trips;
+
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
   NavigationController? _controller;
-  int _lastFocusRequest = 0;
 
   @override
   void didChangeDependencies() {
@@ -76,59 +84,36 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    if (_controller!.focusRequest == _lastFocusRequest) {
-      return;
+    if (_controller!.consumeFocusRequest()) {
+      _focusNode.requestFocus();
     }
-
-    _lastFocusRequest = _controller!.focusRequest;
-    _focusNode.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    final sizes = AppSizes.of(context);
-
     return ValueListenableBuilder<SearchResearchMode>(
       valueListenable: SearchResearchModeStore.instance,
       builder: (context, mode, _) {
-        final hintText = mode == SearchResearchMode.trips
-            ? AppStrings.searchTripHint
-            : AppStrings.searchMateHint;
-
-        return SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(sizes.padL),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TravelSearchBar(
-                      controller: _searchController,
-                      hintText: hintText,
-                      onSubmitted: _openSearchResults,
-                      textInputAction: TextInputAction.done,
-                      autofocus: true,
-                      focusNode: _focusNode,
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: sizes.padS,
-                child: Center(
-                  child: SearchModeSwitchButton(
-                    mode: mode,
-                    onTap: SearchResearchModeStore.instance.toggle,
-                    tripsLabel: AppStrings.searchModeTripsLabel,
-                    matesLabel: AppStrings.searchModeMatesLabel,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        return SearchModeView(
+          mode: mode,
+          controller: _searchController,
+          filteredMates: mode == SearchResearchMode.mates
+              ? filterMates(
+                  _mates,
+                  _searchController.text,
+                  limit: _maxMatesShown,
+                )
+              : const <MateProfile>[],
+          filteredTrips: mode == SearchResearchMode.trips
+              ? filterTrips(
+                  _tripTiles,
+                  _searchController.text,
+                  limit: _maxTripsShown,
+                )
+              : const <TripTileData>[],
+          onChanged: (_) => setState(() {}),
+          onSubmitted: _openSearchResults,
+          focusNode: _focusNode,
         );
       },
     );

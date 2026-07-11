@@ -71,11 +71,21 @@ class _NavigationShellState extends State<NavigationShell> {
           final style = _style;
           final sizes = AppSizes.of(context);
           final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-          final barHeight = _calculateBarHeight(
+          final indicatorSize = _calculateIndicatorSize(
             context,
             sizes: sizes,
             style: style,
             items: _items,
+          );
+          // Content-only height: BottomAppBar wraps its child in its own
+          // SafeArea, which reserves the real bottom system inset *outside*
+          // this box automatically. Baking that inset in here too would
+          // double-reserve it and shrink the space actually available to
+          // the row below what it needs.
+          final barHeight = _calculateBarHeight(
+            sizes: sizes,
+            style: style,
+            itemIndicatorSize: indicatorSize,
           );
 
           return Scaffold(
@@ -100,26 +110,29 @@ class _NavigationShellState extends State<NavigationShell> {
                 : BottomAppBar(
                     color: style.backgroundColor,
                     elevation: style.elevation(sizes),
+                    // BottomAppBar defaults to a 12px vertical / 16px
+                    // horizontal padding in Material 3, on top of whatever
+                    // we add ourselves below. Zeroing it out here keeps our
+                    // own computed height (barHeight) accurate.
+                    padding: EdgeInsets.zero,
                     height: barHeight,
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: style.padding(sizes),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: List.generate(_items.length, (index) {
-                            final item = _items[index];
-                            final isSelected = index == currentIndex;
+                    child: Padding(
+                      padding: style.padding(sizes),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: List.generate(_items.length, (index) {
+                          final item = _items[index];
+                          final isSelected = index == currentIndex;
 
-                            return _NavButton(
-                              item: item,
-                              style: style,
-                              sizes: sizes,
-                              isSelected: isSelected,
-                              onTap: () => _controller.index = index,
-                            );
-                          }),
-                        ),
+                          return _NavButton(
+                            item: item,
+                            style: style,
+                            sizes: sizes,
+                            isSelected: isSelected,
+                            indicatorSize: indicatorSize,
+                            onTap: () => _controller.index = index,
+                          );
+                        }),
                       ),
                     ),
                   ),
@@ -130,7 +143,25 @@ class _NavigationShellState extends State<NavigationShell> {
   }
 }
 
-double _calculateBarHeight(
+double _calculateBarHeight({
+  required AppSizes sizes,
+  required NavigationStyle style,
+  required double itemIndicatorSize,
+}) {
+  final itemPadding = style.itemPadding(sizes);
+  final padding = style.padding(sizes);
+  final contentHeight = itemIndicatorSize + itemPadding.vertical;
+
+  return contentHeight + padding.vertical;
+}
+
+/// Diameter of the circular icon+label badge, shared by every nav item so
+/// they all render at a consistent size. It must fit the tallest stacked
+/// icon+label content *and* the widest single-line label (e.g. "Settings"),
+/// otherwise a label wraps to a second line and overflows the bar height
+/// that was computed assuming a single line — which only shows up on
+/// narrower screens where there's less slack between the two measurements.
+double _calculateIndicatorSize(
   BuildContext context, {
   required AppSizes sizes,
   required NavigationStyle style,
@@ -140,30 +171,37 @@ double _calculateBarHeight(
     return 0;
   }
 
-  final padding = style.padding(sizes);
-  final itemPadding = style.itemPadding(sizes);
   final labelStyle = style.labelStyle(sizes, true);
-  final labelHeight = _maxLabelHeight(context, labelStyle, items);
+  final labelHeight = _maxLabelExtent(
+    context,
+    labelStyle,
+    items,
+    (size) => size.height,
+  );
+  final labelWidth = _maxLabelExtent(
+    context,
+    labelStyle,
+    items,
+    (size) => size.width,
+  );
   final iconSize = style.iconSize(sizes);
   final indicatorPadding = style.indicatorPadding(sizes);
-  final indicatorContentHeight =
-      iconSize + style.labelSpacing(sizes) + labelHeight;
-  final indicatorSize = indicatorContentHeight + (indicatorPadding * 2);
-  final contentHeight = indicatorSize + itemPadding.vertical;
-  final safeBottom = MediaQuery.of(context).padding.bottom;
+  final contentHeight = iconSize + style.labelSpacing(sizes) + labelHeight;
+  final contentWidth = math.max(iconSize, labelWidth);
 
-  return contentHeight + padding.vertical + safeBottom;
+  return math.max(contentHeight, contentWidth) + (indicatorPadding * 2);
 }
 
-double _maxLabelHeight(
+double _maxLabelExtent(
   BuildContext context,
   TextStyle style,
   List<NavigationItem> items,
+  double Function(Size size) selectExtent,
 ) {
   final textScaler = MediaQuery.textScalerOf(context);
   final direction = Directionality.of(context);
 
-  double maxHeight = 0;
+  double maxExtent = 0;
   for (final item in items) {
     final painter = TextPainter(
       text: TextSpan(text: item.label, style: style),
@@ -172,10 +210,10 @@ double _maxLabelHeight(
       maxLines: 1,
     )..layout();
 
-    maxHeight = math.max(maxHeight, painter.size.height);
+    maxExtent = math.max(maxExtent, selectExtent(painter.size));
   }
 
-  return maxHeight;
+  return maxExtent;
 }
 
 class _NavButton extends StatelessWidget {
@@ -183,6 +221,7 @@ class _NavButton extends StatelessWidget {
   final NavigationStyle style;
   final AppSizes sizes;
   final bool isSelected;
+  final double indicatorSize;
   final VoidCallback onTap;
 
   const _NavButton({
@@ -190,6 +229,7 @@ class _NavButton extends StatelessWidget {
     required this.style,
     required this.sizes,
     required this.isSelected,
+    required this.indicatorSize,
     required this.onTap,
   });
 
@@ -198,11 +238,6 @@ class _NavButton extends StatelessWidget {
     final iconColor = style.iconColor(isSelected);
     final labelStyle = style.labelStyle(sizes, isSelected);
     final iconSize = style.iconSize(sizes);
-    final indicatorPadding = style.indicatorPadding(sizes);
-    final labelHeight = _labelHeight(context, labelStyle, item.label);
-    final indicatorContentHeight =
-        iconSize + style.labelSpacing(sizes) + labelHeight;
-    final indicatorSize = indicatorContentHeight + (indicatorPadding * 2);
 
     final Widget iconWidget;
     if (item.svgAsset != null) {
@@ -243,6 +278,9 @@ class _NavButton extends StatelessWidget {
                     item.label,
                     style: labelStyle,
                     textAlign: TextAlign.center,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -252,18 +290,4 @@ class _NavButton extends StatelessWidget {
       ),
     );
   }
-}
-
-double _labelHeight(BuildContext context, TextStyle style, String label) {
-  final textScaler = MediaQuery.textScalerOf(context);
-  final direction = Directionality.of(context);
-
-  final painter = TextPainter(
-    text: TextSpan(text: label, style: style),
-    textDirection: direction,
-    textScaler: textScaler,
-    maxLines: 1,
-  )..layout();
-
-  return painter.size.height;
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/shared/data/trip_tag_catalog.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 
@@ -60,6 +61,7 @@ class MateTagGroup extends StatelessWidget {
   final EdgeInsetsGeometry? tagPadding;
   final double? tagMinHeight;
   final int paletteOffset;
+  final bool matchTripTagCatalog;
 
   const MateTagGroup({
     super.key,
@@ -72,6 +74,7 @@ class MateTagGroup extends StatelessWidget {
     this.tagPadding,
     this.tagMinHeight,
     this.paletteOffset = 0,
+    this.matchTripTagCatalog = false,
   });
 
   @override
@@ -96,6 +99,24 @@ class MateTagGroup extends StatelessWidget {
           (entry) {
             final index = entry.key;
             final tag = entry.value;
+
+            // When this group mirrors real trip tags (e.g. a mate's
+            // preferred trips), reuse the actual trip tag's colors instead
+            // of the arbitrary cycling palette below, so the chip matches
+            // how that same tag looks on a real trip.
+            if (matchTripTagCatalog) {
+              final catalogTag = TripTagCatalog.resolve(tag);
+              if (catalogTag != null) {
+                return TripTag(
+                  label: catalogTag.label,
+                  backgroundColor: tagBackgroundColor ??
+                      catalogTag.backgroundColor,
+                  textColor: tagTextColor ?? catalogTag.textColor,
+                  borderColor: tagBorderColor ?? catalogTag.borderColor,
+                );
+              }
+            }
+
             final paletteIndex =
                 (index + paletteOffset) % _defaultPalette.length;
             final palette = _defaultPalette[paletteIndex];

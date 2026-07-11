@@ -11,9 +11,12 @@ class MateCatalog {
         'low-budget',
         'group trips',
       ],
+      // Matches real trip tags from TripTagCatalog (see trip_tag_catalog.dart)
+      // so this mate's preferred-trip chips share styling with actual trips.
       preferredTrips: [
-        'nature',
-        'islands',
+        'island-vibe',
+        'flexible-dates',
+        'weekend',
       ],
       keywords: [
         'beach',
@@ -31,8 +34,11 @@ class MateCatalog {
         'high budget',
         'adventure',
       ],
+      // Matches real trip tags from TripTagCatalog (see trip_tag_catalog.dart)
+      // so this mate's preferred-trip chips share styling with actual trips.
       preferredTrips: [
-        'mountains',
+        'road-trip',
+        'scenic',
         'nature',
       ],
       keywords: [
@@ -51,9 +57,12 @@ class MateCatalog {
         'high budget',
         'culture',
       ],
+      // Matches real trip tags from TripTagCatalog (see trip_tag_catalog.dart)
+      // so this mate's preferred-trip chips share styling with actual trips.
       preferredTrips: [
-        'urban',
-        'city breaks',
+        'city-break',
+        'museum-pass',
+        'foodie',
       ],
       keywords: [
         'city',
