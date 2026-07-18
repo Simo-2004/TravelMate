@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
-import 'package:travelmate/shared/models/personal_tag.dart';
+import 'package:travelmate/shared/models/trip_tag.dart';
+import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 
@@ -47,41 +48,9 @@ class EditablePersonalTagGroup extends StatelessWidget {
           ).copyWith(color: AppColors.black, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: sizes.padS),
-        TextField(
+        AppTextField(
           controller: inputController,
-          decoration: InputDecoration(
-            labelText: fieldLabel,
-            labelStyle: AppTextStyles.bodyMd(
-              sizes,
-            ).copyWith(color: AppColors.blackAlpha60),
-            filled: true,
-            fillColor: const Color(0xFFFFFCED),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: sizes.padM,
-              vertical: sizes.padS,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(sizes.radiusM),
-              borderSide: BorderSide(
-                color: AppColors.blackAlpha60,
-                width: sizes.padXs * 0.2,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(sizes.radiusM),
-              borderSide: BorderSide(
-                color: AppColors.blackAlpha60,
-                width: sizes.padXs * 0.2,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(sizes.radiusM),
-              borderSide: BorderSide(
-                color: AppColors.yellow,
-                width: sizes.padXs * 0.3,
-              ),
-            ),
-          ),
+          label: fieldLabel,
           onSubmitted: (_) => onAddPressed(),
         ),
         SizedBox(height: sizes.padS),
@@ -120,7 +89,7 @@ class EditablePersonalTagGroup extends StatelessWidget {
 }
 
 class _EditablePersonalTagChip extends StatelessWidget {
-  final PersonalTag tag;
+  final TripTag tag;
   final VoidCallback onRemove;
 
   const _EditablePersonalTagChip({required this.tag, required this.onRemove});

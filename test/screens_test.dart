@@ -9,14 +9,17 @@ import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
 import 'package:travelmate/features/search/mate_details_screen.dart';
 import 'package:travelmate/features/search/search_results_screen.dart';
 import 'package:travelmate/features/search/search_screen.dart';
+import 'package:travelmate/features/profile/personal_profile_screen.dart';
 import 'package:travelmate/features/settings/privacy_settings_screen.dart';
 import 'package:travelmate/features/settings/settings_screen.dart';
-//import 'package:travelmate/features/settings/support_screen.dart';
+import 'package:travelmate/features/settings/support_screen.dart';
 import 'package:travelmate/main.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
 import 'package:travelmate/shared/data/trip_catalog.dart';
+import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/search_research_mode.dart';
+import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
 import 'package:travelmate/shared/widgets/mate_card.dart';
@@ -58,6 +61,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     SavedTripPreviewStore.instance.value = const [];
     SearchResearchModeStore.instance.value = SearchResearchMode.trips;
+    PersonalProfileStore.instance.value = PersonalProfile.defaultProfile;
 
     // Render at a phone-sized surface (the default 800x600 test window is a
     // landscape tablet, which the mobile-first layouts are not designed for).
@@ -256,7 +260,7 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
   });
 
-  /*testWidgets('SupportScreen expands FAQ and contacts support', (tester) async {
+  testWidgets('SupportScreen expands FAQ and contacts support', (tester) async {
     await tester.pumpWidget(wrapApp(const SupportScreen()));
     await tester.pump();
     expect(find.text('FAQ'), findsOneWidget);
@@ -272,7 +276,7 @@ void main() {
     await tester.tap(find.text('FAQ'));
     await tester.pumpAndSettle();
     expect(find.textContaining('edit my personal profile'), findsOneWidget);
-  });*/
+  });
 
   testWidgets('SettingsScreen renders profile and action buttons', (
     tester,
@@ -288,6 +292,85 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('log out done'), findsOneWidget);
+  });
+
+  testWidgets(
+    'PersonalProfileScreen edits fields, tags and photo, then saves',
+    (tester) async {
+      // Start from a profile with no tags yet, so the tag added below is
+      // the only one on screen and its remove icon is unambiguous.
+      PersonalProfileStore.instance.value = PersonalProfile.defaultProfile
+          .copyWith(interestTags: const [], tripTags: const []);
+
+      await tester.pumpWidget(wrapApp(const PersonalProfileScreen()));
+      await tester.pump();
+      expect(find.text('Edit profile'), findsOneWidget);
+      expect(find.text(PersonalProfile.defaultProfile.fullName), findsOneWidget);
+
+      await tester.tap(find.text('Edit profile'));
+      await tester.pump();
+      expect(find.text('Edit your profile'), findsOneWidget);
+
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Zara');
+
+      // Pick a different avatar from the photo picker.
+      await tester.tap(
+        find
+            .descendant(of: find.byType(Wrap), matching: find.byType(InkWell))
+            .last,
+      );
+      await tester.pump();
+
+      // Add then remove an interest tag. The list grows past the viewport in
+      // edit mode, so each further target needs to be scrolled into view.
+      await tester.ensureVisible(
+        find.widgetWithText(TextField, 'Type and add an interest tag'),
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Type and add an interest tag'),
+        'Sunsets',
+      );
+      await tester.ensureVisible(find.text('Add personal tag').first);
+      await tester.tap(find.text('Add personal tag').first);
+      await tester.pump();
+      // Shows both in the live read-only preview at the top of the screen
+      // and in the editable list below it.
+      expect(find.text('Sunsets'), findsWidgets);
+
+      await tester.ensureVisible(find.byIcon(Icons.close_rounded).first);
+      await tester.tap(find.byIcon(Icons.close_rounded).first);
+      await tester.pump();
+      expect(find.text('Sunsets'), findsNothing);
+
+      await tester.ensureVisible(find.text('Save profile changes'));
+      await tester.tap(find.text('Save profile changes'));
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(PersonalProfileStore.instance.value.firstName, 'Zara');
+      expect(find.text('Edit profile'), findsOneWidget);
+    },
+  );
+
+  testWidgets('PersonalProfileScreen cancel discards draft changes', (
+    tester,
+  ) async {
+    await tester.pumpWidget(wrapApp(const PersonalProfileScreen()));
+    await tester.pump();
+
+    await tester.tap(find.text('Edit profile'));
+    await tester.pump();
+    await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Temp');
+
+    await tester.ensureVisible(find.text('Cancel'));
+    await tester.tap(find.text('Cancel'));
+    await tester.pump();
+
+    expect(find.text('Edit profile'), findsOneWidget);
+    expect(
+      PersonalProfileStore.instance.value.firstName,
+      PersonalProfile.defaultProfile.firstName,
+    );
   });
 
   testWidgets('App boots and navigates across bottom tabs', (tester) async {

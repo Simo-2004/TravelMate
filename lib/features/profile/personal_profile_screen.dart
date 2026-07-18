@@ -6,6 +6,7 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
+import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
 import 'package:travelmate/shared/widgets/personal_tag_group.dart';
@@ -300,17 +301,17 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                           ).copyWith(fontSize: sizes.textMd),
                         ),
                         SizedBox(height: sizes.padS),
-                        _ProfileField(
+                        AppTextField(
                           label: 'Name',
                           controller: _firstNameController,
                         ),
                         SizedBox(height: sizes.padS),
-                        _ProfileField(
+                        AppTextField(
                           label: 'Surname',
                           controller: _lastNameController,
                         ),
                         SizedBox(height: sizes.padS),
-                        _ProfileField(
+                        AppTextField(
                           label: 'Description',
                           controller: _descriptionController,
                           maxLines: 4,
@@ -381,64 +382,6 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileField extends StatelessWidget {
-  final String label;
-  final TextEditingController controller;
-  final int maxLines;
-  final int minLines;
-
-  const _ProfileField({
-    required this.label,
-    required this.controller,
-    this.maxLines = 1,
-    this.minLines = 1,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final sizes = AppSizes.of(context);
-
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      minLines: minLines,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: AppTextStyles.bodyMd(
-          sizes,
-        ).copyWith(color: AppColors.blackAlpha60),
-        filled: true,
-        fillColor: const Color(0xFFFFFCED),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: sizes.padM,
-          vertical: sizes.padS,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(sizes.radiusM),
-          borderSide: BorderSide(
-            color: AppColors.blackAlpha60,
-            width: sizes.padXs * 0.2,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(sizes.radiusM),
-          borderSide: BorderSide(
-            color: AppColors.blackAlpha60,
-            width: sizes.padXs * 0.2,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(sizes.radiusM),
-          borderSide: BorderSide(
-            color: AppColors.yellow,
-            width: sizes.padXs * 0.3,
           ),
         ),
       ),
