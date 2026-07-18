@@ -21,7 +21,7 @@ jobs:
           channel: 'stable'
 
       - name: Install Dependencies
-        run: flutter pub get --enforce-lockfile
+        run: flutter pub get
 
       - name: Run Tests with Coverage
         run: flutter test --coverage
