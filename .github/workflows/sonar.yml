@@ -13,20 +13,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          # Full history is required for accurate SonarCloud "new code" and
+          # blame information.
           fetch-depth: 0
-          
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: 'stable'
+          # Pin the exact version used to generate pubspec.lock. Without a pin
+          # the runner floats to the latest stable, whose bundled Dart SDK can
+          # resolve dependencies differently and make `--enforce-lockfile`
+          # fail. Keep this in sync with your local `flutter --version`.
+          flutter-version: '3.41.6'
+          cache: true
 
       - name: Install Dependencies
-        run: flutter pub get
+        # --enforce-lockfile installs the exact versions pinned in
+        # pubspec.lock, which satisfies the "lock resolved versions" security
+        # hotspot. It requires pubspec.lock to be committed and in sync with
+        # pubspec.yaml (run `flutter pub get` locally and commit the lock).
+        run: flutter pub get --enforce-lockfile
 
       - name: Run Tests with Coverage
         run: flutter test --coverage
         continue-on-error: true
-        
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@0303d6b62e310685c0e34d0b9cde218036885c4d
         env:
