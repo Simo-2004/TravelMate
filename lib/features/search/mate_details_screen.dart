@@ -5,6 +5,7 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/chat/chat_screen.dart';
+import 'package:travelmate/shared/data/mate_tag_palette.dart';
 import 'package:travelmate/shared/data/trip_tag_catalog.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
@@ -16,33 +17,6 @@ import 'package:travelmate/shared/widgets/mate_tag_group.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
 
 class MateDetailsScreen extends StatelessWidget {
-  static const List<Color> _tagBackgroundPalette = [
-    Color(0xFFFFF700),
-    Color(0xFF00E5FF),
-    Color(0xFF7CFF4D),
-    Color(0xFFFF9100),
-    Color(0xFFFF4FD8),
-    Color(0xFFB24CFF),
-  ];
-
-  static const List<Color> _tagTextPalette = [
-    Color(0xFF3A3200),
-    Color(0xFF00343A),
-    Color(0xFF1F3A00),
-    Color(0xFF4A2600),
-    Color(0xFF3A0032),
-    Color(0xFF2F005C),
-  ];
-
-  static const List<Color> _tagBorderPalette = [
-    Color(0xFFFFF199),
-    Color(0xFF99F8FF),
-    Color(0xFFC8FFB5),
-    Color(0xFFFFD299),
-    Color(0xFFFFC2EF),
-    Color(0xFFE0B6FF),
-  ];
-
   final MateProfile mate;
 
   const MateDetailsScreen({super.key, required this.mate});
@@ -66,13 +40,13 @@ class MateDetailsScreen extends StatelessWidget {
             return catalogTag;
           }
 
-          final paletteIndex = entry.key % _tagBackgroundPalette.length;
+          final palette = MateTagPalette.resolve(entry.key);
 
           return TripTag(
             label: entry.value,
-            backgroundColor: _tagBackgroundPalette[paletteIndex],
-            textColor: _tagTextPalette[paletteIndex],
-            borderColor: _tagBorderPalette[paletteIndex],
+            backgroundColor: palette.backgroundColor,
+            textColor: palette.textColor,
+            borderColor: palette.borderColor,
           );
         })
         .toList(growable: false);

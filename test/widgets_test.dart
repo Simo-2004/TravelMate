@@ -19,7 +19,6 @@ import 'package:travelmate/shared/widgets/mate_details_panel.dart';
 import 'package:travelmate/shared/widgets/mate_tag_group.dart';
 import 'package:travelmate/shared/widgets/mates_vertical_section.dart';
 import 'package:travelmate/shared/widgets/personal_profile_card.dart';
-import 'package:travelmate/shared/widgets/personal_tag_chip.dart';
 import 'package:travelmate/shared/widgets/personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
 import 'package:travelmate/shared/widgets/search_bar.dart';
@@ -465,27 +464,27 @@ void main() {
     expect(find.text('X'), findsNothing);
   });
 
-  testWidgets('PersonalTagChip truncates and handles zero max chars', (
+  testWidgets('TravelTag truncates edge cases (zero max, exact fit)', (
     tester,
   ) async {
     await tester.pumpWidget(
       wrapScaffold(
         const Column(
           children: [
-            PersonalTagChip(
+            TravelTag(
               label: 'super-long-personal-tag',
               backgroundColor: Color(0xFF112233),
               textColor: Color(0xFF445566),
               borderColor: Color(0xFF778899),
               maxCharacters: 6,
             ),
-            PersonalTagChip(
+            TravelTag(
               label: 'hidden',
               backgroundColor: Color(0xFF112233),
               textColor: Color(0xFF445566),
               maxCharacters: 0,
             ),
-            PersonalTagChip(
+            TravelTag(
               label: 'abcdef',
               backgroundColor: Color(0xFF112233),
               textColor: Color(0xFF445566),

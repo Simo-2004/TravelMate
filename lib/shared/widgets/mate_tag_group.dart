@@ -2,56 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/shared/data/mate_tag_palette.dart';
 import 'package:travelmate/shared/data/trip_tag_catalog.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 
-class _MateTagPaletteEntry {
-  final Color backgroundColor;
-  final Color textColor;
-  final Color borderColor;
-
-  const _MateTagPaletteEntry({
-    required this.backgroundColor,
-    required this.textColor,
-    required this.borderColor,
-  });
-}
-
 class MateTagGroup extends StatelessWidget {
-  static const List<_MateTagPaletteEntry> _defaultPalette = [
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFFFFF700),
-      textColor: Color(0xFF3A3200),
-      borderColor: Color(0xFFFFF199),
-    ),
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFF00E5FF),
-      textColor: Color(0xFF00343A),
-      borderColor: Color(0xFF99F8FF),
-    ),
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFF7CFF4D),
-      textColor: Color(0xFF1F3A00),
-      borderColor: Color(0xFFC8FFB5),
-    ),
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFFFF9100),
-      textColor: Color(0xFF4A2600),
-      borderColor: Color(0xFFFFD299),
-    ),
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFFFF4FD8),
-      textColor: Color(0xFF3A0032),
-      borderColor: Color(0xFFFFC2EF),
-    ),
-    _MateTagPaletteEntry(
-      backgroundColor: Color(0xFFB24CFF),
-      textColor: Color(0xFF2F005C),
-      borderColor: Color(0xFFE0B6FF),
-    ),
-  ];
-
   final String title;
   final List<String> tags;
   final EdgeInsetsGeometry? padding;
@@ -117,16 +73,14 @@ class MateTagGroup extends StatelessWidget {
               }
             }
 
-            final paletteIndex =
-                (index + paletteOffset) % _defaultPalette.length;
-            final palette = _defaultPalette[paletteIndex];
+            final palette = MateTagPalette.resolve(index + paletteOffset);
 
             return TripTag(
-            label: tag,
-            backgroundColor: tagBackgroundColor ?? palette.backgroundColor,
-            textColor: tagTextColor ?? palette.textColor,
-            borderColor: tagBorderColor ?? palette.borderColor,
-          );
+              label: tag,
+              backgroundColor: tagBackgroundColor ?? palette.backgroundColor,
+              textColor: tagTextColor ?? palette.textColor,
+              borderColor: tagBorderColor ?? palette.borderColor,
+            );
           },
         )
         .toList(growable: false);

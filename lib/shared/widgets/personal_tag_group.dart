@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
-import 'package:travelmate/shared/models/personal_tag.dart';
-import 'package:travelmate/shared/widgets/personal_tag_section.dart';
+import 'package:travelmate/shared/models/trip_tag.dart';
+import 'package:travelmate/shared/widgets/tag_section.dart';
 
 class PersonalTagPalette {
   static const List<Color> strokeColors = [
@@ -16,10 +16,10 @@ class PersonalTagPalette {
     Color(0xFF8C3CE0),
   ];
 
-  static PersonalTag tagFromLabel(String label, int index) {
+  static TripTag tagFromLabel(String label, int index) {
     final paletteIndex = index % strokeColors.length;
 
-    return PersonalTag(
+    return TripTag(
       label: label,
       backgroundColor: Colors.transparent,
       textColor: AppColors.black,
@@ -27,7 +27,7 @@ class PersonalTagPalette {
     );
   }
 
-  static List<PersonalTag> buildFromLabels(
+  static List<TripTag> buildFromLabels(
     List<String> labels, {
     int offset = 0,
   }) {
@@ -84,7 +84,7 @@ class PersonalTagGroup extends StatelessWidget {
             entry.key + paletteOffset,
           );
 
-          return PersonalTag(
+          return TripTag(
             label: baseTag.label,
             backgroundColor: Colors.transparent,
             textColor: AppColors.black,
@@ -104,7 +104,7 @@ class PersonalTagGroup extends StatelessWidget {
               fontSize: (sizes.textMd * 1.02).clamp(16.0, 26.0).toDouble(),
             ),
           ),
-          PersonalTagSection(
+          TagSection(
             tags: personalTags,
             padding: EdgeInsets.only(top: sizes.padS),
             spacing: sizes.padM,
