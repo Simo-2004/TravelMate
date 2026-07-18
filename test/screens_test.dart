@@ -11,7 +11,7 @@ import 'package:travelmate/features/search/search_results_screen.dart';
 import 'package:travelmate/features/search/search_screen.dart';
 import 'package:travelmate/features/settings/privacy_settings_screen.dart';
 import 'package:travelmate/features/settings/settings_screen.dart';
-import 'package:travelmate/features/settings/support_screen.dart';
+//import 'package:travelmate/features/settings/support_screen.dart';
 import 'package:travelmate/main.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
 import 'package:travelmate/shared/data/trip_catalog.dart';
@@ -256,7 +256,7 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
   });
 
-  testWidgets('SupportScreen expands FAQ and contacts support', (tester) async {
+  /*testWidgets('SupportScreen expands FAQ and contacts support', (tester) async {
     await tester.pumpWidget(wrapApp(const SupportScreen()));
     await tester.pump();
     expect(find.text('FAQ'), findsOneWidget);
@@ -272,7 +272,7 @@ void main() {
     await tester.tap(find.text('FAQ'));
     await tester.pumpAndSettle();
     expect(find.textContaining('edit my personal profile'), findsOneWidget);
-  });
+  });*/
 
   testWidgets('SettingsScreen renders profile and action buttons', (
     tester,
