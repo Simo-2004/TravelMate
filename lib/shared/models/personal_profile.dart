@@ -60,7 +60,7 @@ class PersonalProfile {
   }
 
   factory PersonalProfile.fromJson(Map<String, dynamic> json) {
-    final fallback = defaultProfile;
+    const fallback = defaultProfile;
     return PersonalProfile(
       firstName: _asString(json['firstName'], fallback.firstName),
       lastName: _asString(json['lastName'], fallback.lastName),

@@ -75,7 +75,7 @@ class PrivacySettings {
   }
 
   factory PrivacySettings.fromJson(Map<String, dynamic> json) {
-    final fallback = defaults;
+    const fallback = defaults;
     return PrivacySettings(
       privateProfile: _asBool(json['privateProfile'], fallback.privateProfile),
       onlyPeopleInRadius: _asBool(

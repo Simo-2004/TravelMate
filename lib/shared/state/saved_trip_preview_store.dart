@@ -67,50 +67,57 @@ class SavedTripPreviewStore extends ValueNotifier<List<SavedTripPreview>> {
       return false;
     }
 
-    final normalizedPreviewSourceId = preview.sourceId.trim().toLowerCase();
-    final normalizedItemSourceId = item.sourceId.trim().toLowerCase();
+    final previewSourceId = preview.sourceId.trim().toLowerCase();
+    final itemSourceId = item.sourceId.trim().toLowerCase();
 
-    if (normalizedPreviewSourceId.isNotEmpty) {
-      if (normalizedItemSourceId.isNotEmpty) {
-        if (normalizedItemSourceId == normalizedPreviewSourceId) {
-          return true;
-        }
-
-        // Migration support: older trip records used labels as sourceId.
-        if (preview.bookmarkType == SavedBookmarkType.trip &&
-            (!_isCanonicalTripId(normalizedPreviewSourceId) ||
-                !_isCanonicalTripId(normalizedItemSourceId))) {
-          return _normalized(item.destinationTitle) ==
-              _normalized(preview.destinationTitle);
-        }
-
-        return false;
-      }
-
+    if (previewSourceId.isEmpty) {
       // Legacy fallback for old records saved before sourceId existed.
-      if (preview.bookmarkType == SavedBookmarkType.trip) {
-        return _normalized(item.destinationTitle) ==
-            _normalized(preview.destinationTitle);
-      }
-
-      return _normalized(item.tripName) == _normalized(preview.tripName);
+      return itemSourceId.isEmpty
+          ? _matchesLegacyKey(item, preview)
+          : _matchesDestinationOnly(item, preview);
     }
 
-    if (normalizedItemSourceId.isNotEmpty) {
-      if (preview.bookmarkType == SavedBookmarkType.trip) {
-        return _normalized(item.destinationTitle) ==
-            _normalized(preview.destinationTitle);
-      }
-
-      return false;
+    if (itemSourceId.isEmpty) {
+      return _matchesLegacyKey(item, preview);
     }
 
+    if (itemSourceId == previewSourceId) {
+      return true;
+    }
+
+    return _matchesMigratedTripTitle(item, preview, previewSourceId, itemSourceId);
+  }
+
+  // Migration support: older trip records used labels as sourceId.
+  bool _matchesMigratedTripTitle(
+    SavedTripPreview item,
+    SavedTripPreview preview,
+    String previewSourceId,
+    String itemSourceId,
+  ) {
+    final isMigratedTripRecord =
+        preview.bookmarkType == SavedBookmarkType.trip &&
+        (!_isCanonicalTripId(previewSourceId) ||
+            !_isCanonicalTripId(itemSourceId));
+
+    return isMigratedTripRecord &&
+        _normalized(item.destinationTitle) ==
+            _normalized(preview.destinationTitle);
+  }
+
+  bool _matchesLegacyKey(SavedTripPreview item, SavedTripPreview preview) {
     if (preview.bookmarkType == SavedBookmarkType.trip) {
       return _normalized(item.destinationTitle) ==
           _normalized(preview.destinationTitle);
     }
 
     return _normalized(item.tripName) == _normalized(preview.tripName);
+  }
+
+  bool _matchesDestinationOnly(SavedTripPreview item, SavedTripPreview preview) {
+    return preview.bookmarkType == SavedBookmarkType.trip &&
+        _normalized(item.destinationTitle) ==
+            _normalized(preview.destinationTitle);
   }
 
   bool _isCanonicalTripId(String sourceId) {

@@ -37,9 +37,9 @@ class SavedTripPreview {
           .map(
             (tag) => {
               'label': tag.label,
-              'backgroundColor': tag.backgroundColor.value,
-              'textColor': tag.textColor.value,
-              'borderColor': tag.borderColor?.value,
+              'backgroundColor': tag.backgroundColor.toARGB32(),
+              'textColor': tag.textColor.toARGB32(),
+              'borderColor': tag.borderColor?.toARGB32(),
             },
           )
           .toList(growable: false),
@@ -49,13 +49,10 @@ class SavedTripPreview {
   factory SavedTripPreview.fromJson(Map<String, dynamic> json) {
     final destinationTitle = _asString(json['destinationTitle']);
     final rawBookmarkType = _asString(json['bookmarkType']).toLowerCase();
-    final resolvedBookmarkType =
-        rawBookmarkType == SavedBookmarkType.mate ||
-            rawBookmarkType == SavedBookmarkType.trip
-        ? rawBookmarkType
-        : destinationTitle.toLowerCase().startsWith('profile:')
-        ? SavedBookmarkType.mate
-        : SavedBookmarkType.trip;
+    final resolvedBookmarkType = _resolveBookmarkType(
+      rawBookmarkType,
+      destinationTitle,
+    );
 
     final rawTags = json['tags'];
     final parsedTags = rawTags is List
@@ -89,6 +86,22 @@ class SavedTripPreview {
       bookmarkType: resolvedBookmarkType,
       sourceId: _asString(json['sourceId']),
     );
+  }
+
+  static String _resolveBookmarkType(
+    String rawBookmarkType,
+    String destinationTitle,
+  ) {
+    if (rawBookmarkType == SavedBookmarkType.mate ||
+        rawBookmarkType == SavedBookmarkType.trip) {
+      return rawBookmarkType;
+    }
+
+    if (destinationTitle.toLowerCase().startsWith('profile:')) {
+      return SavedBookmarkType.mate;
+    }
+
+    return SavedBookmarkType.trip;
   }
 
   static String _asString(Object? value) {

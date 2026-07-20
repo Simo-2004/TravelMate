@@ -181,7 +181,7 @@ class _PrivacyBooleanButtonTile extends StatelessWidget {
           SizedBox(width: sizes.padS),
           Switch.adaptive(
             value: value,
-            activeColor: AppColors.yellow,
+            activeThumbColor: AppColors.yellow,
             onChanged: onChanged,
           ),
         ],
