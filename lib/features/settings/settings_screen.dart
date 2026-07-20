@@ -81,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
                                 color: const Color(0xFF2F80ED),
                                 iconAsset: 'assets/icons/lock.svg',
                                 textColor: AppColors.black,
-                                iconColor: Color(0xFF2F80ED),
+                                iconColor: const Color(0xFF2F80ED),
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -97,7 +97,7 @@ class SettingsScreen extends StatelessWidget {
                                 color: const Color(0xFF2FA84F),
                                 iconAsset: 'assets/icons/handphones.svg',
                                 textColor: AppColors.black,
-                                iconColor: Color(0xFF2FA84F),
+                                iconColor: const Color(0xFF2FA84F),
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(

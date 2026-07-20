@@ -43,8 +43,8 @@ class NavigationScope extends InheritedNotifier<NavigationController> {
     super.key,
     required NavigationController controller,
     required this.items,
-    required Widget child,
-  }) : super(notifier: controller, child: child);
+    required super.child,
+  }) : super(notifier: controller);
 
   static NavigationScope? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<NavigationScope>();

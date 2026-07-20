@@ -10,76 +10,104 @@ List<MateProfile> filterMates(
 }) {
   final normalizedQuery = query.trim().toLowerCase();
 
-  final List<MateProfile> ranked;
-  if (normalizedQuery.isEmpty) {
-    ranked = mates;
-  } else {
-    final terms = normalizedQuery
-        .split(RegExp(r'\s+'))
-        .where((term) => term.isNotEmpty)
-        .toList(growable: false);
+  final ranked = normalizedQuery.isEmpty
+      ? mates
+      : _rankMatesByQuery(mates, normalizedQuery);
 
-    final scoredMates = <({MateProfile mate, int score})>[];
+  return _applyLimit(ranked, limit);
+}
 
-    for (final mate in mates) {
-      final name = mate.name.toLowerCase();
-      final description = mate.description.toLowerCase();
-      final keywords = mate.keywords
-          .map((keyword) => keyword.toLowerCase())
-          .toList(growable: false);
+List<MateProfile> _rankMatesByQuery(
+  List<MateProfile> mates,
+  String normalizedQuery,
+) {
+  final terms = normalizedQuery
+      .split(RegExp(r'\s+'))
+      .where((term) => term.isNotEmpty)
+      .toList(growable: false);
 
-      var score = 0;
-      var matchesAllTerms = true;
+  final scoredMates = <({MateProfile mate, int score})>[];
 
-      for (final term in terms) {
-        var termMatched = false;
-
-        if (name.startsWith(term)) {
-          score += 8;
-          termMatched = true;
-        } else if (name.contains(term)) {
-          score += 5;
-          termMatched = true;
-        }
-
-        if (description.contains(term)) {
-          score += 3;
-          termMatched = true;
-        }
-
-        final matchingKeyword = keywords.firstWhere(
-          (keyword) => keyword.startsWith(term) || keyword.contains(term),
-          orElse: () => '',
-        );
-
-        if (matchingKeyword.isNotEmpty) {
-          score += matchingKeyword.startsWith(term) ? 6 : 4;
-          termMatched = true;
-        }
-
-        if (!termMatched) {
-          matchesAllTerms = false;
-          break;
-        }
-      }
-
-      if (matchesAllTerms) {
-        scoredMates.add((mate: mate, score: score));
-      }
+  for (final mate in mates) {
+    final score = _scoreMate(mate, terms);
+    if (score != null) {
+      scoredMates.add((mate: mate, score: score));
     }
-
-    scoredMates.sort((a, b) {
-      final byScore = b.score.compareTo(a.score);
-      if (byScore != 0) {
-        return byScore;
-      }
-
-      return a.mate.name.compareTo(b.mate.name);
-    });
-
-    ranked = scoredMates.map((entry) => entry.mate).toList(growable: false);
   }
 
+  scoredMates.sort((a, b) {
+    final byScore = b.score.compareTo(a.score);
+    return byScore != 0 ? byScore : a.mate.name.compareTo(b.mate.name);
+  });
+
+  return scoredMates.map((entry) => entry.mate).toList(growable: false);
+}
+
+/// Returns the total score for [mate] across all [terms], or null if any
+/// term fails to match (a mate must match every term to be included).
+int? _scoreMate(MateProfile mate, List<String> terms) {
+  final name = mate.name.toLowerCase();
+  final description = mate.description.toLowerCase();
+  final keywords = mate.keywords
+      .map((keyword) => keyword.toLowerCase())
+      .toList(growable: false);
+
+  var score = 0;
+
+  for (final term in terms) {
+    final termScore = _scoreTerm(
+      term,
+      name: name,
+      description: description,
+      keywords: keywords,
+    );
+
+    if (termScore == null) {
+      return null;
+    }
+
+    score += termScore;
+  }
+
+  return score;
+}
+
+int? _scoreTerm(
+  String term, {
+  required String name,
+  required String description,
+  required List<String> keywords,
+}) {
+  var score = 0;
+  var matched = false;
+
+  if (name.startsWith(term)) {
+    score += 8;
+    matched = true;
+  } else if (name.contains(term)) {
+    score += 5;
+    matched = true;
+  }
+
+  if (description.contains(term)) {
+    score += 3;
+    matched = true;
+  }
+
+  final matchingKeyword = keywords.firstWhere(
+    (keyword) => keyword.startsWith(term) || keyword.contains(term),
+    orElse: () => '',
+  );
+
+  if (matchingKeyword.isNotEmpty) {
+    score += matchingKeyword.startsWith(term) ? 6 : 4;
+    matched = true;
+  }
+
+  return matched ? score : null;
+}
+
+List<MateProfile> _applyLimit(List<MateProfile> ranked, int? limit) {
   if (limit != null && ranked.length > limit) {
     return ranked.take(limit).toList(growable: false);
   }

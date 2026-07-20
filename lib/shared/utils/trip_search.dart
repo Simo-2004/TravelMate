@@ -10,84 +10,115 @@ List<TripTileData> filterTrips(
 }) {
   final normalizedQuery = query.trim().toLowerCase();
 
-  final List<TripTileData> ranked;
-  if (normalizedQuery.isEmpty) {
-    ranked = trips;
-  } else {
-    final terms = normalizedQuery
-        .split(RegExp(r'\s+'))
-        .where((term) => term.isNotEmpty)
-        .toList(growable: false);
+  final ranked = normalizedQuery.isEmpty
+      ? trips
+      : _rankTripsByQuery(trips, normalizedQuery);
 
-    final scoredTrips = <({TripTileData trip, int score})>[];
+  return _applyLimit(ranked, limit);
+}
 
-    for (final trip in trips) {
-      final label = trip.label.toLowerCase();
-      final destination = trip.destinationTitle.toLowerCase();
-      final description = trip.description.toLowerCase();
-      final tagLabels = trip.tags
-          .map((tag) => tag.label.toLowerCase())
-          .toList(growable: false);
+List<TripTileData> _rankTripsByQuery(
+  List<TripTileData> trips,
+  String normalizedQuery,
+) {
+  final terms = normalizedQuery
+      .split(RegExp(r'\s+'))
+      .where((term) => term.isNotEmpty)
+      .toList(growable: false);
 
-      var score = 0;
-      var matchesAllTerms = true;
+  final scoredTrips = <({TripTileData trip, int score})>[];
 
-      for (final term in terms) {
-        var termMatched = false;
-
-        if (label.startsWith(term)) {
-          score += 8;
-          termMatched = true;
-        } else if (label.contains(term)) {
-          score += 5;
-          termMatched = true;
-        }
-
-        if (destination.startsWith(term)) {
-          score += 7;
-          termMatched = true;
-        } else if (destination.contains(term)) {
-          score += 4;
-          termMatched = true;
-        }
-
-        if (description.contains(term)) {
-          score += 2;
-          termMatched = true;
-        }
-
-        final matchingTag = tagLabels.firstWhere(
-          (tagLabel) => tagLabel.startsWith(term) || tagLabel.contains(term),
-          orElse: () => '',
-        );
-        if (matchingTag.isNotEmpty) {
-          score += matchingTag.startsWith(term) ? 6 : 3;
-          termMatched = true;
-        }
-
-        if (!termMatched) {
-          matchesAllTerms = false;
-          break;
-        }
-      }
-
-      if (matchesAllTerms) {
-        scoredTrips.add((trip: trip, score: score));
-      }
+  for (final trip in trips) {
+    final score = _scoreTrip(trip, terms);
+    if (score != null) {
+      scoredTrips.add((trip: trip, score: score));
     }
-
-    scoredTrips.sort((a, b) {
-      final byScore = b.score.compareTo(a.score);
-      if (byScore != 0) {
-        return byScore;
-      }
-
-      return a.trip.label.compareTo(b.trip.label);
-    });
-
-    ranked = scoredTrips.map((entry) => entry.trip).toList(growable: false);
   }
 
+  scoredTrips.sort((a, b) {
+    final byScore = b.score.compareTo(a.score);
+    return byScore != 0 ? byScore : a.trip.label.compareTo(b.trip.label);
+  });
+
+  return scoredTrips.map((entry) => entry.trip).toList(growable: false);
+}
+
+/// Returns the total score for [trip] across all [terms], or null if any
+/// term fails to match (a trip must match every term to be included).
+int? _scoreTrip(TripTileData trip, List<String> terms) {
+  final label = trip.label.toLowerCase();
+  final destination = trip.destinationTitle.toLowerCase();
+  final description = trip.description.toLowerCase();
+  final tagLabels = trip.tags
+      .map((tag) => tag.label.toLowerCase())
+      .toList(growable: false);
+
+  var score = 0;
+
+  for (final term in terms) {
+    final termScore = _scoreTripTerm(
+      term,
+      label: label,
+      destination: destination,
+      description: description,
+      tagLabels: tagLabels,
+    );
+
+    if (termScore == null) {
+      return null;
+    }
+
+    score += termScore;
+  }
+
+  return score;
+}
+
+int? _scoreTripTerm(
+  String term, {
+  required String label,
+  required String destination,
+  required String description,
+  required List<String> tagLabels,
+}) {
+  var score = 0;
+  var matched = false;
+
+  if (label.startsWith(term)) {
+    score += 8;
+    matched = true;
+  } else if (label.contains(term)) {
+    score += 5;
+    matched = true;
+  }
+
+  if (destination.startsWith(term)) {
+    score += 7;
+    matched = true;
+  } else if (destination.contains(term)) {
+    score += 4;
+    matched = true;
+  }
+
+  if (description.contains(term)) {
+    score += 2;
+    matched = true;
+  }
+
+  final matchingTag = tagLabels.firstWhere(
+    (tagLabel) => tagLabel.startsWith(term) || tagLabel.contains(term),
+    orElse: () => '',
+  );
+
+  if (matchingTag.isNotEmpty) {
+    score += matchingTag.startsWith(term) ? 6 : 3;
+    matched = true;
+  }
+
+  return matched ? score : null;
+}
+
+List<TripTileData> _applyLimit(List<TripTileData> ranked, int? limit) {
   if (limit != null && ranked.length > limit) {
     return ranked.take(limit).toList(growable: false);
   }
