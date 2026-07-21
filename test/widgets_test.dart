@@ -33,6 +33,8 @@ import 'package:travelmate/shared/widgets/travel_tag.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 import 'package:travelmate/shared/widgets/trips_vertical_section.dart';
 
+import 'package:travelmate/shared/state/trip_store.dart';
+
 import 'helpers/test_harness.dart';
 
 TripTileData _trip(String id, String label) => TripTileData(
@@ -61,6 +63,15 @@ MateProfile _mate(String id, String name) => MateProfile(
 );
 
 void main() {
+  setUp(() {
+    // Seed the trip catalog so widgets that resolve an attached trip (e.g.
+    // ChatMessageBubble) find it, without touching the SQLite plugin.
+    TripStore.instance.debugSetData(
+      trips: [_trip('trip_1', 'City break')],
+      recents: const [],
+    );
+  });
+
   testWidgets('CustomButton renders label and fires onPressed', (tester) async {
     var tapped = false;
     await tester.pumpWidget(

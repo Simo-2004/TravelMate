@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/features/search/search_mode_view.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
-import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/search_research_mode.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/utils/mate_search.dart';
 import 'package:travelmate/shared/utils/trip_search.dart';
 
@@ -23,7 +23,7 @@ class SearchResultsScreen extends StatefulWidget {
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
   static const int _maxMatesShown = 5;
   static const int _maxTripsShown = 5;
-  static final List<TripTileData> _tripTiles = TripCatalog.trips;
+  List<TripTileData> get _tripTiles => TripStore.instance.trips;
   static final List<MateProfile> _mates = MateCatalog.mates;
   late final TextEditingController _searchController;
 

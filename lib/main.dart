@@ -7,11 +7,13 @@ import 'package:travelmate/shared/state/chat_store.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 
 /// Initializes persistent stores and launches the TravelMate application.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.wait([
+    TripStore.instance.initialize(),
     SavedTripPreviewStore.instance.initialize(),
     PersonalProfileStore.instance.initialize(),
     PrivacySettingsStore.instance.initialize(),

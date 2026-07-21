@@ -5,8 +5,7 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/features/navigation/navigation_controller.dart';
 import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
-import 'package:travelmate/shared/data/trip_catalog.dart';
-import 'package:travelmate/shared/models/trip_tile_data.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/widgets/search_bar.dart';
 import 'package:travelmate/shared/widgets/slider_section.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
@@ -15,12 +14,11 @@ import 'package:travelmate/shared/widgets/square_image_button.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static final List<TripTileData> _tripTiles = TripCatalog.trips;
-  static final List<TripTileData> _recentTiles = TripCatalog.recents;
-
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
+    final tripTiles = TripStore.instance.trips;
+    final recentTiles = TripStore.instance.recents;
 
     return SafeArea(
       child: LayoutBuilder(
@@ -61,11 +59,11 @@ class HomeScreen extends StatelessWidget {
                         height: sizes.sliderTileSize,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _tripTiles.length,
+                          itemCount: tripTiles.length,
                           separatorBuilder: (_, _) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
-                            final item = _tripTiles[index];
+                            final item = tripTiles[index];
 
                             return SquareImageButton(
                               imageAsset: item.asset,
@@ -96,11 +94,11 @@ class HomeScreen extends StatelessWidget {
                         height: sizes.sliderTileSize,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _recentTiles.length,
+                          itemCount: recentTiles.length,
                           separatorBuilder: (_, _) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
-                            final item = _recentTiles[index];
+                            final item = recentTiles[index];
 
                             return SquareImageButton(
                               imageAsset: item.asset,

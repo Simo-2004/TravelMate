@@ -5,7 +5,6 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
-import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/privacy_settings.dart';
@@ -14,6 +13,7 @@ import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/chat_store.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/utils/trip_invite.dart';
 import 'package:travelmate/shared/widgets/chat_input_bar.dart';
 import 'package:travelmate/shared/widgets/chat_message_bubble.dart';
@@ -115,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<TripTileData> _resolveSavedTrips(List<SavedTripPreview> bookmarks) {
     return bookmarks
         .where((item) => item.bookmarkType == SavedBookmarkType.trip)
-        .map((item) => TripCatalog.findTripById(item.sourceId))
+        .map((item) => TripStore.instance.findTripById(item.sourceId))
         .whereType<TripTileData>()
         .toList(growable: false);
   }
