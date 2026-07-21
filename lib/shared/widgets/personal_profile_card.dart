@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
+import 'package:travelmate/shared/widgets/profile_photo.dart';
 
 class PersonalProfileCard extends StatelessWidget {
   final PersonalProfile profile;
@@ -144,24 +144,13 @@ class _ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final asset = photoAsset.trim();
-    final isSvg = asset.toLowerCase().endsWith('.svg');
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(size * 0.5),
       child: Container(
         width: size,
         height: size,
         color: AppColors.white,
-        child: asset.isEmpty
-            ? Icon(
-                Icons.person_outline,
-                color: AppColors.blackAlpha60,
-                size: size * 0.46,
-              )
-            : isSvg
-            ? SvgPicture.asset(asset, fit: BoxFit.cover)
-            : Image.asset(asset, fit: BoxFit.cover),
+        child: ProfilePhoto(source: photoAsset, size: size),
       ),
     );
   }

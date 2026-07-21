@@ -4,6 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:travelmate/core/theme/app_theme.dart';
+import 'package:travelmate/shared/data/profile_data_source.dart';
+import 'package:travelmate/shared/models/personal_profile.dart';
+
+/// In-memory [ProfileDataSource] for tests, so exercising the profile store
+/// never reaches the SQLite / secure-storage platform plugins.
+class InMemoryProfileData implements ProfileDataSource {
+  InMemoryProfileData([this._profile = PersonalProfile.defaultProfile]);
+
+  PersonalProfile _profile;
+
+  @override
+  Future<PersonalProfile> read() async => _profile;
+
+  @override
+  Future<void> write(PersonalProfile profile) async => _profile = profile;
+}
 
 /// Asset bundle that returns a tiny valid SVG for any key, so widgets calling
 /// `SvgPicture.asset` render in tests without the real asset bundle.

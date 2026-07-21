@@ -15,6 +15,8 @@ import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
 import 'package:travelmate/shared/models/search_research_mode.dart';
 
+import 'helpers/test_harness.dart';
+
 SavedTripPreview _bookmark({
   String name = 'Trip 1',
   String sourceId = 'trip_1',
@@ -229,14 +231,20 @@ void main() {
   });
 
   group('PersonalProfileStore', () {
+    setUp(() {
+      // Inject an in-memory source so writes never reach SQLite / secure
+      // storage plugins, which are unavailable in the unit-test VM.
+      PersonalProfileStore.instance.debugSetDataSource(InMemoryProfileData());
+    });
+
     test('initialize loads persisted profile', () async {
-      await const PersonalProfileData().write(
-        PersonalProfile.defaultProfile.copyWith(firstName: 'Loaded'),
+      PersonalProfileStore.instance.debugSetDataSource(
+        InMemoryProfileData(
+          PersonalProfile.defaultProfile.copyWith(firstName: 'Loaded'),
+        ),
       );
-      // The singleton may already be initialized by another test; assert
-      // that updates flow through regardless.
-      PersonalProfileStore.instance.updateName(firstName: 'Direct');
-      expect(PersonalProfileStore.instance.value.firstName, 'Direct');
+      await PersonalProfileStore.instance.initialize();
+      expect(PersonalProfileStore.instance.value.firstName, 'Loaded');
     });
 
     test('update helpers change specific fields', () {

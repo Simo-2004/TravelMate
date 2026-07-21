@@ -62,6 +62,9 @@ void main() {
     SavedTripPreviewStore.instance.value = const [];
     SearchResearchModeStore.instance.value = SearchResearchMode.trips;
     PersonalProfileStore.instance.value = PersonalProfile.defaultProfile;
+    // Route profile writes to an in-memory source instead of the SQLite /
+    // secure-storage plugins, which are unavailable in the unit-test VM.
+    PersonalProfileStore.instance.debugSetDataSource(InMemoryProfileData());
 
     // Render at a phone-sized surface (the default 800x600 test window is a
     // landscape tablet, which the mobile-first layouts are not designed for).
