@@ -35,7 +35,7 @@ class AppTransitions {
       alignment: Alignment.center,
       children: [
         ...previousChildren,
-        if (currentChild != null) currentChild,
+        ?currentChild,
       ],
     );
   }

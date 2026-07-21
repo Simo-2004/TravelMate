@@ -73,7 +73,7 @@ class AppStrings {
   static const String homeSubtitle =
       'Filter people based on your next destination.';
   static const String homeCta = 'Start Exploring';
-  static const String homeCtaLog = "The user wants to find travel companions!";
+  static const String homeCtaLog = 'The user wants to find travel companions!';
 
   static const String searchHint = 'Search on TravelMate';
   static const String searchTripHint = 'Search a trip';

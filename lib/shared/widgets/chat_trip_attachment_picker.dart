@@ -49,7 +49,7 @@ class ChatTripAttachmentPicker extends StatelessWidget {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: trips.length,
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (_, _) =>
                       SizedBox(width: sizes.sliderTileSpacing),
                   itemBuilder: (context, index) {
                     final trip = trips[index];

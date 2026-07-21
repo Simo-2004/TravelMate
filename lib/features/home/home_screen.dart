@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _tripTiles.length,
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (_, _) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
                             final item = _tripTiles[index];
@@ -97,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _recentTiles.length,
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (_, _) =>
                               SizedBox(width: sizes.sliderTileSpacing),
                           itemBuilder: (context, index) {
                             final item = _recentTiles[index];

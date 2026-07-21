@@ -31,7 +31,7 @@ class TripsVerticalSection extends StatelessWidget {
     final listView = ListView.separated(
       scrollDirection: Axis.vertical,
       itemCount: trips.length,
-      separatorBuilder: (_, __) => SizedBox(height: resolvedItemSpacing),
+      separatorBuilder: (_, _) => SizedBox(height: resolvedItemSpacing),
       itemBuilder: (context, index) {
         final trip = trips[index];
 

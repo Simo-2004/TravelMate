@@ -126,7 +126,7 @@ class MateDetailsScreen extends StatelessWidget {
                         nameTrailing:
                             ValueListenableBuilder<List<SavedTripPreview>>(
                               valueListenable: SavedTripPreviewStore.instance,
-                              builder: (context, _, __) {
+                              builder: (context, _, _) {
                                 final isSaved = SavedTripPreviewStore.instance
                                     .isSaved(_buildMatePreview());
 
