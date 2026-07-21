@@ -12,6 +12,9 @@ class AppTextField extends StatelessWidget {
   final String label;
   final int maxLines;
   final int minLines;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+  final String? errorText;
   final ValueChanged<String>? onSubmitted;
 
   const AppTextField({
@@ -20,6 +23,9 @@ class AppTextField extends StatelessWidget {
     required this.label,
     this.maxLines = 1,
     this.minLines = 1,
+    this.obscureText = false,
+    this.keyboardType,
+    this.errorText,
     this.onSubmitted,
   });
 
@@ -36,11 +42,14 @@ class AppTextField extends StatelessWidget {
 
     return TextField(
       controller: controller,
-      maxLines: maxLines,
-      minLines: minLines,
+      maxLines: obscureText ? 1 : maxLines,
+      minLines: obscureText ? 1 : minLines,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
       onSubmitted: onSubmitted,
       decoration: InputDecoration(
         labelText: label,
+        errorText: errorText,
         labelStyle: AppTextStyles.bodyMd(
           sizes,
         ).copyWith(color: AppColors.blackAlpha60),

@@ -16,13 +16,16 @@ class DatabaseHelper {
   DatabaseHelper._();
 
   static const String _databaseName = 'travelmate.db';
-  static const int _databaseVersion = 2;
+  static const int _databaseVersion = 3;
 
   /// Single-row table; sensitive columns hold AES-GCM base64 payloads.
   static const String tableProfile = 'personal_profile';
 
   /// Read-only trip catalog rows (public data, stored in plain text).
   static const String tableTrips = 'trips';
+
+  /// Single-row login account: encrypted username + salted password hash.
+  static const String tableAccount = 'account';
 
   static final DatabaseHelper instance = DatabaseHelper._();
 
@@ -71,6 +74,16 @@ class DatabaseHelper {
         tags TEXT NOT NULL,
         destination_title TEXT NOT NULL,
         description TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableAccount (
+        id INTEGER PRIMARY KEY,
+        username TEXT NOT NULL,
+        password_salt TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        password_iterations INTEGER NOT NULL
       )
     ''');
   }

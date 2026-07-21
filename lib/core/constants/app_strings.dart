@@ -2,6 +2,32 @@
 class AppStrings {
   static const String appTitle = 'TravelMate';
 
+  // Login screen.
+  static const String brandName = 'Travel Mate';
+  static const String loginUsernameLabel = 'Username';
+  static const String loginPasswordLabel = 'Password';
+  static const String loginButtonLabel = 'Enter';
+  static const String loginErrorMessage = 'Invalid username or password';
+  static const String loginCreateAccountLink = 'Create a new account';
+
+  // Create account screen.
+  static const String createAccountTitle = 'Create account';
+  static const String createAccountNameLabel = 'Name';
+  static const String createAccountSurnameLabel = 'Surname';
+  static const String createAccountDescriptionLabel = 'Description';
+  static const String createAccountPhotoLabel = 'Profile photo';
+  static const String createAccountUploadPhotoLabel = 'Upload photo';
+  static const String createAccountInterestTagsTitle = 'Interest tags';
+  static const String createAccountInterestTagField = 'Type and add an interest tag';
+  static const String createAccountInterestTagEmpty = 'No interest tags yet.';
+  static const String createAccountTripTagsTitle = 'Trip tags';
+  static const String createAccountTripTagField = 'Type and add a trip tag';
+  static const String createAccountTripTagEmpty = 'No trip tags yet.';
+  static const String createAccountUsernameLabel = 'Username';
+  static const String createAccountPasswordLabel = 'Password';
+  static const String createAccountSubmitLabel = 'Create account';
+  static const String createAccountPhotoError = 'Could not load the selected photo.';
+
   static const String navHomeLabel = 'Home';
   static const String navSearchLabel = 'Search';
   static const String navSavedLabel = 'Saved';

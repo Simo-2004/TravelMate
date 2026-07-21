@@ -6,6 +6,7 @@ import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/features/profile/image/profile_image_picker.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
+import 'package:travelmate/shared/utils/tag_input.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
@@ -124,69 +125,35 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
         : value;
   }
 
-  String _normalizedTagLabel(String raw) {
-    return raw.trim().replaceAll(RegExp(r'\s+'), ' ');
-  }
-
-  List<String> _cleanTagList(List<String> source) {
-    final unique = <String>{};
-    final cleaned = <String>[];
-
-    for (final item in source) {
-      final normalized = _normalizedTagLabel(item);
-      if (normalized.isEmpty) {
-        continue;
-      }
-
-      final key = normalized.toLowerCase();
-      if (unique.add(key)) {
-        cleaned.add(normalized);
-      }
-    }
-
-    return cleaned;
-  }
+  List<String> _cleanTagList(List<String> source) => TagInput.clean(source);
 
   void _addTag({required bool isInterestTag}) {
     final controller = isInterestTag
         ? _interestTagInputController
         : _tripTagInputController;
-    final normalized = _normalizedTagLabel(controller.text);
-    if (normalized.isEmpty) {
-      controller.clear();
-      return;
-    }
-
     final currentTags = isInterestTag ? _interestTags : _tripTags;
-    final alreadyExists = currentTags.any(
-      (tag) => tag.toLowerCase() == normalized.toLowerCase(),
-    );
-    if (alreadyExists) {
-      controller.clear();
+    final updated = TagInput.tryAdd(currentTags, controller.text);
+    controller.clear();
+
+    if (updated == null) {
       return;
     }
 
     setState(() {
-      final updated = <String>[...currentTags, normalized];
       if (isInterestTag) {
         _interestTags = updated;
       } else {
         _tripTags = updated;
       }
-      controller.clear();
     });
   }
 
   void _removeTag(String tag, {required bool isInterestTag}) {
     setState(() {
       if (isInterestTag) {
-        _interestTags = _interestTags
-            .where((item) => item.toLowerCase() != tag.toLowerCase())
-            .toList(growable: false);
+        _interestTags = TagInput.remove(_interestTags, tag);
       } else {
-        _tripTags = _tripTags
-            .where((item) => item.toLowerCase() != tag.toLowerCase())
-            .toList(growable: false);
+        _tripTags = TagInput.remove(_tripTags, tag);
       }
     });
   }
