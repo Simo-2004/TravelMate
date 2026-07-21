@@ -22,6 +22,7 @@ import 'package:travelmate/shared/models/search_research_mode.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/widgets/mate_card.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
@@ -65,6 +66,11 @@ void main() {
     // Route profile writes to an in-memory source instead of the SQLite /
     // secure-storage plugins, which are unavailable in the unit-test VM.
     PersonalProfileStore.instance.debugSetDataSource(InMemoryProfileData());
+    // Seed the trip catalog in memory (no SQLite plugin needed in tests).
+    TripStore.instance.debugSetData(
+      trips: TripCatalog.trips,
+      recents: TripCatalog.recents,
+    );
 
     // Render at a phone-sized surface (the default 800x600 test window is a
     // landscape tablet, which the mobile-first layouts are not designed for).

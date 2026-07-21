@@ -6,23 +6,23 @@ import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/features/schedule/travel_schedule_screen.dart';
 import 'package:travelmate/features/search/mate_details_screen.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
-import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 
 /// Screen listing all saved trip and mate bookmarks.
 class SavedItemsScreen extends StatelessWidget {
-  static final List<TripTileData> _allTripTiles = [
-    ...TripCatalog.trips,
-    ...TripCatalog.recents,
-  ];
-
   const SavedItemsScreen({super.key});
+
+  List<TripTileData> get _allTripTiles => [
+    ...TripStore.instance.trips,
+    ...TripStore.instance.recents,
+  ];
 
   void _openSavedItem(BuildContext context, SavedTripPreview item) {
     if (item.bookmarkType == SavedBookmarkType.mate) {
@@ -59,7 +59,7 @@ class SavedItemsScreen extends StatelessWidget {
         .trim()
         .toLowerCase();
 
-    final tripById = TripCatalog.findTripById(normalizedSourceId);
+    final tripById = TripStore.instance.findTripById(normalizedSourceId);
     if (tripById != null) {
       return tripById;
     }

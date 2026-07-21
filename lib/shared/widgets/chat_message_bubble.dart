@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
-import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/models/trip_tile_data.dart';
+import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
 
 /// Single chat bubble: yellow and right-aligned for the current user's
@@ -33,7 +33,7 @@ class ChatMessageBubble extends StatelessWidget {
     final attachedTripId = message.attachedTripId;
     final attachedTrip = attachedTripId == null
         ? null
-        : TripCatalog.findTripById(attachedTripId);
+        : TripStore.instance.findTripById(attachedTripId);
 
     return Align(
       alignment: isFromMe ? Alignment.centerRight : Alignment.centerLeft,
