@@ -89,7 +89,7 @@ class TravelScheduleScreen extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: ValueListenableBuilder<List<SavedTripPreview>>(
                   valueListenable: SavedTripPreviewStore.instance,
-                  builder: (context, _, __) {
+                  builder: (context, _, _) {
                     final isSaved = SavedTripPreviewStore.instance.isSaved(
                       _buildTripPreview(),
                     );

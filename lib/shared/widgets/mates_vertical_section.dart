@@ -31,7 +31,7 @@ class MatesVerticalSection extends StatelessWidget {
     final listView = ListView.separated(
       scrollDirection: Axis.vertical,
       itemCount: mates.length,
-      separatorBuilder: (_, __) => SizedBox(height: resolvedItemSpacing),
+      separatorBuilder: (_, _) => SizedBox(height: resolvedItemSpacing),
       itemBuilder: (context, index) {
         final mate = mates[index];
 

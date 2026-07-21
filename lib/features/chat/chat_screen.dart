@@ -159,7 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   valueListenable: ChatStore.instance.onlineStatusFor(
                     widget.mate.id,
                   ),
-                  builder: (context, isMateOnline, __) {
+                  builder: (context, isMateOnline, _) {
                     return ChatOnlineStatus(isOnline: isMateOnline);
                   },
                 );
