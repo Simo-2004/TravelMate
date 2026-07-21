@@ -58,7 +58,7 @@ SavedTripPreview _mateBookmark() {
 void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
     SavedTripPreviewStore.instance.value = const [];
     SearchResearchModeStore.instance.value = SearchResearchMode.trips;
@@ -71,6 +71,8 @@ void main() {
       trips: TripCatalog.trips,
       recents: TripCatalog.recents,
     );
+    // Seed the login account in memory so the login gate can authenticate.
+    await seedAuthService();
 
     // Render at a phone-sized surface (the default 800x600 test window is a
     // landscape tablet, which the mobile-first layouts are not designed for).
@@ -300,7 +302,9 @@ void main() {
     await tester.tap(find.text('Exit'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('log out done'), findsOneWidget);
+    // Logout returns to the login screen.
+    expect(find.text('Enter'), findsOneWidget);
+    expect(find.text('Travel Mate'), findsOneWidget);
   });
 
   testWidgets(
@@ -403,6 +407,13 @@ void main() {
     await tester.pumpWidget(
       DefaultAssetBundle(bundle: FakeAssetBundle(), child: const TravelMateApp()),
     );
+    await tester.pump();
+
+    // Login gate is shown first; enter valid credentials to reach the app.
+    expect(find.text('Enter'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, 'alessia');
+    await tester.enterText(find.byType(TextField).last, 'travelmate');
+    await tester.tap(find.text('Enter'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 

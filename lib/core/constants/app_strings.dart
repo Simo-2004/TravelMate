@@ -2,6 +2,13 @@
 class AppStrings {
   static const String appTitle = 'TravelMate';
 
+  // Login screen.
+  static const String brandName = 'Travel Mate';
+  static const String loginUsernameLabel = 'Username';
+  static const String loginPasswordLabel = 'Password';
+  static const String loginButtonLabel = 'Enter';
+  static const String loginErrorMessage = 'Invalid username or password';
+
   static const String navHomeLabel = 'Home';
   static const String navSearchLabel = 'Search';
   static const String navSavedLabel = 'Saved';

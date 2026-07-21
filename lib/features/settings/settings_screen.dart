@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
+import 'package:travelmate/features/auth/login_screen.dart';
 import 'package:travelmate/features/profile/personal_profile_screen.dart';
 import 'package:travelmate/features/settings/privacy_settings_screen.dart';
 import 'package:travelmate/features/settings/support_screen.dart';
@@ -16,9 +17,12 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   void _handleExit(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const _LogoutDoneScreen()));
+    // Log out: return to the login screen and clear the navigation stack so the
+    // back button can't re-enter the authenticated app.
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -125,31 +129,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _LogoutDoneScreen extends StatelessWidget {
-  const _LogoutDoneScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final sizes = AppSizes.of(context);
-
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'log out done',
-            style: TextStyle(
-              fontSize: sizes.textMd,
-              fontWeight: FontWeight.w600,
-              color: AppColors.black,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

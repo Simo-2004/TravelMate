@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
-import 'package:travelmate/features/navigation/navigation_shell.dart';
+import 'package:travelmate/features/auth/login_screen.dart';
+import 'package:travelmate/shared/state/auth_service.dart';
 import 'package:travelmate/shared/state/chat_store.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
@@ -13,6 +14,7 @@ import 'package:travelmate/shared/state/trip_store.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.wait([
+    AuthService.instance.initialize(),
     TripStore.instance.initialize(),
     SavedTripPreviewStore.instance.initialize(),
     PersonalProfileStore.instance.initialize(),
@@ -44,7 +46,7 @@ class TravelMateApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const NavigationShell(),
+      home: const LoginScreen(),
     );
   }
 }
