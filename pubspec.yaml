@@ -31,11 +31,22 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  # AES-GCM field-level encryption for sensitive profile data (pure Dart).
+  encrypt: ^5.0.3
 
   flutter:
     sdk: flutter
+  # OS keystore/keychain used to persist the AES key at rest.
+  flutter_secure_storage: ^9.2.2
   flutter_svg: ^2.0.10
+  # Profile photo selection; the file is copied out, never stored as a BLOB.
+  image_picker: ^1.1.2
+  path: ^1.9.0
+  # Resolves the app's private documents directory for the SQLite file/photos.
+  path_provider: ^2.1.4
   shared_preferences: ^2.3.2
+  # Local SQLite database (personal profile persistence).
+  sqflite: ^2.3.3
 
 dev_dependencies:
   fake_async: ^1.3.1

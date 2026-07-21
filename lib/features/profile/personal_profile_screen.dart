@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/features/profile/image/profile_image_picker.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
 import 'package:travelmate/shared/widgets/personal_tag_group.dart';
+import 'package:travelmate/shared/widgets/profile_photo.dart';
 import 'package:travelmate/shared/widgets/settings_action_button.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
+/// Picks a profile photo and returns its stored file path (or null if
+/// cancelled). Injectable so tests can bypass the `image_picker` plugin.
+typedef ProfilePhotoPicker = Future<String?> Function();
+
 /// Editable personal profile page with identity, photo, and personal tags.
 class PersonalProfileScreen extends StatefulWidget {
-  const PersonalProfileScreen({super.key});
+  const PersonalProfileScreen({super.key, this.photoPicker});
+
+  /// Defaults to the real gallery picker; overridden in tests.
+  final ProfilePhotoPicker? photoPicker;
 
   @override
   State<PersonalProfileScreen> createState() => _PersonalProfileScreenState();
@@ -37,9 +45,24 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
   late final TextEditingController _interestTagInputController;
   late final TextEditingController _tripTagInputController;
   late String _selectedPhotoAsset;
+  late List<String> _photoChoices;
   late List<String> _interestTags;
   late List<String> _tripTags;
   bool _isEditing = false;
+
+  ProfilePhotoPicker get _photoPicker =>
+      widget.photoPicker ?? const ProfileImagePicker().pickAndStore;
+
+  /// Bundled asset options plus any uploaded file path currently selected, so
+  /// a just-picked photo appears as a selectable (highlighted) choice.
+  List<String> _buildPhotoChoices() {
+    final selected = _selectedPhotoAsset;
+    if (selected.isEmpty || _photoOptions.contains(selected)) {
+      return List<String>.from(_photoOptions);
+    }
+
+    return <String>[selected, ..._photoOptions];
+  }
 
   @override
   void initState() {
@@ -181,6 +204,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
     _lastNameController.text = profile.lastName;
     _descriptionController.text = profile.description;
     _selectedPhotoAsset = profile.photoAsset;
+    _photoChoices = _buildPhotoChoices();
     _interestTags = List<String>.from(_cleanTagList(profile.interestTags));
     _tripTags = List<String>.from(_cleanTagList(profile.tripTags));
     _interestTagInputController.clear();
@@ -206,7 +230,28 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
   void _selectPhoto(String asset) {
     setState(() {
       _selectedPhotoAsset = asset;
+      _photoChoices = _buildPhotoChoices();
     });
+  }
+
+  Future<void> _uploadPhoto(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    final String? path;
+    try {
+      path = await _photoPicker();
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not load the selected photo.')),
+      );
+      return;
+    }
+
+    if (path == null || !mounted) {
+      return;
+    }
+
+    _selectPhoto(path);
   }
 
   void _saveProfile(BuildContext context) {
@@ -328,7 +373,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                         Wrap(
                           spacing: sizes.padS,
                           runSpacing: sizes.padS,
-                          children: _photoOptions
+                          children: _photoChoices
                               .map(
                                 (asset) => _PhotoOptionButton(
                                   asset: asset,
@@ -337,6 +382,15 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
                                 ),
                               )
                               .toList(growable: false),
+                        ),
+                        SizedBox(height: sizes.padS),
+                        SettingsActionButton(
+                          label: 'Upload photo',
+                          color: const Color(0xFF2F80ED),
+                          iconAsset: _userIconAsset,
+                          textColor: AppColors.black,
+                          iconColor: const Color(0xFF2F80ED),
+                          onTap: () => _uploadPhoto(context),
                         ),
                         SizedBox(height: sizes.spaceM),
                         EditablePersonalTagGroup(
@@ -404,7 +458,6 @@ class _PhotoOptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
     final side = (sizes.sliderTileSize * 0.28).clamp(56.0, 84.0).toDouble();
-    final isSvg = asset.toLowerCase().endsWith('.svg');
 
     return Material(
       color: AppColors.white,
@@ -426,13 +479,7 @@ class _PhotoOptionButton extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(sizes.radiusM),
-            child: isSvg
-                ? SvgPicture.asset(asset, fit: BoxFit.cover)
-                : Image.asset(
-                    asset,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                  ),
+            child: ProfilePhoto(source: asset, size: side),
           ),
         ),
       ),
