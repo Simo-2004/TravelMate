@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
+import 'package:travelmate/features/auth/create_account_screen.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
 import 'package:travelmate/shared/state/auth_service.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/brand_header.dart';
 import 'package:travelmate/shared/widgets/custom_button.dart';
+import 'package:travelmate/shared/widgets/link_text.dart';
 
 /// Signature for verifying a login attempt.
 typedef CredentialValidator =
@@ -82,6 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _openCreateAccount(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CreateAccountScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
@@ -127,6 +135,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.yellow,
                             onPressed: _submitting ? () {} : _handleEnter,
                           ),
+                        ),
+                        SizedBox(height: sizes.spaceM),
+                        LinkText(
+                          text: AppStrings.loginCreateAccountLink,
+                          onTap: () => _openCreateAccount(context),
                         ),
                       ],
                     ),

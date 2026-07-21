@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:travelmate/features/auth/create_account_screen.dart';
 import 'package:travelmate/features/auth/login_screen.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/brand_header.dart';
+import 'package:travelmate/shared/widgets/link_text.dart';
 
 import 'helpers/test_harness.dart';
 
@@ -94,5 +96,16 @@ void main() {
     await tester.pump();
 
     expect(entered, isTrue);
+  });
+
+  testWidgets('create-account link opens the create screen', (tester) async {
+    await tester.pumpWidget(wrapApp(const LoginScreen()));
+    await tester.pump();
+
+    await tester.ensureVisible(find.byType(LinkText));
+    await tester.tap(find.byType(LinkText));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CreateAccountScreen), findsOneWidget);
   });
 }

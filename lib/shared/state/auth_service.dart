@@ -42,6 +42,11 @@ class AuthService {
     return _repository.authenticate(username, password);
   }
 
+  /// Replaces the stored account with newly created credentials (sign-up).
+  Future<void> createAccount(String username, String password) {
+    return _repository.createAccount(username: username, password: password);
+  }
+
   static AccountRepository _buildProductionRepository() {
     final keyProvider = ProfileKeyProvider(const FlutterSecureKeyStore());
 

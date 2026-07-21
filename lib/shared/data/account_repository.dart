@@ -31,6 +31,22 @@ class AccountRepository {
       return;
     }
 
+    await _writeAccount(username: username, password: password);
+  }
+
+  /// Replaces the stored account with new credentials (used by sign-up). The
+  /// single-row account table upserts, so this overwrites any existing account.
+  Future<void> createAccount({
+    required String username,
+    required String password,
+  }) {
+    return _writeAccount(username: username, password: password);
+  }
+
+  Future<void> _writeAccount({
+    required String username,
+    required String password,
+  }) async {
     final cipher = await _cipher();
     final hashed = _hasher.hash(password);
 

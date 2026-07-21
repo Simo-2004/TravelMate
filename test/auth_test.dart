@@ -103,6 +103,17 @@ void main() {
       expect(await repository.authenticate('alessia', 'wrong'), isFalse);
       expect(await repository.authenticate('bob', 'travelmate'), isFalse);
     });
+
+    test('createAccount overwrites the existing account', () async {
+      final repository = _repository(FakeAccountDao());
+      await repository.ensureSeeded(username: 'alessia', password: 'travelmate');
+
+      await repository.createAccount(username: 'bob', password: 'password1');
+
+      expect(await repository.authenticate('bob', 'password1'), isTrue);
+      // Old credentials no longer work.
+      expect(await repository.authenticate('alessia', 'travelmate'), isFalse);
+    });
   });
 
   group('AuthService', () {
@@ -125,6 +136,19 @@ void main() {
           'bad',
         ),
         isFalse,
+      );
+    });
+
+    test('createAccount replaces the credentials used by authenticate',
+        () async {
+      AuthService.instance.debugSetRepository(_repository(FakeAccountDao()));
+      await AuthService.instance.initialize();
+
+      await AuthService.instance.createAccount('newbie', 'password1');
+
+      expect(
+        await AuthService.instance.authenticate('newbie', 'password1'),
+        isTrue,
       );
     });
   });
