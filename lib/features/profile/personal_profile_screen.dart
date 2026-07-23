@@ -7,6 +7,7 @@ import 'package:travelmate/features/profile/image/profile_image_picker.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/utils/tag_input.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
@@ -208,9 +209,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
     try {
       path = await _photoPicker();
     } catch (_) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Could not load the selected photo.')),
-      );
+      AppSnackBar.show(messenger, 'Could not load the selected photo.');
       return;
     }
 
@@ -238,9 +237,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
       _applyProfileToDraft(updated);
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Personal profile updated.')));
+    AppSnackBar.show(ScaffoldMessenger.of(context), 'Personal profile updated.');
   }
 
   @override

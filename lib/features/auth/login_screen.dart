@@ -6,6 +6,7 @@ import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/features/auth/create_account_screen.dart';
 import 'package:travelmate/features/navigation/navigation_shell.dart';
 import 'package:travelmate/shared/state/auth_service.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/brand_header.dart';
 import 'package:travelmate/shared/widgets/custom_button.dart';
@@ -73,9 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    messenger.showSnackBar(
-      const SnackBar(content: Text(AppStrings.loginErrorMessage)),
-    );
+    AppSnackBar.show(messenger, AppStrings.loginErrorMessage);
   }
 
   void _openApp(BuildContext context) {

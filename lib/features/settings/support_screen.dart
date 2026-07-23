@@ -4,6 +4,7 @@ import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
 /// Support page with expandable FAQ and contact actions.
@@ -71,10 +72,9 @@ class SupportScreen extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: ElevatedButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(AppStrings.supportContactedMessage),
-                        ),
+                      AppSnackBar.show(
+                        ScaffoldMessenger.of(context),
+                        AppStrings.supportContactedMessage,
                       );
                     },
                     child: const Text(AppStrings.supportContactTitle),
