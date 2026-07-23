@@ -8,6 +8,7 @@ import 'package:travelmate/shared/widgets/travel_image_slider.dart';
 import 'package:travelmate/shared/widgets/tag_section.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
 import 'package:travelmate/shared/widgets/trip_info_card.dart';
 
@@ -46,14 +47,9 @@ class TravelScheduleScreen extends StatelessWidget {
       _buildTripPreview(),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          nowSaved
-              ? 'Trip saved to Saved Items.'
-              : 'Trip removed from Saved Items.',
-        ),
-      ),
+    AppSnackBar.show(
+      ScaffoldMessenger.of(context),
+      nowSaved ? 'Trip saved to Saved Items.' : 'Trip removed from Saved Items.',
     );
   }
 

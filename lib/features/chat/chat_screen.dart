@@ -15,6 +15,7 @@ import 'package:travelmate/shared/state/privacy_settings_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/utils/trip_invite.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/chat_input_bar.dart';
 import 'package:travelmate/shared/widgets/chat_message_bubble.dart';
 import 'package:travelmate/shared/widgets/chat_online_status.dart';
@@ -123,8 +124,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void _handleClearHistory() {
     ChatStore.instance.clearConversation(widget.mate.id);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(AppStrings.chatHistoryClearedMessage)),
+    AppSnackBar.show(
+      ScaffoldMessenger.of(context),
+      AppStrings.chatHistoryClearedMessage,
     );
   }
 

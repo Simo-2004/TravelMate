@@ -4,14 +4,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/core/constants/app_sizes.dart';
 
+/// Bookmark/flag toggle used on trip and mate detail screens.
+///
+/// A hollow circular outline frames a single flag icon; both the ring and the
+/// icon fill communicate the saved state through color alone —
+/// [AppColors.inactiveGray] when unsaved, [AppColors.yellow] when saved —
+/// rather than swapping between a plain and a "barred" icon asset. The white
+/// fill keeps the badge visible against any backdrop the button sits on.
 class SaveTripButton extends StatelessWidget {
   final VoidCallback onTap;
   final String iconAsset;
-  final String savedIconAsset;
   final bool isSaved;
-  final Color? backgroundColor;
-  final Color? iconColor;
-  final Color? borderColor;
   final double? size;
   final double? iconSize;
 
@@ -19,11 +22,7 @@ class SaveTripButton extends StatelessWidget {
     super.key,
     required this.onTap,
     this.iconAsset = 'assets/icons/Bookmark.svg',
-    this.savedIconAsset = 'assets/icons/unsave_bookmark.svg',
     this.isSaved = false,
-    this.backgroundColor,
-    this.iconColor,
-    this.borderColor,
     this.size,
     this.iconSize,
   });
@@ -33,32 +32,26 @@ class SaveTripButton extends StatelessWidget {
     final sizes = AppSizes.of(context);
     final resolvedSize = size ?? sizes.padL * 1.62;
     final resolvedIconSize = iconSize ?? sizes.iconM * 0.93;
-    final resolvedIconAsset = isSaved ? savedIconAsset : iconAsset;
+    final resolvedColor = isSaved ? AppColors.yellow : AppColors.inactiveGray;
 
     return SizedBox(
       width: resolvedSize,
       height: resolvedSize,
       child: Material(
-        color: backgroundColor ?? AppColors.yellow,
+        color: AppColors.white,
         elevation: sizes.buttonElevation,
         shape: CircleBorder(
-          side: BorderSide(
-            color: borderColor ?? AppColors.yellow,
-            width: sizes.padXs * 0.24,
-          ),
+          side: BorderSide(color: resolvedColor, width: sizes.padXs * 0.32),
         ),
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onTap,
           child: Center(
             child: SvgPicture.asset(
-              resolvedIconAsset,
+              iconAsset,
               width: resolvedIconSize,
               height: resolvedIconSize,
-              colorFilter: ColorFilter.mode(
-                iconColor ?? AppColors.black,
-                BlendMode.srcIn,
-              ),
+              colorFilter: ColorFilter.mode(resolvedColor, BlendMode.srcIn),
             ),
           ),
         ),

@@ -11,6 +11,7 @@ import 'package:travelmate/shared/state/auth_service.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/utils/account_validation.dart';
 import 'package:travelmate/shared/utils/tag_input.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/app_text_field.dart';
 import 'package:travelmate/shared/widgets/custom_button.dart';
 import 'package:travelmate/shared/widgets/editable_personal_tag_group.dart';
@@ -121,9 +122,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     try {
       path = await _photoPicker();
     } catch (_) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text(AppStrings.createAccountPhotoError)),
-      );
+      AppSnackBar.show(messenger, AppStrings.createAccountPhotoError);
       return;
     }
 

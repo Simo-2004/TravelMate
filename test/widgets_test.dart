@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:travelmate/core/constants/app_colors.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
@@ -229,6 +231,39 @@ void main() {
     await tester.tap(find.byType(SaveTripButton));
     expect(tapped, isTrue);
   });
+
+  testWidgets(
+    'SaveTripButton rings and colors the flag gray when unsaved, yellow when saved',
+    (tester) async {
+      Color ringColorOf() {
+        final material = tester.widget<Material>(
+          find.descendant(
+            of: find.byType(SaveTripButton),
+            matching: find.byType(Material),
+          ),
+        );
+        return (material.shape! as CircleBorder).side.color;
+      }
+
+      await tester.pumpWidget(
+        wrapScaffold(SaveTripButton(isSaved: false, onTap: () {})),
+      );
+      expect(
+        tester.widget<SvgPicture>(find.byType(SvgPicture)).colorFilter,
+        const ColorFilter.mode(AppColors.inactiveGray, BlendMode.srcIn),
+      );
+      expect(ringColorOf(), AppColors.inactiveGray);
+
+      await tester.pumpWidget(
+        wrapScaffold(SaveTripButton(isSaved: true, onTap: () {})),
+      );
+      expect(
+        tester.widget<SvgPicture>(find.byType(SvgPicture)).colorFilter,
+        const ColorFilter.mode(AppColors.yellow, BlendMode.srcIn),
+      );
+      expect(ringColorOf(), AppColors.yellow);
+    },
+  );
 
   testWidgets('TravelTag truncates long labels', (tester) async {
     await tester.pumpWidget(

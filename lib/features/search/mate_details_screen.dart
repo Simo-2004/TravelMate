@@ -11,6 +11,7 @@ import 'package:travelmate/shared/models/mate_profile.dart';
 import 'package:travelmate/shared/models/saved_trip_preview.dart';
 import 'package:travelmate/shared/models/trip_tag.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/chat_button.dart';
 import 'package:travelmate/shared/widgets/mate_details_panel.dart';
 import 'package:travelmate/shared/widgets/mate_tag_group.dart';
@@ -75,14 +76,11 @@ class MateDetailsScreen extends StatelessWidget {
       _buildMatePreview(),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          nowSaved
-              ? 'Mate profile saved to Saved Items.'
-              : 'Mate profile removed from Saved Items.',
-        ),
-      ),
+    AppSnackBar.show(
+      ScaffoldMessenger.of(context),
+      nowSaved
+          ? 'Mate profile saved to Saved Items.'
+          : 'Mate profile removed from Saved Items.',
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:travelmate/core/constants/app_strings.dart';
 import 'package:travelmate/core/theme/app_text_styles.dart';
 import 'package:travelmate/shared/models/privacy_settings.dart';
 import 'package:travelmate/shared/state/privacy_settings_store.dart';
+import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'package:travelmate/shared/widgets/settings_action_card.dart';
 
 typedef PrivacySettingChanged =
@@ -63,11 +64,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     widget.onSettingsChanged?.call(updated);
 
     final stateLabel = value ? 'On' : 'Off';
-    final message = '$label $stateLabel';
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    AppSnackBar.show(ScaffoldMessenger.of(context), '$label $stateLabel');
   }
 
   @override
