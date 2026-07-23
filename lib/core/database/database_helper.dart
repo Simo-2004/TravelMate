@@ -16,7 +16,7 @@ class DatabaseHelper {
   DatabaseHelper._();
 
   static const String _databaseName = 'travelmate.db';
-  static const int _databaseVersion = 3;
+  static const int _databaseVersion = 4;
 
   /// Single-row table; sensitive columns hold AES-GCM base64 payloads.
   static const String tableProfile = 'personal_profile';
@@ -26,6 +26,11 @@ class DatabaseHelper {
 
   /// Single-row login account: encrypted username + salted password hash.
   static const String tableAccount = 'account';
+
+  /// Chat messages, keyed by mate_id; the message `text` column holds an
+  /// AES-GCM payload, all other columns stay plain (needed for querying by
+  /// conversation and ordering, and not sensitive on their own).
+  static const String tableChatMessages = 'chat_messages';
 
   static final DatabaseHelper instance = DatabaseHelper._();
 
@@ -85,6 +90,23 @@ class DatabaseHelper {
         password_hash TEXT NOT NULL,
         password_iterations INTEGER NOT NULL
       )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableChatMessages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        mate_id TEXT NOT NULL,
+        message_id TEXT NOT NULL,
+        text TEXT NOT NULL,
+        is_from_me INTEGER NOT NULL,
+        sent_at TEXT NOT NULL,
+        attached_trip_id TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_mate_id
+      ON $tableChatMessages (mate_id)
     ''');
   }
 }

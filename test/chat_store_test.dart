@@ -1,15 +1,16 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:travelmate/shared/state/chat_store.dart';
+
+import 'helpers/test_harness.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
+  // Route chat persistence to an in-memory source instead of the SQLite
+  // plugin, which is unavailable in the unit-test VM.
+  setUp(resetChatStore);
 
   test('initialize is idempotent and safe to call', () async {
     await ChatStore.instance.initialize();

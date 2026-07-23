@@ -73,6 +73,9 @@ void main() {
     );
     // Seed the login account in memory so the login gate can authenticate.
     await seedAuthService();
+    // Route chat persistence to an in-memory source instead of the SQLite
+    // plugin, which is unavailable in the unit-test VM.
+    resetChatStore();
 
     // Render at a phone-sized surface (the default 800x600 test window is a
     // landscape tablet, which the mobile-first layouts are not designed for).
