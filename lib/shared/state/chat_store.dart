@@ -2,27 +2,37 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:travelmate/shared/data/chat_history_data.dart';
+import 'package:travelmate/shared/data/chat_data_source.dart';
+import 'package:travelmate/shared/data/sqlite_chat_data.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/utils/chat_auto_reply.dart';
 
 /// Chat conversations, keyed by mate id, persisted to disk so history
 /// survives app restarts until a conversation is explicitly cleared.
 class ChatStore {
-  ChatStore._({ChatHistoryData? historyData})
-    : _historyData = historyData ?? const ChatHistoryData();
+  ChatStore._({ChatDataSource? dataSource})
+    : _dataSource = dataSource ?? SqliteChatData.production();
 
   static final ChatStore instance = ChatStore._();
 
   static const Duration _replyDelay = Duration(milliseconds: 900);
   static const Duration _onlineIdleTimeout = Duration(seconds: 5);
 
-  final ChatHistoryData _historyData;
+  ChatDataSource _dataSource;
   final Map<String, ValueNotifier<List<ChatMessage>>> _conversations = {};
   final Map<String, ValueNotifier<bool>> _onlineStatus = {};
   final Map<String, Timer> _offlineTimers = {};
   bool _initialized = false;
   int _lastMessageId = 0;
+
+  /// Test-only seam: swaps the backing data source (typically over an
+  /// in-memory fake), so chat flows can be exercised without SQLite / secure
+  /// storage plugins.
+  @visibleForTesting
+  void debugSetDataSource(ChatDataSource dataSource) {
+    _dataSource = dataSource;
+    _initialized = false;
+  }
 
   Future<void> initialize() async {
     if (_initialized) {
@@ -31,7 +41,7 @@ class ChatStore {
 
     _initialized = true;
 
-    final persisted = await _historyData.readAll();
+    final persisted = await _dataSource.readAll();
     var highestId = 0;
 
     for (final entry in persisted.entries) {
@@ -123,7 +133,7 @@ class ChatStore {
 
   void clearConversation(String mateId) {
     conversationFor(mateId).value = const [];
-    unawaited(_persist());
+    unawaited(_dataSource.clearConversation(mateId));
   }
 
   Future<void> _scheduleReply(String mateId, String replyText) async {
@@ -148,15 +158,7 @@ class ChatStore {
       ...notifier.value,
       message,
     ]);
-    unawaited(_persist());
-  }
-
-  Future<void> _persist() {
-    final snapshot = <String, List<ChatMessage>>{
-      for (final entry in _conversations.entries) entry.key: entry.value.value,
-    };
-
-    return _historyData.writeAll(snapshot);
+    unawaited(_dataSource.appendMessage(mateId, message));
   }
 
   String _nextId() {

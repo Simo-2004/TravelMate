@@ -9,9 +9,12 @@ import 'package:travelmate/core/security/aes_cipher.dart';
 import 'package:travelmate/core/theme/app_theme.dart';
 import 'package:travelmate/core/security/password_hasher.dart';
 import 'package:travelmate/shared/data/account_repository.dart';
+import 'package:travelmate/shared/data/chat_data_source.dart';
 import 'package:travelmate/shared/data/profile_data_source.dart';
+import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
 import 'package:travelmate/shared/state/auth_service.dart';
+import 'package:travelmate/shared/state/chat_store.dart';
 
 /// In-memory [ProfileDataSource] for tests, so exercising the profile store
 /// never reaches the SQLite / secure-storage platform plugins.
@@ -60,6 +63,41 @@ Future<void> seedAuthService({
   );
   await repository.ensureSeeded(username: username, password: password);
   AuthService.instance.debugSetRepository(repository);
+}
+
+/// In-memory [ChatDataSource] for tests, so exercising the chat store never
+/// reaches the SQLite platform plugin. Optionally pre-seeded to simulate
+/// history persisted by an earlier app session.
+class InMemoryChatData implements ChatDataSource {
+  InMemoryChatData([Map<String, List<ChatMessage>>? initial]) {
+    if (initial != null) {
+      initial.forEach((mateId, messages) {
+        _conversations[mateId] = List<ChatMessage>.from(messages);
+      });
+    }
+  }
+
+  final Map<String, List<ChatMessage>> _conversations = {};
+
+  @override
+  Future<Map<String, List<ChatMessage>>> readAll() async =>
+      Map<String, List<ChatMessage>>.from(_conversations);
+
+  @override
+  Future<void> appendMessage(String mateId, ChatMessage message) async {
+    _conversations[mateId] = [...?_conversations[mateId], message];
+  }
+
+  @override
+  Future<void> clearConversation(String mateId) async {
+    _conversations.remove(mateId);
+  }
+}
+
+/// Resets [ChatStore.instance] onto a fresh in-memory data source, so chat
+/// tests don't touch the SQLite plugin and don't leak history between tests.
+void resetChatStore() {
+  ChatStore.instance.debugSetDataSource(InMemoryChatData());
 }
 
 /// Asset bundle that returns a tiny valid SVG for any key, so widgets calling
