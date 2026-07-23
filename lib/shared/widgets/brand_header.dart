@@ -21,17 +21,20 @@ class BrandHeader extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          logoAsset,
+        Container(
           width: logoSize,
           height: logoSize,
-          fit: BoxFit.contain,
-          errorBuilder: (_, _, _) => SizedBox(
-            width: logoSize,
-            height: logoSize,
-            child: Icon(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.white,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            logoAsset,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => Icon(
               Icons.travel_explore,
-              size: logoSize * 0.6,
+              size: logoSize * 0.55,
               color: AppColors.yellow,
             ),
           ),
