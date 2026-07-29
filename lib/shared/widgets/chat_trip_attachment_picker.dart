@@ -28,12 +28,7 @@ class ChatTripAttachmentPicker extends StatelessWidget {
       color: AppColors.white,
       elevation: sizes.navElevation,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          sizes.padM,
-          sizes.padM,
-          sizes.padM,
-          0,
-        ),
+        padding: EdgeInsets.fromLTRB(sizes.padM, sizes.padM, sizes.padM, 0),
         child: trips.isEmpty
             ? Padding(
                 padding: EdgeInsets.only(bottom: sizes.padS),

@@ -34,15 +34,14 @@ class TripInfoCard extends StatelessWidget {
     final resolvedRadius = borderRadius ?? sizes.radiusL;
     final resolvedPadding = padding ?? EdgeInsets.all(sizes.padM);
     final resolvedTitleSpacing = titleSpacing ?? sizes.padS;
-    final resolvedTitleStyle = titleStyle ??
-        AppTextStyles.titleLg(sizes).copyWith(
-          color: AppColors.black,
-          fontSize: sizes.textMd,
-        );
-    final resolvedDescriptionStyle = descriptionStyle ??
-        AppTextStyles.bodyMd(sizes).copyWith(
-          color: AppColors.blackAlpha60,
-        );
+    final resolvedTitleStyle =
+        titleStyle ??
+        AppTextStyles.titleLg(
+          sizes,
+        ).copyWith(color: AppColors.black, fontSize: sizes.textMd);
+    final resolvedDescriptionStyle =
+        descriptionStyle ??
+        AppTextStyles.bodyMd(sizes).copyWith(color: AppColors.blackAlpha60);
 
     return Container(
       width: double.infinity,
@@ -58,15 +57,9 @@ class TripInfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: resolvedTitleStyle,
-          ),
+          Text(title, style: resolvedTitleStyle),
           SizedBox(height: resolvedTitleSpacing),
-          Text(
-            description,
-            style: resolvedDescriptionStyle,
-          ),
+          Text(description, style: resolvedDescriptionStyle),
         ],
       ),
     );

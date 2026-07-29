@@ -92,7 +92,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       widget.photoPicker ?? const ProfileImagePicker().pickAndStore;
 
   void _addInterestTag() {
-    final updated = TagInput.tryAdd(_interestTags, _interestTagInputController.text);
+    final updated = TagInput.tryAdd(
+      _interestTags,
+      _interestTagInputController.text,
+    );
     _interestTagInputController.clear();
     if (updated != null) {
       setState(() => _interestTags = updated);
@@ -174,7 +177,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
     setState(() => _submitting = true);
 
-    final createAccount = widget.createAccount ?? AuthService.instance.createAccount;
+    final createAccount =
+        widget.createAccount ?? AuthService.instance.createAccount;
     await createAccount(
       _usernameController.text.trim(),
       _passwordController.text,
@@ -308,7 +312,9 @@ class _PhotoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-    final previewSize = (sizes.sliderTileSize * 0.5).clamp(72.0, 120.0).toDouble();
+    final previewSize = (sizes.sliderTileSize * 0.5)
+        .clamp(72.0, 120.0)
+        .toDouble();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

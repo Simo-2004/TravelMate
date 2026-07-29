@@ -25,8 +25,11 @@ class AesCipher {
 
     final combined = Uint8List(iv.bytes.length + encrypted.bytes.length)
       ..setRange(0, iv.bytes.length, iv.bytes)
-      ..setRange(iv.bytes.length, iv.bytes.length + encrypted.bytes.length,
-          encrypted.bytes);
+      ..setRange(
+        iv.bytes.length,
+        iv.bytes.length + encrypted.bytes.length,
+        encrypted.bytes,
+      );
 
     return base64Encode(combined);
   }

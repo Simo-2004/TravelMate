@@ -1,6 +1,7 @@
 import 'package:travelmate/core/database/chat_dao.dart';
 import 'package:travelmate/core/security/aes_cipher.dart';
-import 'package:travelmate/shared/data/profile_repository.dart' show CipherProvider;
+import 'package:travelmate/shared/data/profile_repository.dart'
+    show CipherProvider;
 import 'package:travelmate/shared/models/chat_message.dart';
 
 /// Persists chat messages to SQLite, encrypting only the message text.

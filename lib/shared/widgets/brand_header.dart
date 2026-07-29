@@ -16,7 +16,9 @@ class BrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-    final logoSize = (sizes.sliderTileSize * 1.15).clamp(96.0, 200.0).toDouble();
+    final logoSize = (sizes.sliderTileSize * 1.15)
+        .clamp(96.0, 200.0)
+        .toDouble();
 
     return Column(
       mainAxisSize: MainAxisSize.min,

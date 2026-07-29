@@ -53,11 +53,9 @@ class TravelSearchBar extends StatelessWidget {
     final resolvedTextColor = textColor ?? AppColors.black;
     final resolvedHintColor = hintColor ?? AppColors.blackAlpha60;
     final resolvedRadius = borderRadius ?? sizes.radiusL;
-    final resolvedPadding = padding ??
-        EdgeInsets.symmetric(
-          horizontal: sizes.padM,
-          vertical: sizes.padS,
-        );
+    final resolvedPadding =
+        padding ??
+        EdgeInsets.symmetric(horizontal: sizes.padM, vertical: sizes.padS);
     final resolvedIconSize = iconSize ?? sizes.iconM;
     final resolvedIconAsset = iconAsset ?? _defaultIconAsset;
     final resolvedReadOnly = readOnly ?? onTap != null;
@@ -90,16 +88,16 @@ class TravelSearchBar extends StatelessWidget {
               showCursor: resolvedShowCursor,
               autofocus: resolvedAutofocus,
               textInputAction: textInputAction,
-              style: AppTextStyles.bodyMd(sizes).copyWith(
-                color: resolvedTextColor,
-              ),
+              style: AppTextStyles.bodyMd(
+                sizes,
+              ).copyWith(color: resolvedTextColor),
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
                 hintText: hintText,
-                hintStyle: AppTextStyles.bodyMd(sizes).copyWith(
-                  color: resolvedHintColor,
-                ),
+                hintStyle: AppTextStyles.bodyMd(
+                  sizes,
+                ).copyWith(color: resolvedHintColor),
               ),
             ),
           ),

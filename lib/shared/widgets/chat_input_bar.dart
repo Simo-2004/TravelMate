@@ -140,10 +140,7 @@ class _ChatRoundIconButton extends StatelessWidget {
         shape: CircleBorder(
           side: borderColor == null
               ? BorderSide.none
-              : BorderSide(
-                  color: borderColor!,
-                  width: sizes.padXs * 0.22,
-                ),
+              : BorderSide(color: borderColor!, width: sizes.padXs * 0.22),
         ),
         child: InkWell(
           customBorder: const CircleBorder(),

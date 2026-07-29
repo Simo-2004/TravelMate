@@ -44,10 +44,7 @@ class MatesVerticalSection extends StatelessWidget {
       },
     );
     final listContent = resolvedListHeight.isFinite
-        ? SizedBox(
-            height: resolvedListHeight,
-            child: listView,
-          )
+        ? SizedBox(height: resolvedListHeight, child: listView)
         : Expanded(child: listView);
 
     return SliderSection(
@@ -57,10 +54,9 @@ class MatesVerticalSection extends StatelessWidget {
               padding: EdgeInsets.only(top: sizes.padXs),
               child: Text(
                 emptyMessage,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontSize: sizes.textSm),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontSize: sizes.textSm),
               ),
             )
           : listContent,

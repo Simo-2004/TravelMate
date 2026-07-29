@@ -30,7 +30,9 @@ class TripTagCodec {
 
     return TripTag(
       label: _asString(json['label']),
-      backgroundColor: Color(_asInt(json['backgroundColor'], _defaultBackground)),
+      backgroundColor: Color(
+        _asInt(json['backgroundColor'], _defaultBackground),
+      ),
       textColor: Color(_asInt(json['textColor'], _defaultText)),
       borderColor: borderColor == null
           ? null

@@ -65,13 +65,15 @@ class _TravelImageSliderState extends State<TravelImageSlider> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final side = widget.size ??
+        final side =
+            widget.size ??
             math.min(constraints.maxWidth, sizes.scheduleSliderSize);
         final radius = widget.borderRadius ?? sizes.radiusL;
         final background = widget.backgroundColor ?? AppColors.white;
         final indicatorPadding =
             widget.indicatorPadding ?? EdgeInsets.all(sizes.padXs);
-        final indicatorTextStyle = widget.indicatorTextStyle ??
+        final indicatorTextStyle =
+            widget.indicatorTextStyle ??
             AppTextStyles.caption(sizes).copyWith(color: AppColors.white);
 
         return SizedBox(
@@ -125,10 +127,7 @@ class _SliderImage extends StatelessWidget {
   final String asset;
   final BoxFit fit;
 
-  const _SliderImage({
-    required this.asset,
-    required this.fit,
-  });
+  const _SliderImage({required this.asset, required this.fit});
 
   @override
   Widget build(BuildContext context) {

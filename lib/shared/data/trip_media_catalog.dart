@@ -4,8 +4,11 @@ class TripMediaCatalog {
   static const String _homeFolder = 'assets/images/home';
   static const String _scheduleFolder = 'assets/images/schedule';
 
-  static final List<String> homeTripAssets =
-      _buildAssets(folder: _homeFolder, prefix: 'trip', count: tripCount);
+  static final List<String> homeTripAssets = _buildAssets(
+    folder: _homeFolder,
+    prefix: 'trip',
+    count: tripCount,
+  );
 
   static final List<String> scheduleAssets = _buildAssets(
     folder: _scheduleFolder,

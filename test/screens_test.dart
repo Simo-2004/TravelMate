@@ -230,9 +230,7 @@ void main() {
   });
 
   testWidgets('ChatScreen sends a message and clears history', (tester) async {
-    await tester.pumpWidget(
-      wrapApp(ChatScreen(mate: MateCatalog.mates.first)),
-    );
+    await tester.pumpWidget(wrapApp(ChatScreen(mate: MateCatalog.mates.first)));
     await tester.pump();
     expect(find.textContaining('Say hi'), findsOneWidget);
 
@@ -254,9 +252,7 @@ void main() {
     tester,
   ) async {
     SavedTripPreviewStore.instance.stageBookmark(_tripBookmark());
-    await tester.pumpWidget(
-      wrapApp(ChatScreen(mate: MateCatalog.mates.first)),
-    );
+    await tester.pumpWidget(wrapApp(ChatScreen(mate: MateCatalog.mates.first)));
     await tester.pump();
 
     await tester.tap(find.byIcon(Icons.add_rounded));
@@ -321,7 +317,10 @@ void main() {
       await tester.pumpWidget(wrapApp(const PersonalProfileScreen()));
       await tester.pump();
       expect(find.text('Edit profile'), findsOneWidget);
-      expect(find.text(PersonalProfile.defaultProfile.fullName), findsOneWidget);
+      expect(
+        find.text(PersonalProfile.defaultProfile.fullName),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Edit profile'));
       await tester.pump();
@@ -408,7 +407,10 @@ void main() {
     addTearDown(() => FlutterError.onError = originalOnError);
 
     await tester.pumpWidget(
-      DefaultAssetBundle(bundle: FakeAssetBundle(), child: const TravelMateApp()),
+      DefaultAssetBundle(
+        bundle: FakeAssetBundle(),
+        child: const TravelMateApp(),
+      ),
     );
     await tester.pump();
 

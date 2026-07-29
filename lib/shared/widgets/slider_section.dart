@@ -25,10 +25,7 @@ class SliderSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.titleLg(sizes),
-          ),
+          Text(title, style: AppTextStyles.titleLg(sizes)),
           SizedBox(height: sizes.spaceS),
           child ?? const SizedBox.shrink(),
         ],

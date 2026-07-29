@@ -15,14 +15,23 @@ void main() {
     test('username: required, length bounds and allowed characters', () {
       expect(AccountValidation.validateUsername('  '), isNotNull);
       expect(AccountValidation.validateUsername('ab'), isNotNull); // too short
-      expect(AccountValidation.validateUsername('a' * 21), isNotNull); // too long
-      expect(AccountValidation.validateUsername('bad name'), isNotNull); // space
+      expect(
+        AccountValidation.validateUsername('a' * 21),
+        isNotNull,
+      ); // too long
+      expect(
+        AccountValidation.validateUsername('bad name'),
+        isNotNull,
+      ); // space
       expect(AccountValidation.validateUsername('good_user.1'), isNull);
     });
 
     test('password: required and minimum/maximum length', () {
       expect(AccountValidation.validatePassword(''), isNotNull);
-      expect(AccountValidation.validatePassword('short7!'), isNotNull); // 7 chars
+      expect(
+        AccountValidation.validatePassword('short7!'),
+        isNotNull,
+      ); // 7 chars
       expect(AccountValidation.validatePassword('a' * 65), isNotNull);
       expect(AccountValidation.validatePassword('travelmate'), isNull);
     });
@@ -45,10 +54,10 @@ void main() {
     });
 
     test('clean drops blanks and case-insensitive duplicates', () {
-      expect(
-        TagInput.clean(['Beach', 'beach', '  ', 'Food']),
-        ['Beach', 'Food'],
-      );
+      expect(TagInput.clean(['Beach', 'beach', '  ', 'Food']), [
+        'Beach',
+        'Food',
+      ]);
     });
 
     test('tryAdd appends, rejects duplicates and blanks', () {
@@ -100,10 +109,7 @@ void main() {
       await tester.pump();
 
       await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Zara');
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Surname'),
-        'Khan',
-      );
+      await tester.enterText(find.widgetWithText(TextField, 'Surname'), 'Khan');
       await tester.enterText(
         find.widgetWithText(TextField, 'Username'),
         'zara_k',
@@ -140,10 +146,7 @@ void main() {
       await tester.pump();
 
       await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Zara');
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Surname'),
-        'Khan',
-      );
+      await tester.enterText(find.widgetWithText(TextField, 'Surname'), 'Khan');
       await tester.enterText(
         find.widgetWithText(TextField, 'Username'),
         'zara_k',
@@ -177,10 +180,7 @@ void main() {
       await tester.pump();
 
       await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Zara');
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Surname'),
-        'Khan',
-      );
+      await tester.enterText(find.widgetWithText(TextField, 'Surname'), 'Khan');
       await tester.enterText(
         find.widgetWithText(TextField, 'Username'),
         'zara_k',

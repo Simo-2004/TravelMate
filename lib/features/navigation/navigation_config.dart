@@ -43,10 +43,7 @@ class NavigationStyle {
   }
 
   EdgeInsets padding(AppSizes sizes) {
-    return EdgeInsets.symmetric(
-      horizontal: sizes.padM,
-      vertical: sizes.padXs,
-    );
+    return EdgeInsets.symmetric(horizontal: sizes.padM, vertical: sizes.padXs);
   }
 
   EdgeInsets itemPadding(AppSizes sizes) {
@@ -107,28 +104,28 @@ class NavigationDefaults {
 
   static const NavigationConfig config = NavigationConfig(
     items: [
-       NavigationItem(
+      NavigationItem(
         label: AppStrings.navHomeLabel,
         title: AppStrings.pageHomeTitle,
         icon: Icons.home,
         svgAsset: 'assets/icons/airplane.svg',
         page: HomeScreen(),
       ),
-       NavigationItem(
+      NavigationItem(
         label: AppStrings.navSearchLabel,
         title: AppStrings.pageSearchTitle,
         icon: Icons.search,
         svgAsset: 'assets/icons/Search 2.svg',
         page: SearchScreen(),
       ),
-       NavigationItem(
+      NavigationItem(
         label: AppStrings.navSavedLabel,
         title: AppStrings.pageSavedTitle,
         icon: Icons.bookmark_border,
         svgAsset: 'assets/icons/Bookmark.svg',
         page: SavedItemsScreen(),
       ),
-       NavigationItem(
+      NavigationItem(
         label: AppStrings.navSettingsLabel,
         title: AppStrings.pageSettingsTitle,
         icon: Icons.settings,

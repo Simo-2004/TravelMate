@@ -31,10 +31,9 @@ class ProfileSqfliteDao implements ProfileDao {
   @override
   Future<void> upsertProfileRow(Map<String, Object?> row) async {
     final db = await _helper.database;
-    await db.insert(
-      DatabaseHelper.tableProfile,
-      {...row, 'id': profileRowId},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert(DatabaseHelper.tableProfile, {
+      ...row,
+      'id': profileRowId,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }

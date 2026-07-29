@@ -66,9 +66,7 @@ class PasswordHasher {
     final derivator = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
       ..init(Pbkdf2Parameters(salt, iterations, keyLength));
 
-    return derivator.process(
-      Uint8List.fromList(utf8.encode(password)),
-    );
+    return derivator.process(Uint8List.fromList(utf8.encode(password)));
   }
 
   Uint8List _randomBytes(int length) {

@@ -288,9 +288,7 @@ void main() {
       const pickedPath = '/tmp/uploaded_profile.png';
 
       await tester.pumpWidget(
-        wrapApp(
-          const PersonalProfileScreen(photoPicker: _fixedPicker),
-        ),
+        wrapApp(const PersonalProfileScreen(photoPicker: _fixedPicker)),
       );
       await tester.pump();
 
@@ -310,9 +308,7 @@ void main() {
 
     testWidgets('shows an error when picking fails', (tester) async {
       await tester.pumpWidget(
-        wrapApp(
-          const PersonalProfileScreen(photoPicker: _throwingPicker),
-        ),
+        wrapApp(const PersonalProfileScreen(photoPicker: _throwingPicker)),
       );
       await tester.pump();
 

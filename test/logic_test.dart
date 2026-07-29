@@ -202,11 +202,17 @@ void main() {
     });
 
     test('how are you takes priority over greeting', () {
-      expect(resolveAutoReply('hi, how are you?'), AppStrings.chatReplyHowAreYou);
+      expect(
+        resolveAutoReply('hi, how are you?'),
+        AppStrings.chatReplyHowAreYou,
+      );
     });
 
     test('travel keyword', () {
-      expect(resolveAutoReply('I love to travel'), AppStrings.chatReplyTravelPlans);
+      expect(
+        resolveAutoReply('I love to travel'),
+        AppStrings.chatReplyTravelPlans,
+      );
     });
 
     test('goodbye keyword', () {
@@ -219,7 +225,10 @@ void main() {
 
     test('whole-word matching avoids false positives', () {
       // "hi" should not match inside "this"
-      expect(resolveAutoReply('think about this'), AppStrings.chatFallbackReply);
+      expect(
+        resolveAutoReply('think about this'),
+        AppStrings.chatFallbackReply,
+      );
     });
 
     test('unknown text returns fallback', () {
@@ -341,9 +350,7 @@ void main() {
     });
 
     test('copyWith overrides only given fields', () {
-      final updated = PersonalProfile.defaultProfile.copyWith(
-        firstName: 'Zoe',
-      );
+      final updated = PersonalProfile.defaultProfile.copyWith(firstName: 'Zoe');
       expect(updated.firstName, 'Zoe');
       expect(updated.lastName, PersonalProfile.defaultProfile.lastName);
     });
@@ -455,7 +462,9 @@ void main() {
       expect(TripMediaCatalog.homeTripAssets, hasLength(8));
       expect(
         TripMediaCatalog.scheduleAssets,
-        hasLength(TripMediaCatalog.tripCount * TripMediaCatalog.schedulePerTrip),
+        hasLength(
+          TripMediaCatalog.tripCount * TripMediaCatalog.schedulePerTrip,
+        ),
       );
       expect(TripMediaCatalog.scheduleSets, hasLength(8));
       expect(TripMediaCatalog.scheduleSets.first, hasLength(4));

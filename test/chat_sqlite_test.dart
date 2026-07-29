@@ -84,24 +84,28 @@ void main() {
       expect(conversations['mate_2']!.single.text, 'b');
     });
 
-    test('preserves attachedTripId and isFromMe through the round trip', () async {
-      final dao = _FakeChatDao();
-      final repository = build(dao);
-      final message = ChatMessage(
-        id: '1',
-        text: 'Join me?',
-        isFromMe: false,
-        sentAt: DateTime(2024, 5, 1),
-        attachedTripId: 'trip_1',
-      );
+    test(
+      'preserves attachedTripId and isFromMe through the round trip',
+      () async {
+        final dao = _FakeChatDao();
+        final repository = build(dao);
+        final message = ChatMessage(
+          id: '1',
+          text: 'Join me?',
+          isFromMe: false,
+          sentAt: DateTime(2024, 5, 1),
+          attachedTripId: 'trip_1',
+        );
 
-      await repository.appendMessage('mate_1', message);
-      final restored = (await repository.readAllConversations())['mate_1']!.single;
+        await repository.appendMessage('mate_1', message);
+        final restored =
+            (await repository.readAllConversations())['mate_1']!.single;
 
-      expect(restored.attachedTripId, 'trip_1');
-      expect(restored.isFromMe, isFalse);
-      expect(restored.sentAt, DateTime(2024, 5, 1));
-    });
+        expect(restored.attachedTripId, 'trip_1');
+        expect(restored.isFromMe, isFalse);
+        expect(restored.sentAt, DateTime(2024, 5, 1));
+      },
+    );
 
     test('appendAll bulk-inserts every conversation', () async {
       final dao = _FakeChatDao();
@@ -134,9 +138,12 @@ void main() {
       expect(conversations['mate_2'], hasLength(1));
     });
 
-    test('readAllConversations returns empty map when nothing stored', () async {
-      expect(await build(_FakeChatDao()).readAllConversations(), isEmpty);
-    });
+    test(
+      'readAllConversations returns empty map when nothing stored',
+      () async {
+        expect(await build(_FakeChatDao()).readAllConversations(), isEmpty);
+      },
+    );
   });
 
   group('SqliteChatData', () {
@@ -182,16 +189,19 @@ void main() {
       expect(result['mate_1']!.single.text, 'Fresh');
     });
 
-    test('appendMessage and clearConversation delegate to the repository', () async {
-      final dao = _FakeChatDao();
-      final data = build(dao);
+    test(
+      'appendMessage and clearConversation delegate to the repository',
+      () async {
+        final dao = _FakeChatDao();
+        final data = build(dao);
 
-      await data.appendMessage('mate_1', _message('1', text: 'Hey'));
-      expect((await data.readAll())['mate_1']!.single.text, 'Hey');
+        await data.appendMessage('mate_1', _message('1', text: 'Hey'));
+        expect((await data.readAll())['mate_1']!.single.text, 'Hey');
 
-      await data.clearConversation('mate_1');
-      expect(await data.readAll(), isEmpty);
-    });
+        await data.clearConversation('mate_1');
+        expect(await data.readAll(), isEmpty);
+      },
+    );
   });
 
   group('ChatStore persistence', () {
@@ -239,10 +249,7 @@ void main() {
         // A new message must continue from id 5, not restart at 1.
         ChatStore.instance.sendMessage('mate_z', 'Back again');
         async.flushMicrotasks();
-        expect(
-          ChatStore.instance.conversationFor('mate_z').value.last.id,
-          '6',
-        );
+        expect(ChatStore.instance.conversationFor('mate_z').value.last.id, '6');
 
         // Drain the scheduled auto-reply timer.
         async.elapse(const Duration(seconds: 2));

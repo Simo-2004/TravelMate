@@ -18,7 +18,8 @@ class AppStrings {
   static const String createAccountPhotoLabel = 'Profile photo';
   static const String createAccountUploadPhotoLabel = 'Upload photo';
   static const String createAccountInterestTagsTitle = 'Interest tags';
-  static const String createAccountInterestTagField = 'Type and add an interest tag';
+  static const String createAccountInterestTagField =
+      'Type and add an interest tag';
   static const String createAccountInterestTagEmpty = 'No interest tags yet.';
   static const String createAccountTripTagsTitle = 'Trip tags';
   static const String createAccountTripTagField = 'Type and add a trip tag';
@@ -26,7 +27,8 @@ class AppStrings {
   static const String createAccountUsernameLabel = 'Username';
   static const String createAccountPasswordLabel = 'Password';
   static const String createAccountSubmitLabel = 'Create account';
-  static const String createAccountPhotoError = 'Could not load the selected photo.';
+  static const String createAccountPhotoError =
+      'Could not load the selected photo.';
 
   static const String navHomeLabel = 'Home';
   static const String navSearchLabel = 'Search';

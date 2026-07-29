@@ -4,10 +4,7 @@ class AppTransitions {
   static const Duration pageSwitchDuration = Duration(milliseconds: 260);
   static const Duration pageSwitchReverseDuration = Duration(milliseconds: 200);
 
-  static Widget switcherTransition(
-    Widget child,
-    Animation<double> animation,
-  ) {
+  static Widget switcherTransition(Widget child, Animation<double> animation) {
     final curved = CurvedAnimation(
       parent: animation,
       curve: Curves.easeOutCubic,
@@ -20,10 +17,7 @@ class AppTransitions {
 
     return FadeTransition(
       opacity: curved,
-      child: SlideTransition(
-        position: offset,
-        child: child,
-      ),
+      child: SlideTransition(position: offset, child: child),
     );
   }
 
@@ -33,10 +27,7 @@ class AppTransitions {
   ) {
     return Stack(
       alignment: Alignment.center,
-      children: [
-        ...previousChildren,
-        ?currentChild,
-      ],
+      children: [...previousChildren, ?currentChild],
     );
   }
 }
