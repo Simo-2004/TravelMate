@@ -85,7 +85,12 @@ class SavedTripPreviewStore extends ValueNotifier<List<SavedTripPreview>> {
       return true;
     }
 
-    return _matchesMigratedTripTitle(item, preview, previewSourceId, itemSourceId);
+    return _matchesMigratedTripTitle(
+      item,
+      preview,
+      previewSourceId,
+      itemSourceId,
+    );
   }
 
   // Migration support: older trip records used labels as sourceId.
@@ -114,7 +119,10 @@ class SavedTripPreviewStore extends ValueNotifier<List<SavedTripPreview>> {
     return _normalized(item.tripName) == _normalized(preview.tripName);
   }
 
-  bool _matchesDestinationOnly(SavedTripPreview item, SavedTripPreview preview) {
+  bool _matchesDestinationOnly(
+    SavedTripPreview item,
+    SavedTripPreview preview,
+  ) {
     return preview.bookmarkType == SavedBookmarkType.trip &&
         _normalized(item.destinationTitle) ==
             _normalized(preview.destinationTitle);

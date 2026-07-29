@@ -26,10 +26,9 @@ class _FakeTripDao implements TripDao {
     String collection,
   ) async {
     final matching =
-        rows.where((row) => row['collection'] == collection).toList()
-          ..sort(
-            (a, b) => (a['position']! as int).compareTo(b['position']! as int),
-          );
+        rows.where((row) => row['collection'] == collection).toList()..sort(
+          (a, b) => (a['position']! as int).compareTo(b['position']! as int),
+        );
     return matching;
   }
 }
@@ -173,10 +172,7 @@ void main() {
         TripRepository(dao: _FakeTripDao()),
       );
 
-      store.debugSetData(
-        trips: [_trip('trip_9', 'Nine')],
-        recents: const [],
-      );
+      store.debugSetData(trips: [_trip('trip_9', 'Nine')], recents: const []);
 
       expect(store.findTripById('trip_9')!.label, 'Nine');
       expect(store.recents, isEmpty);

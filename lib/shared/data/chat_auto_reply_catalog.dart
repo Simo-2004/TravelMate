@@ -33,10 +33,7 @@ class ChatAutoReplyCatalog {
       keywords: ['haha', 'lol', 'lmao', 'funny'],
       reply: AppStrings.chatReplyLaugh,
     ),
-    ChatAutoReplyRule(
-      keywords: ['where'],
-      reply: AppStrings.chatReplyLocation,
-    ),
+    ChatAutoReplyRule(keywords: ['where'], reply: AppStrings.chatReplyLocation),
     ChatAutoReplyRule(
       keywords: ['weather'],
       reply: AppStrings.chatReplyWeather,

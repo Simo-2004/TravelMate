@@ -237,7 +237,10 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
       _applyProfileToDraft(updated);
     });
 
-    AppSnackBar.show(ScaffoldMessenger.of(context), 'Personal profile updated.');
+    AppSnackBar.show(
+      ScaffoldMessenger.of(context),
+      'Personal profile updated.',
+    );
   }
 
   @override

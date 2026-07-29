@@ -77,9 +77,7 @@ void main() {
   testWidgets('CustomButton renders label and fires onPressed', (tester) async {
     var tapped = false;
     await tester.pumpWidget(
-      wrapScaffold(
-        CustomButton(text: 'Go', onPressed: () => tapped = true),
-      ),
+      wrapScaffold(CustomButton(text: 'Go', onPressed: () => tapped = true)),
     );
     expect(find.text('Go'), findsOneWidget);
     await tester.tap(find.text('Go'));
@@ -224,9 +222,7 @@ void main() {
   testWidgets('SaveTripButton reflects saved state and fires', (tester) async {
     var tapped = false;
     await tester.pumpWidget(
-      wrapScaffold(
-        SaveTripButton(isSaved: true, onTap: () => tapped = true),
-      ),
+      wrapScaffold(SaveTripButton(isSaved: true, onTap: () => tapped = true)),
     );
     await tester.tap(find.byType(SaveTripButton));
     expect(tapped, isTrue);
@@ -624,16 +620,17 @@ void main() {
           height: 300,
           width: 300,
           child: TravelImageSlider(
-            images: ['assets/images/schedule/s1.svg', 'assets/images/schedule/s2.svg'],
+            images: [
+              'assets/images/schedule/s1.svg',
+              'assets/images/schedule/s2.svg',
+            ],
           ),
         ),
       ),
     );
     expect(find.text('1/2'), findsOneWidget);
 
-    await tester.pumpWidget(
-      wrapScaffold(const TravelImageSlider(images: [])),
-    );
+    await tester.pumpWidget(wrapScaffold(const TravelImageSlider(images: [])));
     expect(find.byType(TravelImageSlider), findsOneWidget);
   });
 }

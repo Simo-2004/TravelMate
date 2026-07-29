@@ -49,7 +49,9 @@ class TravelScheduleScreen extends StatelessWidget {
 
     AppSnackBar.show(
       ScaffoldMessenger.of(context),
-      nowSaved ? 'Trip saved to Saved Items.' : 'Trip removed from Saved Items.',
+      nowSaved
+          ? 'Trip saved to Saved Items.'
+          : 'Trip removed from Saved Items.',
     );
   }
 

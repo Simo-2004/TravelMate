@@ -41,10 +41,9 @@ class AccountSqfliteDao implements AccountDao {
   @override
   Future<void> upsertAccountRow(Map<String, Object?> row) async {
     final db = await _helper.database;
-    await db.insert(
-      DatabaseHelper.tableAccount,
-      {...row, 'id': accountRowId},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert(DatabaseHelper.tableAccount, {
+      ...row,
+      'id': accountRowId,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }

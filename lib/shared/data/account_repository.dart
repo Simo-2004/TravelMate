@@ -1,6 +1,7 @@
 import 'package:travelmate/core/database/account_dao.dart';
 import 'package:travelmate/core/security/password_hasher.dart';
-import 'package:travelmate/shared/data/profile_repository.dart' show CipherProvider;
+import 'package:travelmate/shared/data/profile_repository.dart'
+    show CipherProvider;
 
 /// Persists the login account and verifies credentials.
 ///

@@ -117,7 +117,10 @@ void main() {
 
     test('returns defaults on corrupted payload', () async {
       SharedPreferences.setMockInitialValues({'privacy_settings_v1': 'oops'});
-      expect((await const PrivacySettingsData().read()).privateProfile, isFalse);
+      expect(
+        (await const PrivacySettingsData().read()).privateProfile,
+        isFalse,
+      );
     });
   });
 

@@ -25,9 +25,7 @@ class ChatMessageBubble extends StatelessWidget {
     final backgroundColor = isFromMe
         ? AppColors.yellow
         : const Color(0xFFFFFCED);
-    final borderColor = isFromMe
-        ? AppColors.yellow
-        : const Color(0xFFFFE9A6);
+    final borderColor = isFromMe ? AppColors.yellow : const Color(0xFFFFE9A6);
     final cornerRadius = sizes.radiusM;
     final tightCorner = sizes.padXs * 0.6;
     final attachedTripId = message.attachedTripId;
@@ -53,9 +51,7 @@ class ChatMessageBubble extends StatelessWidget {
             topLeft: Radius.circular(cornerRadius),
             topRight: Radius.circular(cornerRadius),
             bottomLeft: Radius.circular(isFromMe ? cornerRadius : tightCorner),
-            bottomRight: Radius.circular(
-              isFromMe ? tightCorner : cornerRadius,
-            ),
+            bottomRight: Radius.circular(isFromMe ? tightCorner : cornerRadius),
           ),
         ),
         child: Column(
@@ -77,9 +73,9 @@ class ChatMessageBubble extends StatelessWidget {
               ),
             Text(
               message.text,
-              style: AppTextStyles.bodyMd(sizes).copyWith(
-                color: AppColors.black,
-              ),
+              style: AppTextStyles.bodyMd(
+                sizes,
+              ).copyWith(color: AppColors.black),
             ),
             SizedBox(height: sizes.padXs * 0.5),
             Text(

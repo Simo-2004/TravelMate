@@ -53,7 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final authenticate = widget.authenticate ?? AuthService.instance.authenticate;
+    final authenticate =
+        widget.authenticate ?? AuthService.instance.authenticate;
     final messenger = ScaffoldMessenger.of(context);
 
     setState(() => _submitting = true);
@@ -84,9 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _openCreateAccount(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CreateAccountScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const CreateAccountScreen()));
   }
 
   @override

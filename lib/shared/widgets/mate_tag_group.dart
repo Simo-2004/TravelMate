@@ -41,7 +41,8 @@ class MateTagGroup extends StatelessWidget {
 
     final sizes = AppSizes.of(context);
     final resolvedPadding = padding ?? EdgeInsets.only(top: sizes.spaceM);
-    final resolvedTagPadding = tagPadding ??
+    final resolvedTagPadding =
+        tagPadding ??
         EdgeInsets.symmetric(
           horizontal: sizes.padL,
           vertical: sizes.padS * 0.9,
@@ -51,38 +52,36 @@ class MateTagGroup extends StatelessWidget {
     final tripTags = tags
         .asMap()
         .entries
-        .map(
-          (entry) {
-            final index = entry.key;
-            final tag = entry.value;
+        .map((entry) {
+          final index = entry.key;
+          final tag = entry.value;
 
-            // When this group mirrors real trip tags (e.g. a mate's
-            // preferred trips), reuse the actual trip tag's colors instead
-            // of the arbitrary cycling palette below, so the chip matches
-            // how that same tag looks on a real trip.
-            if (matchTripTagCatalog) {
-              final catalogTag = TripTagCatalog.resolve(tag);
-              if (catalogTag != null) {
-                return TripTag(
-                  label: catalogTag.label,
-                  backgroundColor: tagBackgroundColor ??
-                      catalogTag.backgroundColor,
-                  textColor: tagTextColor ?? catalogTag.textColor,
-                  borderColor: tagBorderColor ?? catalogTag.borderColor,
-                );
-              }
+          // When this group mirrors real trip tags (e.g. a mate's
+          // preferred trips), reuse the actual trip tag's colors instead
+          // of the arbitrary cycling palette below, so the chip matches
+          // how that same tag looks on a real trip.
+          if (matchTripTagCatalog) {
+            final catalogTag = TripTagCatalog.resolve(tag);
+            if (catalogTag != null) {
+              return TripTag(
+                label: catalogTag.label,
+                backgroundColor:
+                    tagBackgroundColor ?? catalogTag.backgroundColor,
+                textColor: tagTextColor ?? catalogTag.textColor,
+                borderColor: tagBorderColor ?? catalogTag.borderColor,
+              );
             }
+          }
 
-            final palette = MateTagPalette.resolve(index + paletteOffset);
+          final palette = MateTagPalette.resolve(index + paletteOffset);
 
-            return TripTag(
-              label: tag,
-              backgroundColor: tagBackgroundColor ?? palette.backgroundColor,
-              textColor: tagTextColor ?? palette.textColor,
-              borderColor: tagBorderColor ?? palette.borderColor,
-            );
-          },
-        )
+          return TripTag(
+            label: tag,
+            backgroundColor: tagBackgroundColor ?? palette.backgroundColor,
+            textColor: tagTextColor ?? palette.textColor,
+            borderColor: tagBorderColor ?? palette.borderColor,
+          );
+        })
         .toList(growable: false);
 
     return Padding(

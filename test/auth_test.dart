@@ -69,7 +69,10 @@ void main() {
       final dao = FakeAccountDao();
       final repository = _repository(dao);
 
-      await repository.ensureSeeded(username: 'Alessia', password: 'travelmate');
+      await repository.ensureSeeded(
+        username: 'Alessia',
+        password: 'travelmate',
+      );
       final row = await dao.readAccountRow();
 
       // Username is encrypted, password is never stored in plaintext.
@@ -82,31 +85,47 @@ void main() {
       expect(await dao.countAccounts(), 1);
     });
 
-    test('authenticates valid credentials, case-insensitive username',
-        () async {
-      final repository = _repository(FakeAccountDao());
-      await repository.ensureSeeded(username: 'alessia', password: 'travelmate');
+    test(
+      'authenticates valid credentials, case-insensitive username',
+      () async {
+        final repository = _repository(FakeAccountDao());
+        await repository.ensureSeeded(
+          username: 'alessia',
+          password: 'travelmate',
+        );
 
-      expect(await repository.authenticate('alessia', 'travelmate'), isTrue);
-      expect(await repository.authenticate('  ALESSIA ', 'travelmate'), isTrue);
-    });
+        expect(await repository.authenticate('alessia', 'travelmate'), isTrue);
+        expect(
+          await repository.authenticate('  ALESSIA ', 'travelmate'),
+          isTrue,
+        );
+      },
+    );
 
-    test('rejects a wrong password, wrong username, or missing account',
-        () async {
-      final dao = FakeAccountDao();
-      final repository = _repository(dao);
+    test(
+      'rejects a wrong password, wrong username, or missing account',
+      () async {
+        final dao = FakeAccountDao();
+        final repository = _repository(dao);
 
-      // No account seeded yet.
-      expect(await repository.authenticate('alessia', 'travelmate'), isFalse);
+        // No account seeded yet.
+        expect(await repository.authenticate('alessia', 'travelmate'), isFalse);
 
-      await repository.ensureSeeded(username: 'alessia', password: 'travelmate');
-      expect(await repository.authenticate('alessia', 'wrong'), isFalse);
-      expect(await repository.authenticate('bob', 'travelmate'), isFalse);
-    });
+        await repository.ensureSeeded(
+          username: 'alessia',
+          password: 'travelmate',
+        );
+        expect(await repository.authenticate('alessia', 'wrong'), isFalse);
+        expect(await repository.authenticate('bob', 'travelmate'), isFalse);
+      },
+    );
 
     test('createAccount overwrites the existing account', () async {
       final repository = _repository(FakeAccountDao());
-      await repository.ensureSeeded(username: 'alessia', password: 'travelmate');
+      await repository.ensureSeeded(
+        username: 'alessia',
+        password: 'travelmate',
+      );
 
       await repository.createAccount(username: 'bob', password: 'password1');
 
@@ -139,17 +158,19 @@ void main() {
       );
     });
 
-    test('createAccount replaces the credentials used by authenticate',
-        () async {
-      AuthService.instance.debugSetRepository(_repository(FakeAccountDao()));
-      await AuthService.instance.initialize();
+    test(
+      'createAccount replaces the credentials used by authenticate',
+      () async {
+        AuthService.instance.debugSetRepository(_repository(FakeAccountDao()));
+        await AuthService.instance.initialize();
 
-      await AuthService.instance.createAccount('newbie', 'password1');
+        await AuthService.instance.createAccount('newbie', 'password1');
 
-      expect(
-        await AuthService.instance.authenticate('newbie', 'password1'),
-        isTrue,
-      );
-    });
+        expect(
+          await AuthService.instance.authenticate('newbie', 'password1'),
+          isTrue,
+        );
+      },
+    );
   });
 }

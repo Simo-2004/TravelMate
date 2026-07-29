@@ -35,10 +35,7 @@ class CustomButton extends StatelessWidget {
         elevation: sizes.buttonElevation,
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: AppTextStyles.buttonLabel(sizes),
-      ),
+      child: Text(text, style: AppTextStyles.buttonLabel(sizes)),
     );
   }
 }

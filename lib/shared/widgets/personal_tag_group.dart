@@ -27,10 +27,7 @@ class PersonalTagPalette {
     );
   }
 
-  static List<TripTag> buildFromLabels(
-    List<String> labels, {
-    int offset = 0,
-  }) {
+  static List<TripTag> buildFromLabels(List<String> labels, {int offset = 0}) {
     return labels
         .asMap()
         .entries

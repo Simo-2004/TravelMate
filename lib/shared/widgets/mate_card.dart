@@ -50,38 +50,45 @@ class MateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = AppSizes.of(context);
-    final defaultHeight =
-      (sizes.sliderTileSize * 0.98).clamp(110.0, 180.0).toDouble();
+    final defaultHeight = (sizes.sliderTileSize * 0.98)
+        .clamp(110.0, 180.0)
+        .toDouble();
     final resolvedHeight = height ?? defaultHeight;
     final resolvedBorderRadius = borderRadius ?? sizes.radiusL;
-    final resolvedPadding = padding ??
+    final resolvedPadding =
+        padding ??
         EdgeInsets.symmetric(
-        horizontal: sizes.padM * 1.1,
-        vertical: sizes.padS * 1.15,
+          horizontal: sizes.padM * 1.1,
+          vertical: sizes.padS * 1.15,
         );
-    final defaultProfileImageSize =
-      (resolvedHeight * 0.72).clamp(76.0, 130.0).toDouble();
+    final defaultProfileImageSize = (resolvedHeight * 0.72)
+        .clamp(76.0, 130.0)
+        .toDouble();
     final resolvedProfileImageSize =
-      profileImageSize ?? defaultProfileImageSize;
-    final resolvedProfileImageRadius = profileImageRadius ??
-        resolvedProfileImageSize * 0.5;
+        profileImageSize ?? defaultProfileImageSize;
+    final resolvedProfileImageRadius =
+        profileImageRadius ?? resolvedProfileImageSize * 0.5;
     final resolvedTextSpacing = textSpacing ?? sizes.padXs * 1.25;
     final resolvedBackgroundColor = backgroundColor ?? AppColors.white;
     final resolvedBorderColor = borderColor ?? AppColors.blackAlpha60;
     final resolvedBorderWidth = borderWidth ?? sizes.padXs * 0.22;
-    final defaultTitleFontSize =
-      (sizes.textMd * 1.14).clamp(16.0, 22.0).toDouble();
-    final defaultDescriptionFontSize =
-      (sizes.textSm * 1.22).clamp(13.5, 18.0).toDouble();
-    final resolvedTitleStyle = titleStyle ??
+    final defaultTitleFontSize = (sizes.textMd * 1.14)
+        .clamp(16.0, 22.0)
+        .toDouble();
+    final defaultDescriptionFontSize = (sizes.textSm * 1.22)
+        .clamp(13.5, 18.0)
+        .toDouble();
+    final resolvedTitleStyle =
+        titleStyle ??
         AppTextStyles.titleLg(sizes).copyWith(
-        fontSize: defaultTitleFontSize,
-        height: sizes.textHeightTight + 0.06,
+          fontSize: defaultTitleFontSize,
+          height: sizes.textHeightTight + 0.06,
         );
-    final resolvedDescriptionStyle = descriptionStyle ??
+    final resolvedDescriptionStyle =
+        descriptionStyle ??
         AppTextStyles.bodyMd(sizes).copyWith(
-        fontSize: defaultDescriptionFontSize,
-        height: sizes.textHeightTight + 0.08,
+          fontSize: defaultDescriptionFontSize,
+          height: sizes.textHeightTight + 0.08,
         );
 
     return SizedBox(
@@ -172,15 +179,9 @@ class MateCard extends StatelessWidget {
 
     final isSvg = asset.toLowerCase().endsWith('.svg');
     if (isSvg) {
-      return SvgPicture.asset(
-        asset,
-        fit: imageFit,
-      );
+      return SvgPicture.asset(asset, fit: imageFit);
     }
 
-    return Image.asset(
-      asset,
-      fit: imageFit,
-    );
+    return Image.asset(asset, fit: imageFit);
   }
 }

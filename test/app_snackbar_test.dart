@@ -6,15 +6,17 @@ import 'package:travelmate/shared/widgets/app_snackbar.dart';
 import 'helpers/test_harness.dart';
 
 void main() {
-  testWidgets('shows the message with the short 1.5s duration', (
-    tester,
-  ) async {
+  testWidgets('shows the message with the short 1.5s duration', (tester) async {
     late BuildContext capturedContext;
     await tester.pumpWidget(
-      wrapScaffold(Builder(builder: (context) {
-        capturedContext = context;
-        return const SizedBox.shrink();
-      })),
+      wrapScaffold(
+        Builder(
+          builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
     );
 
     AppSnackBar.show(ScaffoldMessenger.of(capturedContext), 'Hello');
@@ -31,10 +33,14 @@ void main() {
   ) async {
     late BuildContext capturedContext;
     await tester.pumpWidget(
-      wrapScaffold(Builder(builder: (context) {
-        capturedContext = context;
-        return const SizedBox.shrink();
-      })),
+      wrapScaffold(
+        Builder(
+          builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
     );
 
     // Simulate quickly toggling a switch on/off several times: each call

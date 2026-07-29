@@ -1,4 +1,1 @@
-enum SearchResearchMode {
-  trips,
-  mates,
-}
+enum SearchResearchMode { trips, mates }
