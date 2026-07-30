@@ -34,6 +34,9 @@ class ChatStore {
     _initialized = false;
   }
 
+  /// Loads persisted conversations and resumes the message-id counter from
+  /// the highest id found, so ids keep increasing across app restarts; a
+  /// no-op after the first call.
   Future<void> initialize() async {
     if (_initialized) {
       return;
@@ -60,6 +63,8 @@ class ChatStore {
     _lastMessageId = highestId;
   }
 
+  /// Returns the stable notifier for [mateId]'s conversation, creating an
+  /// empty one on first access.
   ValueNotifier<List<ChatMessage>> conversationFor(String mateId) {
     return _conversations.putIfAbsent(
       mateId,
@@ -85,6 +90,8 @@ class ChatStore {
     });
   }
 
+  /// Sends [text] as the current user (ignored if blank), then schedules an
+  /// auto-reply from the mate.
   void sendMessage(String mateId, String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) {
@@ -131,6 +138,7 @@ class ChatStore {
     unawaited(_scheduleReply(mateId, reply));
   }
 
+  /// Clears [mateId]'s conversation, in memory and in persistent storage.
   void clearConversation(String mateId) {
     conversationFor(mateId).value = const [];
     unawaited(_dataSource.clearConversation(mateId));
