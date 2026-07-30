@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:travelmate/features/navigation/navigation_config.dart';
 import 'package:travelmate/features/navigation/navigation_controller.dart';
 
-import 'helpers/test_harness.dart';
+import '../helpers/test_harness.dart';
 
 void main() {
   group('NavigationController', () {

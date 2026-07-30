@@ -28,10 +28,30 @@ class ChatStore {
   /// Test-only seam: swaps the backing data source (typically over an
   /// in-memory fake), so chat flows can be exercised without SQLite / secure
   /// storage plugins.
+  ///
+  /// Also drops everything held in memory — conversations, online flags, the
+  /// pending idle timers and the message-id counter — because the store is now
+  /// pointed at different storage and must not keep serving the old one's
+  /// history.
   @visibleForTesting
   void debugSetDataSource(ChatDataSource dataSource) {
     _dataSource = dataSource;
     _initialized = false;
+    _lastMessageId = 0;
+
+    for (final timer in _offlineTimers.values) {
+      timer.cancel();
+    }
+    _offlineTimers.clear();
+
+    // The notifiers themselves are kept: callers may already be listening to
+    // one, and they should see it emptied rather than be silently orphaned.
+    for (final conversation in _conversations.values) {
+      conversation.value = const [];
+    }
+    for (final status in _onlineStatus.values) {
+      status.value = false;
+    }
   }
 
   /// Loads persisted conversations and resumes the message-id counter from

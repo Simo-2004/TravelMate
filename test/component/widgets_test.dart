@@ -37,7 +37,7 @@ import 'package:travelmate/shared/widgets/trips_vertical_section.dart';
 
 import 'package:travelmate/shared/state/trip_store.dart';
 
-import 'helpers/test_harness.dart';
+import '../helpers/test_harness.dart';
 
 TripTileData _trip(String id, String label) => TripTileData(
   tripId: id,
