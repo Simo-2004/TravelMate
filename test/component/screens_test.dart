@@ -1,6 +1,7 @@
+// Component-level tests: each screen is pumped on its own, with the stores it
+// reads from seeded in memory. Whole-app journeys live in test/system/.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:travelmate/features/chat/chat_screen.dart';
 import 'package:travelmate/features/home/home_screen.dart';
@@ -13,7 +14,6 @@ import 'package:travelmate/features/profile/personal_profile_screen.dart';
 import 'package:travelmate/features/settings/privacy_settings_screen.dart';
 import 'package:travelmate/features/settings/settings_screen.dart';
 import 'package:travelmate/features/settings/support_screen.dart';
-import 'package:travelmate/main.dart';
 import 'package:travelmate/shared/data/mate_catalog.dart';
 import 'package:travelmate/shared/data/trip_catalog.dart';
 import 'package:travelmate/shared/models/personal_profile.dart';
@@ -22,12 +22,11 @@ import 'package:travelmate/shared/models/search_research_mode.dart';
 import 'package:travelmate/shared/state/personal_profile_store.dart';
 import 'package:travelmate/shared/state/saved_trip_preview_store.dart';
 import 'package:travelmate/shared/state/search_research_mode_store.dart';
-import 'package:travelmate/shared/state/trip_store.dart';
 import 'package:travelmate/shared/widgets/mate_card.dart';
 import 'package:travelmate/shared/widgets/save_trip_button.dart';
 import 'package:travelmate/shared/widgets/square_image_button.dart';
 
-import 'helpers/test_harness.dart';
+import '../helpers/test_harness.dart';
 
 SavedTripPreview _tripBookmark() {
   final trip = TripCatalog.trips.first;
@@ -59,35 +58,10 @@ void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({});
-    SavedTripPreviewStore.instance.value = const [];
-    SearchResearchModeStore.instance.value = SearchResearchMode.trips;
-    PersonalProfileStore.instance.value = PersonalProfile.defaultProfile;
-    // Route profile writes to an in-memory source instead of the SQLite /
-    // secure-storage plugins, which are unavailable in the unit-test VM.
-    PersonalProfileStore.instance.debugSetDataSource(InMemoryProfileData());
-    // Seed the trip catalog in memory (no SQLite plugin needed in tests).
-    TripStore.instance.debugSetData(
-      trips: TripCatalog.trips,
-      recents: TripCatalog.recents,
-    );
-    // Seed the login account in memory so the login gate can authenticate.
-    await seedAuthService();
-    // Route chat persistence to an in-memory source instead of the SQLite
-    // plugin, which is unavailable in the unit-test VM.
-    resetChatStore();
-
-    // Render at a phone-sized surface (the default 800x600 test window is a
-    // landscape tablet, which the mobile-first layouts are not designed for).
-    final view = binding.platformDispatcher.implicitView!;
-    view.devicePixelRatio = 1.0;
-    view.physicalSize = const Size(400, 900);
-  });
-
-  tearDown(() {
-    final view = binding.platformDispatcher.implicitView!;
-    view.resetPhysicalSize();
-    view.resetDevicePixelRatio();
+    // Every singleton store back to a clean, plugin-free state, then a
+    // phone-sized render surface.
+    await resetAllStores();
+    usePhoneSurface(binding);
   });
 
   testWidgets('HomeScreen renders sliders and opens a trip', (tester) async {
@@ -306,6 +280,37 @@ void main() {
     expect(find.text('Travel Mate'), findsOneWidget);
   });
 
+  testWidgets('SettingsScreen opens each destination it links to', (
+    tester,
+  ) async {
+    // One test per button would repeat the same three lines; the table keeps
+    // the intent (every link goes somewhere, and comes back) in one place.
+    const destinations = <String, Type>{
+      'Profile': PersonalProfileScreen,
+      'Privacy': PrivacySettingsScreen,
+      'Support': SupportScreen,
+    };
+
+    for (final entry in destinations.entries) {
+      await tester.pumpWidget(wrapApp(const SettingsScreen()));
+      await tester.pump();
+
+      await tester.tap(find.text(entry.key));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(
+        find.byType(entry.value),
+        findsOneWidget,
+        reason: '"${entry.key}" did not open ${entry.value}',
+      );
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Exit'), findsOneWidget);
+    }
+  });
+
   testWidgets(
     'PersonalProfileScreen edits fields, tags and photo, then saves',
     (tester) async {
@@ -386,60 +391,5 @@ void main() {
       PersonalProfileStore.instance.value.firstName,
       PersonalProfile.defaultProfile.firstName,
     );
-  });
-
-  testWidgets('App boots and navigates across bottom tabs', (tester) async {
-    // Landscape surface: keeps the shortest side (and thus font scale) modest
-    // while giving the bottom nav row enough width for all four labels.
-    final view = binding.platformDispatcher.implicitView!;
-    view.physicalSize = const Size(900, 500);
-
-    // The bottom nav bar can trip a small cosmetic RenderFlex overflow in
-    // debug at some surface sizes; that is a paint-time warning, not a logic
-    // failure, so ignore it here while still surfacing every other error.
-    final originalOnError = FlutterError.onError;
-    FlutterError.onError = (details) {
-      if (details.exceptionAsString().contains('A RenderFlex overflowed')) {
-        return;
-      }
-      originalOnError?.call(details);
-    };
-    addTearDown(() => FlutterError.onError = originalOnError);
-
-    await tester.pumpWidget(
-      DefaultAssetBundle(
-        bundle: FakeAssetBundle(),
-        child: const TravelMateApp(),
-      ),
-    );
-    await tester.pump();
-
-    // Login gate is shown first; enter valid credentials to reach the app.
-    expect(find.text('Enter'), findsOneWidget);
-    await tester.enterText(find.byType(TextField).first, 'alessia');
-    await tester.enterText(find.byType(TextField).last, 'travelmate');
-    await tester.tap(find.text('Enter'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-
-    // Home tab content.
-    expect(find.text('Recommended trips for you'), findsOneWidget);
-
-    // Switch to Search.
-    await tester.tap(find.text('Search'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-
-    // Switch to Saved.
-    await tester.tap(find.text('Saved'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.textContaining('Tap the bookmark button'), findsOneWidget);
-
-    // Switch to Settings.
-    await tester.tap(find.text('Settings'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('Exit'), findsOneWidget);
   });
 }

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:travelmate/shared/state/chat_store.dart';
 
-import 'helpers/test_harness.dart';
+import '../helpers/test_harness.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

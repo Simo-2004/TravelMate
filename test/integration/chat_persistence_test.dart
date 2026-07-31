@@ -1,68 +1,34 @@
-import 'package:encrypt/encrypt.dart' as enc;
+/// Integration testing — the chat persistence stack.
+///
+/// ChatRepository -> AesCipher -> ChatDao, with SqliteChatData on top handling
+/// the migration of any history left behind in SharedPreferences, and ChatStore
+/// above that. Message text is encrypted at rest, so these tests check both
+/// that it round-trips and that what reaches the DAO is unreadable.
+library;
+
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:travelmate/core/database/chat_dao.dart';
-import 'package:travelmate/core/security/aes_cipher.dart';
 import 'package:travelmate/shared/data/chat_history_data.dart';
 import 'package:travelmate/shared/data/chat_repository.dart';
 import 'package:travelmate/shared/data/sqlite_chat_data.dart';
 import 'package:travelmate/shared/models/chat_message.dart';
 import 'package:travelmate/shared/state/chat_store.dart';
 
-import 'helpers/test_harness.dart';
-
-/// In-memory [ChatDao] so repository logic runs without a native SQLite.
-class _FakeChatDao implements ChatDao {
-  final List<Map<String, Object?>> rows = [];
-
-  @override
-  Future<int> countMessages() async => rows.length;
-
-  @override
-  Future<List<Map<String, Object?>>> readAllMessages() async =>
-      List<Map<String, Object?>>.from(rows);
-
-  @override
-  Future<void> insertMessage(Map<String, Object?> row) async {
-    rows.add(Map<String, Object?>.from(row));
-  }
-
-  @override
-  Future<void> insertMessages(List<Map<String, Object?>> newRows) async {
-    rows.addAll(newRows.map(Map<String, Object?>.from));
-  }
-
-  @override
-  Future<void> deleteConversation(String mateId) async {
-    rows.removeWhere((row) => row['mate_id'] == mateId);
-  }
-}
-
-ChatMessage _message(String id, {String text = 'hi', bool isFromMe = true}) {
-  return ChatMessage(
-    id: id,
-    text: text,
-    isFromMe: isFromMe,
-    sentAt: DateTime(2024, 1, 1, 10, 0),
-  );
-}
+import '../helpers/test_harness.dart';
 
 void main() {
   group('ChatRepository', () {
-    ChatRepository build(_FakeChatDao dao) {
-      final cipher = AesCipher(enc.Key.fromLength(32));
-      return ChatRepository(dao: dao, cipher: () async => cipher);
-    }
+    ChatRepository build(FakeChatDao dao) => testChatRepository(dao);
 
     test('encrypts message text on write, decrypts on read', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final repository = build(dao);
 
       await repository.appendMessage(
         'mate_1',
-        _message('1', text: 'Secret plan'),
+        buildMessage('1', text: 'Secret plan'),
       );
 
       expect(dao.rows.single['text'], isNot('Secret plan'));
@@ -72,12 +38,12 @@ void main() {
     });
 
     test('groups messages by mate id, preserving order', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final repository = build(dao);
 
-      await repository.appendMessage('mate_1', _message('1', text: 'a'));
-      await repository.appendMessage('mate_2', _message('2', text: 'b'));
-      await repository.appendMessage('mate_1', _message('3', text: 'c'));
+      await repository.appendMessage('mate_1', buildMessage('1', text: 'a'));
+      await repository.appendMessage('mate_2', buildMessage('2', text: 'b'));
+      await repository.appendMessage('mate_1', buildMessage('3', text: 'c'));
 
       final conversations = await repository.readAllConversations();
       expect(conversations['mate_1']!.map((m) => m.text), ['a', 'c']);
@@ -87,7 +53,7 @@ void main() {
     test(
       'preserves attachedTripId and isFromMe through the round trip',
       () async {
-        final dao = _FakeChatDao();
+        final dao = FakeChatDao();
         final repository = build(dao);
         final message = ChatMessage(
           id: '1',
@@ -108,28 +74,28 @@ void main() {
     );
 
     test('appendAll bulk-inserts every conversation', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final repository = build(dao);
 
       await repository.appendAll({
-        'mate_1': [_message('1'), _message('2')],
-        'mate_2': [_message('3')],
+        'mate_1': [buildMessage('1'), buildMessage('2')],
+        'mate_2': [buildMessage('3')],
       });
 
       expect(await repository.countMessages(), 3);
     });
 
     test('appendAll is a no-op for an empty map', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       await build(dao).appendAll(const {});
       expect(dao.rows, isEmpty);
     });
 
     test('clearConversation removes only that mate\'s messages', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final repository = build(dao);
-      await repository.appendMessage('mate_1', _message('1'));
-      await repository.appendMessage('mate_2', _message('2'));
+      await repository.appendMessage('mate_1', buildMessage('1'));
+      await repository.appendMessage('mate_2', buildMessage('2'));
 
       await repository.clearConversation('mate_1');
 
@@ -141,7 +107,7 @@ void main() {
     test(
       'readAllConversations returns empty map when nothing stored',
       () async {
-        expect(await build(_FakeChatDao()).readAllConversations(), isEmpty);
+        expect(await build(FakeChatDao()).readAllConversations(), isEmpty);
       },
     );
   });
@@ -149,23 +115,20 @@ void main() {
   group('SqliteChatData', () {
     setUp(() => SharedPreferences.setMockInitialValues({}));
 
-    SqliteChatData build(_FakeChatDao dao) {
-      final cipher = AesCipher(enc.Key.fromLength(32));
-      return SqliteChatData(
-        repository: ChatRepository(dao: dao, cipher: () async => cipher),
-      );
+    SqliteChatData build(FakeChatDao dao) {
+      return SqliteChatData(repository: testChatRepository(dao));
     }
 
     test('returns empty when nothing is stored anywhere', () async {
-      expect(await build(_FakeChatDao()).readAll(), isEmpty);
+      expect(await build(FakeChatDao()).readAll(), isEmpty);
     });
 
     test('migrates legacy SharedPreferences history into the db', () async {
       await const ChatHistoryData().writeAll({
-        'mate_1': [_message('1', text: 'Legacy hello')],
+        'mate_1': [buildMessage('1', text: 'Legacy hello')],
       });
 
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final data = build(dao);
 
       final migrated = await data.readAll();
@@ -177,12 +140,12 @@ void main() {
     });
 
     test('does not re-migrate once the db already has messages', () async {
-      final dao = _FakeChatDao();
+      final dao = FakeChatDao();
       final data = build(dao);
-      await data.appendMessage('mate_1', _message('1', text: 'Fresh'));
+      await data.appendMessage('mate_1', buildMessage('1', text: 'Fresh'));
 
       await const ChatHistoryData().writeAll({
-        'mate_1': [_message('2', text: 'Should be ignored')],
+        'mate_1': [buildMessage('2', text: 'Should be ignored')],
       });
 
       final result = await data.readAll();
@@ -192,10 +155,10 @@ void main() {
     test(
       'appendMessage and clearConversation delegate to the repository',
       () async {
-        final dao = _FakeChatDao();
+        final dao = FakeChatDao();
         final data = build(dao);
 
-        await data.appendMessage('mate_1', _message('1', text: 'Hey'));
+        await data.appendMessage('mate_1', buildMessage('1', text: 'Hey'));
         expect((await data.readAll())['mate_1']!.single.text, 'Hey');
 
         await data.clearConversation('mate_1');
@@ -236,7 +199,7 @@ void main() {
         // Simulate history persisted by an earlier session, highest id = 5.
         ChatStore.instance.debugSetDataSource(
           InMemoryChatData({
-            'mate_z': [_message('5', text: 'From last time')],
+            'mate_z': [buildMessage('5', text: 'From last time')],
           }),
         );
 

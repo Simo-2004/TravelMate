@@ -1,0 +1,373 @@
+/// Security testing — adversarial checks on the data-at-rest guarantees.
+///
+/// The other suites ask "does it work?". These ask "what does an attacker get
+/// if they read the database file, and what happens if they change it?".
+///
+/// Three properties are being defended:
+///   1. Confidentiality — no sensitive value is recoverable from a stored row.
+///   2. Integrity — a modified ciphertext is rejected, not silently accepted.
+///   3. Irreversibility — the password is stored so that not even the app can
+///      turn it back into the secret the user typed.
+library;
+
+import 'dart:convert';
+
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:travelmate/core/security/profile_key_provider.dart';
+import 'package:travelmate/shared/models/personal_profile.dart';
+
+import '../helpers/fakes.dart';
+import '../helpers/fixtures.dart';
+
+/// Flattens every value of a stored row into one searchable string.
+String rowAsText(Map<String, Object?> row) => row.values.join(' ');
+
+/// Asserts that none of [secrets] can be found anywhere in [stored].
+///
+/// Every secret must be alphanumeric and at least [_minSecretLength] long, and
+/// that is enforced rather than assumed. Both halves matter:
+///
+/// * Ciphertext is base64, whose alphabet is `A-Z a-z 0-9 + / =`. A secret
+///   containing a space, underscore or dot therefore *cannot* appear in it no
+///   matter how broken the encryption is, so such an assertion would pass
+///   forever without testing anything.
+/// * Short secrets have the opposite problem: a 3-character run has roughly a
+///   one-in-a-thousand chance of turning up in a few hundred characters of
+///   random base64, which is a flaky test rather than a failing one.
+void expectNoneReadable(String stored, List<String> secrets) {
+  for (final secret in secrets) {
+    expect(
+      RegExp(r'^[A-Za-z0-9]+$').hasMatch(secret),
+      isTrue,
+      reason: '"$secret" is not alphanumeric, so this check could never fail',
+    );
+    expect(
+      secret.length,
+      greaterThanOrEqualTo(_minSecretLength),
+      reason: '"$secret" is short enough to appear in random base64 by chance',
+    );
+    expect(
+      stored,
+      isNot(contains(secret)),
+      reason: '"$secret" is readable in the stored row',
+    );
+  }
+}
+
+/// Six base64 characters is a 1-in-6.9e10 coincidence per position — far
+/// beyond anything a test run will hit by accident.
+const int _minSecretLength = 6;
+
+void main() {
+  group('integrity: tampered ciphertext is rejected', () {
+    test('flipping a bit in the authentication tag fails decryption', () {
+      final cipher = testCipher();
+      final bytes = base64Decode(cipher.encryptString('secret'));
+      bytes[bytes.length - 1] ^= 0xFF; // corrupt the GCM tag
+
+      expect(
+        () => cipher.decryptString(base64Encode(bytes)),
+        throwsA(anything),
+        reason: 'AES-GCM must detect the modification, not decrypt garbage',
+      );
+    });
+
+    test('flipping a bit in the body fails decryption', () {
+      final cipher = testCipher();
+      final bytes = base64Decode(cipher.encryptString('a longer secret value'));
+      bytes[bytes.length ~/ 2] ^= 0x01;
+
+      expect(
+        () => cipher.decryptString(base64Encode(bytes)),
+        throwsA(anything),
+      );
+    });
+
+    test('a truncated payload fails rather than decrypting partially', () {
+      final cipher = testCipher();
+      final payload = base64Decode(cipher.encryptString('secret'));
+
+      expect(
+        () => cipher.decryptString(
+          base64Encode(payload.sublist(0, payload.length - 4)),
+        ),
+        throwsA(anything),
+      );
+    });
+
+    test('garbage in the column fails rather than crashing unpredictably', () {
+      final cipher = testCipher();
+
+      expect(
+        () => cipher.decryptString('not-base64-at-all!'),
+        throwsA(anything),
+      );
+      expect(() => cipher.decryptString(''), throwsA(anything));
+    });
+  });
+
+  group('confidentiality: the wrong key gets nothing', () {
+    test('data encrypted under one key cannot be read under another', () {
+      final payload = testCipher().encryptString('secret');
+
+      expect(() => foreignCipher().decryptString(payload), throwsA(anything));
+    });
+
+    test('the same value encrypts differently every time', () {
+      final cipher = testCipher();
+
+      final payloads = List.generate(20, (_) => cipher.encryptString('same'));
+
+      expect(
+        payloads.toSet(),
+        hasLength(payloads.length),
+        reason: 'a repeated nonce would leak that two records are equal',
+      );
+    });
+
+    test('the key is generated once and never rewritten', () async {
+      final store = FakeSecureKeyStore();
+
+      await ProfileKeyProvider(store).getOrCreateKey();
+      await ProfileKeyProvider(store).getOrCreateKey();
+      await ProfileKeyProvider(store).getOrCreateKey();
+
+      expect(store.writes, 1);
+    });
+
+    test(
+      'the key material is 256 bits and lives only in the key store',
+      () async {
+        final store = FakeSecureKeyStore();
+
+        final key = await ProfileKeyProvider(store).getOrCreateKey();
+
+        expect(key.bytes.length, 32);
+        expect(store.values, hasLength(1));
+      },
+    );
+  });
+
+  group('confidentiality: nothing readable reaches the profile row', () {
+    // Every distinctive token below is alphanumeric and >= 6 characters, so
+    // each assertion is one the encryption could actually fail. See
+    // [expectNoneReadable].
+    const profile = PersonalProfile(
+      firstName: 'Adalovelace',
+      lastName: 'Byronshire',
+      description: 'Analytical traveler living in Torinocentro.',
+      photoAsset: '/data/app/profile_images/secretphoto.png',
+      interestTags: <String>['Museums'],
+      tripTags: <String>['Citybreak'],
+    );
+
+    test('no field of the profile survives as plaintext', () async {
+      final dao = FakeProfileDao();
+
+      await testProfileRepository(dao).writeProfile(profile);
+
+      expectNoneReadable(rowAsText(dao.row!), const [
+        'Adalovelace',
+        'Byronshire',
+        'Analytical',
+        'Torinocentro',
+        'secretphoto',
+        'Museums',
+        'Citybreak',
+      ]);
+    });
+
+    test('the check is looking at something — the plaintext would fail it', () {
+      // Guards the guard: if expectNoneReadable ever stopped matching, the
+      // profile tests above would pass silently.
+      expect(
+        () => expectNoneReadable(
+          rowAsText({'first_name': 'Adalovelace'}),
+          const ['Adalovelace'],
+        ),
+        throwsA(isA<TestFailure>()),
+      );
+    });
+
+    test('the values still round-trip for the app itself', () async {
+      final dao = FakeProfileDao();
+      final repository = testProfileRepository(dao);
+
+      await repository.writeProfile(profile);
+
+      expect(
+        (await repository.readProfile())!.description,
+        profile.description,
+      );
+    });
+  });
+
+  group('confidentiality: nothing readable reaches the chat row', () {
+    test('message text is unreadable at rest', () async {
+      final dao = FakeChatDao();
+
+      await testChatRepository(dao).appendMessage(
+        'mate_1',
+        buildMessage('1', text: 'Meet me at the northgate before sunrise'),
+      );
+
+      expectNoneReadable(rowAsText(dao.rows.single), const [
+        'northgate',
+        'sunrise',
+      ]);
+    });
+
+    test(
+      'every message in a bulk insert is encrypted, not just the first',
+      () async {
+        final dao = FakeChatDao();
+
+        await testChatRepository(dao).appendAll({
+          'mate_1': [
+            buildMessage('1', text: 'firstconfidential note'),
+            buildMessage('2', text: 'secondconfidential note'),
+          ],
+        });
+
+        expect(dao.rows, hasLength(2));
+        for (final row in dao.rows) {
+          expectNoneReadable(rowAsText(row), const [
+            'firstconfidential',
+            'secondconfidential',
+          ]);
+        }
+      },
+    );
+  });
+
+  group('irreversibility: the password is never recoverable', () {
+    test(
+      'neither the password nor its reverse appears in the account row',
+      () async {
+        final dao = FakeAccountDao();
+
+        await testAccountRepository(
+          dao,
+        ).createAccount(username: 'alessia', password: 'travelmate');
+        expectNoneReadable(rowAsText(dao.row!), const [
+          'travelmate', // the password as typed
+          'etamlevart', // and reversed, in case of a naive obfuscation
+          'alessia', // the username is encrypted, not stored in the clear
+        ]);
+      },
+    );
+
+    test('the app itself cannot decrypt the password back', () async {
+      final dao = FakeAccountDao();
+      final cipher = testCipher();
+
+      await testAccountRepository(
+        dao,
+      ).createAccount(username: 'alessia', password: 'travelmate');
+
+      // The username is encrypted, so the very same cipher reads it back...
+      expect(cipher.decryptString(dao.row!['username']! as String), 'alessia');
+      // ...but the password hash is not ciphertext at all, so the same
+      // operation cannot recover it.
+      expect(
+        () => cipher.decryptString(dao.row!['password_hash']! as String),
+        throwsA(anything),
+      );
+    });
+
+    test('the stored hash is salted, so identical passwords differ', () async {
+      final first = FakeAccountDao();
+      final second = FakeAccountDao();
+
+      await testAccountRepository(
+        first,
+      ).createAccount(username: 'one', password: 'identical');
+      await testAccountRepository(
+        second,
+      ).createAccount(username: 'two', password: 'identical');
+
+      expect(first.row!['password_hash'], isNot(second.row!['password_hash']));
+      expect(first.row!['password_salt'], isNot(second.row!['password_salt']));
+    });
+  });
+
+  group('hostile input is handled as data, not as code', () {
+    test(
+      'SQL metacharacters in a username do not authenticate anyone',
+      () async {
+        final repository = testAccountRepository(FakeAccountDao());
+        await repository.ensureSeeded(
+          username: 'alessia',
+          password: 'travelmate',
+        );
+
+        for (final attempt in const [
+          "' OR '1'='1",
+          "alessia'--",
+          'alessia" OR 1=1 --',
+          '%',
+          '*',
+        ]) {
+          expect(
+            await repository.authenticate(attempt, 'travelmate'),
+            isFalse,
+            reason: 'username "$attempt" was accepted',
+          );
+        }
+      },
+    );
+
+    test('a wildcard password matches nothing', () async {
+      final repository = testAccountRepository(FakeAccountDao());
+      await repository.ensureSeeded(
+        username: 'alessia',
+        password: 'travelmate',
+      );
+
+      for (final attempt in const ['%', '*', "' OR '1'='1", '']) {
+        expect(
+          await repository.authenticate('alessia', attempt),
+          isFalse,
+          reason: 'password "$attempt" was accepted',
+        );
+      }
+    });
+
+    test(
+      'quotes and unicode in a username round-trip and still log in',
+      () async {
+        final repository = testAccountRepository(FakeAccountDao());
+        const username = "o'brien";
+
+        await repository.createAccount(
+          username: username,
+          password: 'password1',
+        );
+
+        expect(await repository.authenticate(username, 'password1'), isTrue);
+        expect(
+          await repository.authenticate("o'brien'--", 'password1'),
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'control characters in chat text survive without corrupting the row',
+      () async {
+        final dao = FakeChatDao();
+        const text = "'; DROPTABLE messages; --\n\t end";
+
+        final repository = testChatRepository(dao);
+        await repository.appendMessage('mate_1', buildMessage('1', text: text));
+
+        // Round-trips byte for byte, newlines and tabs included...
+        final restored = await repository.readAllConversations();
+        expect(restored['mate_1']!.single.text, text);
+        // ...and never reaches storage in a form a query could act on.
+        expectNoneReadable(rowAsText(dao.rows.single), const ['DROPTABLE']);
+      },
+    );
+  });
+}
