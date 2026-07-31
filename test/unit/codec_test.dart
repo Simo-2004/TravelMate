@@ -68,5 +68,39 @@ void main() {
     test('fromJson falls back to an empty label', () {
       expect(TripTagCodec.fromJson(const {}).label, '');
     });
+
+    test('fromJson coerces a non-string label rather than dropping it', () {
+      expect(TripTagCodec.fromJson(const {'label': 42}).label, '42');
+      expect(TripTagCodec.fromJson(const {'label': true}).label, 'true');
+    });
+
+    test('fromJson accepts colors stored as numbers of any kind', () {
+      // A value that came back from JSON as a double must still resolve.
+      final fromDouble = TripTagCodec.fromJson(const {
+        'label': 'x',
+        'backgroundColor': 4278190080.0,
+      });
+      final fromInt = TripTagCodec.fromJson(const {
+        'label': 'x',
+        'backgroundColor': 4278190080,
+      });
+      final fromString = TripTagCodec.fromJson(const {
+        'label': 'x',
+        'backgroundColor': '4278190080',
+      });
+
+      expect(fromDouble.backgroundColor.toARGB32(), 0xFF000000);
+      expect(fromInt.backgroundColor.toARGB32(), 0xFF000000);
+      expect(fromString.backgroundColor.toARGB32(), 0xFF000000);
+    });
+
+    test('fromJson falls back when a color string is not a number', () {
+      final tag = TripTagCodec.fromJson(const {
+        'label': 'x',
+        'backgroundColor': 'not-a-number',
+      });
+
+      expect(tag.backgroundColor.toARGB32(), 0xFFFFF700);
+    });
   });
 }

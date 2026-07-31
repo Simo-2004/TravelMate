@@ -311,6 +311,51 @@ void main() {
       expect(store.value, hasLength(1));
     });
 
+    test('an id-less lookup matches a stored trip by destination title', () {
+      // The screen can ask "is this saved?" with a preview it rebuilt from a
+      // catalog entry that carries no sourceId. The stored record has one, so
+      // the titles are what has to line up.
+      final store = SavedTripPreviewStore.instance;
+      store.stageBookmark(
+        buildBookmark(sourceId: 'trip_1', destinationTitle: 'Bali'),
+      );
+
+      expect(
+        store.isSaved(
+          buildBookmark(
+            name: 'a different name',
+            sourceId: '',
+            destinationTitle: 'Bali',
+          ),
+        ),
+        isTrue,
+      );
+      expect(
+        store.isSaved(
+          buildBookmark(sourceId: '', destinationTitle: 'Somewhere else'),
+        ),
+        isFalse,
+      );
+    });
+
+    test('an id-less mate lookup never matches a stored trip', () {
+      final store = SavedTripPreviewStore.instance;
+      store.stageBookmark(
+        buildBookmark(sourceId: 'trip_1', destinationTitle: 'Bali'),
+      );
+
+      expect(
+        store.isSaved(
+          buildBookmark(
+            sourceId: '',
+            destinationTitle: 'Bali',
+            type: SavedBookmarkType.mate,
+          ),
+        ),
+        isFalse,
+      );
+    });
+
     test('a legacy record saved under a label id still matches by title', () {
       // Older builds used the trip label as the sourceId. Such a record must
       // still be recognised as the same bookmark as the canonical one.

@@ -135,4 +135,56 @@ void main() {
       expect(filterMates(const [], 'alessia'), isEmpty);
     });
   });
+
+  group('filterMates ranking', () {
+    test('a name prefix outranks a name that merely contains the term', () {
+      final mates = [
+        buildMate(id: 'contains', name: 'Gianmarco'),
+        buildMate(id: 'prefix', name: 'Marco'),
+      ];
+
+      // Both match "marco"; the one starting with it must come first.
+      expect(filterMates(mates, 'marco').map((mate) => mate.id), [
+        'prefix',
+        'contains',
+      ]);
+    });
+
+    test('a name match outranks a description-only match', () {
+      final mates = [
+        buildMate(id: 'description', name: 'Zoe', description: 'loves Marco'),
+        buildMate(id: 'name', name: 'Marco'),
+      ];
+
+      expect(filterMates(mates, 'marco').first.id, 'name');
+    });
+
+    test('equally scored mates are ordered by name, so results are stable', () {
+      final mates = [
+        buildMate(id: 'c', name: 'Carla', description: 'hiker'),
+        buildMate(id: 'a', name: 'Anna', description: 'hiker'),
+        buildMate(id: 'b', name: 'Bruno', description: 'hiker'),
+      ];
+
+      // Same score for every mate: the tie-break is alphabetical by name.
+      expect(filterMates(mates, 'hiker').map((mate) => mate.name), [
+        'Anna',
+        'Bruno',
+        'Carla',
+      ]);
+    });
+
+    test('the ordering does not depend on the input order', () {
+      final forwards = [
+        buildMate(id: 'a', name: 'Anna', description: 'hiker'),
+        buildMate(id: 'b', name: 'Bruno', description: 'hiker'),
+      ];
+      final backwards = forwards.reversed.toList();
+
+      expect(
+        filterMates(backwards, 'hiker').map((mate) => mate.id),
+        filterMates(forwards, 'hiker').map((mate) => mate.id),
+      );
+    });
+  });
 }

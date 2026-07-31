@@ -44,6 +44,33 @@ void main() {
       expect(find.byIcon(Icons.person_outline), findsNothing);
     });
 
+    testWidgets('renders a bundled raster asset through Image.asset', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapScaffold(
+          const ProfilePhoto(source: 'assets/images/home/trip_1.png', size: 60),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(Image), findsOneWidget);
+    });
+
+    testWidgets('an undecodable asset falls back to the placeholder', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapScaffold(const ProfilePhoto(source: corruptAssetKey, size: 60)),
+      );
+      await tester.pumpAndSettle();
+
+      // The decode failure is handled by the errorBuilder, not thrown on to
+      // the framework, and the user sees the placeholder instead of a gap.
+      expect(tester.takeException(), isNull);
+      expect(find.byIcon(Icons.person_outline), findsOneWidget);
+    });
+
     testWidgets('uses Image.file for an absolute file path', (tester) async {
       await tester.pumpWidget(
         wrapScaffold(

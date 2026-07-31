@@ -96,17 +96,45 @@ void main() {
       );
     });
 
-    testWidgets('by destination title, for the oldest records', (tester) async {
+    testWidgets('by destination title, for records with no id at all', (
+      tester,
+    ) async {
       await openCardFor(
         tester,
-        buildBookmark(name: 'nothing matches', sourceId: ''),
+        buildBookmark(
+          name: 'no label matches this',
+          sourceId: '',
+          destinationTitle: 'Bali',
+        ),
       );
 
-      // "Dest" matches nothing either, so the snapshot itself is shown.
+      expect(
+        tester
+            .widget<TravelScheduleScreen>(find.byType(TravelScheduleScreen))
+            .tripId,
+        'trip_1',
+      );
+    });
+
+    testWidgets('destination title is NOT used when an id was stored', (
+      tester,
+    ) async {
+      // An id that matches nothing is treated as authoritative: falling back to
+      // the title here would resolve two different trips to the same entry.
+      await openCardFor(
+        tester,
+        buildBookmark(
+          name: 'no label matches this',
+          sourceId: 'trip_gone',
+          destinationTitle: 'Bali',
+        ),
+      );
+
       final screen = tester.widget<TravelScheduleScreen>(
         find.byType(TravelScheduleScreen),
       );
-      expect(screen.destinationTitle, 'Dest');
+      expect(screen.tripId, 'trip_gone');
+      expect(screen.destinationTitle, 'Bali');
     });
 
     testWidgets('falls back to the snapshot when nothing matches at all', (
@@ -216,9 +244,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(Image), findsWidgets);
-      // The test bundle answers every asset with an SVG, so the raster decode
-      // itself fails — that is the stub's doing, not the widget's.
-      expect(tester.takeException(), isA<FormatException>());
+      expect(tester.takeException(), isNull);
     });
   });
 }

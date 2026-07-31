@@ -34,32 +34,73 @@ export 'fixtures.dart';
 // Assets and widget wrappers
 // ---------------------------------------------------------------------------
 
-/// Asset bundle that returns a tiny valid SVG for any key, so widgets calling
-/// `SvgPicture.asset` render in tests without the real asset bundle.
+/// Asset bundle that answers any key with a tiny valid asset of the right
+/// *kind*, so widgets render in tests without the real bundle: a minimal SVG
+/// document for `.svg` keys, and a 1x1 transparent PNG for everything else.
+///
+/// Serving the right kind matters — a widget that picks `Image.asset` over
+/// `SvgPicture.asset` can only be shown to work if the bytes it gets actually
+/// decode as an image. Use [corruptAssetKey] to test the failure path instead.
 class FakeAssetBundle extends CachingAssetBundle {
+  FakeAssetBundle({this.corruptKeys = const <String>{}});
+
+  /// Keys to answer with undecodable bytes, so a widget's error/placeholder
+  /// branch can be exercised. [corruptAssetKey] is always treated this way.
+  final Set<String> corruptKeys;
+
   static const String _svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"></svg>';
 
+  /// A 1x1 fully transparent PNG (68 bytes).
+  static final Uint8List _png = base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpe'
+    'qz8AAAAASUVORK5CYII=',
+  );
+
   @override
   Future<ByteData> load(String key) async {
-    final bytes = Uint8List.fromList(utf8.encode(_svg));
+    // `Image.asset` reads the manifest first to pick a resolution variant.
+    // Handing it image bytes makes it fail to decode long before it ever gets
+    // to the image itself, so answer it in its own format: an empty manifest,
+    // meaning "no resolution variants, use the key as given".
+    if (key == 'AssetManifest.bin') {
+      return const StandardMessageCodec().encodeMessage(<String, Object>{})!;
+    }
+
+    if (key == corruptAssetKey || corruptKeys.contains(key)) {
+      return ByteData.sublistView(
+        Uint8List.fromList(utf8.encode('not-an-image')),
+      );
+    }
+
+    final bytes = key.toLowerCase().endsWith('.svg')
+        ? Uint8List.fromList(utf8.encode(_svg))
+        : _png;
     return ByteData.sublistView(bytes);
   }
 }
 
+/// An asset key this bundle deliberately serves undecodable bytes for, so the
+/// error/placeholder branch of an image widget can be exercised.
+const String corruptAssetKey = 'assets/images/__corrupt__.png';
+
 /// Wraps [child] in a MaterialApp (with the app theme and a fake asset bundle)
 /// so it can be pumped in isolation.
-Widget wrapApp(Widget child) {
+///
+/// Pass [bundle] to substitute a differently-behaving bundle — for example one
+/// built with `FakeAssetBundle(corruptKeys: {...})` to force a hard-coded asset
+/// to fail loading.
+Widget wrapApp(Widget child, {AssetBundle? bundle}) {
   return DefaultAssetBundle(
-    bundle: FakeAssetBundle(),
+    bundle: bundle ?? FakeAssetBundle(),
     child: MaterialApp(theme: AppTheme.light(), home: child),
   );
 }
 
 /// Wraps [child] inside a Scaffold body — for widgets that expect Material
 /// ancestors but do not provide their own Scaffold.
-Widget wrapScaffold(Widget child) {
-  return wrapApp(Scaffold(body: child));
+Widget wrapScaffold(Widget child, {AssetBundle? bundle}) {
+  return wrapApp(Scaffold(body: child), bundle: bundle);
 }
 
 // ---------------------------------------------------------------------------

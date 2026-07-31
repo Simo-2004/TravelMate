@@ -283,6 +283,24 @@ void main() {
       expect(restored.bookmarkType, SavedBookmarkType.mate);
     });
 
+    test('coerces non-string fields rather than dropping the record', () {
+      // Storage is JSON, so a number that was written as a name comes back as
+      // a num. Losing the whole bookmark over that would be worse than
+      // rendering "42".
+      final restored = SavedTripPreview.fromJson(const {
+        'tripName': 42,
+        'destinationTitle': true,
+        'description': 3.5,
+        'coverImage': null,
+        'tags': <Object>[],
+      });
+
+      expect(restored.tripName, '42');
+      expect(restored.destinationTitle, 'true');
+      expect(restored.description, '3.5');
+      expect(restored.coverImage, '');
+    });
+
     test('defaults to the trip type and empty tags on missing fields', () {
       final restored = SavedTripPreview.fromJson(const {});
 

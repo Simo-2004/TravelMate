@@ -280,6 +280,37 @@ void main() {
     expect(find.text('Travel Mate'), findsOneWidget);
   });
 
+  testWidgets('SettingsScreen opens each destination it links to', (
+    tester,
+  ) async {
+    // One test per button would repeat the same three lines; the table keeps
+    // the intent (every link goes somewhere, and comes back) in one place.
+    const destinations = <String, Type>{
+      'Profile': PersonalProfileScreen,
+      'Privacy': PrivacySettingsScreen,
+      'Support': SupportScreen,
+    };
+
+    for (final entry in destinations.entries) {
+      await tester.pumpWidget(wrapApp(const SettingsScreen()));
+      await tester.pump();
+
+      await tester.tap(find.text(entry.key));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(
+        find.byType(entry.value),
+        findsOneWidget,
+        reason: '"${entry.key}" did not open ${entry.value}',
+      );
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Exit'), findsOneWidget);
+    }
+  });
+
   testWidgets(
     'PersonalProfileScreen edits fields, tags and photo, then saves',
     (tester) async {
